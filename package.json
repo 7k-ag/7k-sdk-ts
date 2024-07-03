@@ -25,7 +25,10 @@
     "build:esm": "tsc -p ./configs/tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
     "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
     "prepack": "npm run build",
-    "test": "mocha"
+    "test": "mocha",
+    "publish:patch": "npm version patch --no-git-tag-version && npm publish --access public",
+    "publish:minor": "npm version minor --no-git-tag-version && npm publish --access public",
+    "publish:major": "npm version major --no-git-tag-version && npm publish --access public"
   },
   "keywords": ["7k Protocol", "DEX Aggregator", "Sui Network"],
   "author": "7k Protocol",
