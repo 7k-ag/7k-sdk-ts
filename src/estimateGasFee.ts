@@ -1,21 +1,20 @@
 import BigNumber from "bignumber.js";
 import { SUI_DECIMALS } from "@mysten/sui.js/utils";
 import { buildTx } from "./buildTx";
-import { BIG_ZERO } from "./constants/amount";
-import { getSuiscanTokenMetadata } from "./utils/token";
 import { formatBalance } from "./utils/number";
-import { SUI_TYPE } from "./constants/tokens";
-import { BuildTxParams } from "./types/tx";
+import { EstimateGasFeeParams } from "./types/tx";
 import { getSuiClient } from "./suiClient";
+import { getSuiPrice } from "./getSuiPrice";
 
 export async function estimateGasFee({
   quoteResponse,
   accountAddress,
   slippage,
+  suiPrice: _suiPrice,
   tx: _tx,
   commission,
-}: BuildTxParams): Promise<BigNumber> {
-  if (!accountAddress) return BIG_ZERO;
+}: EstimateGasFeeParams): Promise<number> {
+  if (!accountAddress) return 0;
 
   const tx = await buildTx({
     tx: _tx,
@@ -28,11 +27,10 @@ export async function estimateGasFee({
     return undefined;
   });
 
-  if (!tx) return BIG_ZERO;
+  if (!tx) return 0;
 
-  const suiToken = await getSuiscanTokenMetadata(SUI_TYPE);
-  const suiPrice = suiToken?.tokenPrice ?? "0";
-  const suiDecimals = suiToken?.decimals ?? SUI_DECIMALS;
+  const suiPrice = _suiPrice || (await getSuiPrice());
+  const suiDecimals = SUI_DECIMALS;
 
   const {
     effects: { gasUsed, status },
@@ -41,7 +39,7 @@ export async function estimateGasFee({
     transactionBlock: tx,
   });
 
-  if (status.status !== "success") return BIG_ZERO;
+  if (status.status !== "success") return 0;
 
   const fee = new BigNumber(gasUsed.computationCost)
     .plus(gasUsed.storageCost)
@@ -50,5 +48,5 @@ export async function estimateGasFee({
     formatBalance(fee, suiDecimals),
   );
 
-  return feeUsd;
+  return feeUsd.toNumber();
 }

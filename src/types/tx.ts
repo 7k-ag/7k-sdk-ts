@@ -9,3 +9,7 @@ export interface BuildTxParams {
   slippage: BigNumber.Value;
   commission?: Commission;
 }
+
+export interface EstimateGasFeeParams extends BuildTxParams {
+  suiPrice?: number;
+}

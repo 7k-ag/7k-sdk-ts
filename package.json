@@ -42,6 +42,10 @@
     "DEX Aggregator",
     "Sui Network"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/7k-ag/7k-sdk-ts"
+  },
   "author": "7k Protocol",
   "license": "MIT",
   "devDependencies": {

@@ -16,11 +16,10 @@ import { setSuiClient } from "@7kprotocol/sdk-ts";
 
 const network = "mainnet";
 const suiClient = new SuiClient({ url: getFullnodeUrl(network) });
-
 setSuiClient(suiClient);
 ```
 
-Note: this package only supports mainnet for now.
+Note: this package only supports **mainnet** for now.
 
 ### 2. Get Quote
 
@@ -63,22 +62,15 @@ await buildTx({
 });
 ```
 
-### Estimate Gas Fee
-
-```typescript
-import { estimateGasFee } from "@7kprotocol/sdk-ts";
-
-const feeInUsd = await estimateGasFee({
-  quoteResponse,
-  accountAddress: "0xSenderAddress",
-  slippage: 0.01, // 1%
-});
-```
-
 ### Full Example
 
 ```typescript
-import { getQuote, buildTx } from "@7kprotocol/sdk-ts";
+import { setSuiClient, getQuote, buildTx } from "@7kprotocol/sdk-ts";
+
+// optional
+const network = "mainnet";
+const suiClient = new SuiClient({ url: getFullnodeUrl(network) });
+setSuiClient(suiClient);
 
 const quoteResponse = await getQuote({
   tokenIn: "0x2::sui::SUI",
@@ -94,6 +86,34 @@ const tx = await buildTx({
 });
 
 console.log(tx);
+```
+
+### Estimate Gas Fee
+
+```typescript
+import { estimateGasFee } from "@7kprotocol/sdk-ts";
+
+const feeInUsd = await estimateGasFee({
+  quoteResponse,
+  accountAddress: "0xSenderAddress",
+  slippage: 0.01, // 1%
+});
+```
+
+or
+
+```typescript
+import { getSuiPrice, estimateGasFee } from "@7kprotocol/sdk-ts";
+
+// get sui price using sdk or from else where
+const suiPrice = await getSuiPrice();
+
+const feeInUsd = await estimateGasFee({
+  quoteResponse,
+  accountAddress: "0xSenderAddress",
+  slippage: 0.01, // 1%
+  suiPrice,
+});
 ```
 
 ## License
