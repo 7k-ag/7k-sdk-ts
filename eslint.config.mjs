@@ -6,4 +6,9 @@ import tsEslint from "typescript-eslint";
 export default tsEslint.config(
   eslint.configs.recommended,
   ...tsEslint.configs.recommended,
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+    },
+  },
 );

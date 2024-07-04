@@ -1,14 +1,13 @@
-export function helloWorld() {
-  const message = "Hello World from my example modern npm package!";
-  return message;
-}
+export * from "./types/aggregator";
 
-export function goodBye() {
-  const message = "Goodbye from my example modern npm package!";
-  return message;
-}
+import { getQuote } from "./getQuote";
+import { estimateGasFee } from "./estimateGasFee";
+import { buildTx } from "./buildTx";
+
+export { getQuote, estimateGasFee, buildTx };
 
 export default {
-  helloWorld,
-  goodBye,
+  getQuote,
+  estimateGasFee,
+  buildTx,
 };
