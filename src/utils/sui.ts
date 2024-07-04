@@ -49,7 +49,8 @@ export const SuiUtils = {
         ? txb.object(coinObjects[0])
         : coinObjects[0];
     txb.mergeCoins(
-      // @ts-expect-error mismatched typing
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       firstCoin,
       coinObjects
         .slice(1)

@@ -16,10 +16,10 @@ const _7K_CONFIG =
   "0xc31272d90e0c36181b0153776c9d7c1516d4c1eca50fc2eb01f36d3f457ea90d";
 
 export const buildTx = async ({
-  tx: _tx,
   quoteResponse,
   accountAddress,
   slippage,
+  tx: _tx,
   commission: _commission,
 }: BuildTxParams) => {
   if (!accountAddress || !quoteResponse.routes) return;

@@ -9,10 +9,10 @@ import { BuildTxParams } from "./types/tx";
 import { getSuiClient } from "./suiClient";
 
 export async function estimateGasFee({
-  tx: _tx,
   quoteResponse,
   accountAddress,
   slippage,
+  tx: _tx,
   commission,
 }: BuildTxParams): Promise<BigNumber> {
   if (!accountAddress) return BIG_ZERO;
