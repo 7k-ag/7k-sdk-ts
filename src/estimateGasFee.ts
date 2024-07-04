@@ -3,28 +3,26 @@ import { SUI_DECIMALS } from "@mysten/sui.js/utils";
 import { buildTx } from "./buildTx";
 import { BIG_ZERO } from "./constants/amount";
 import { getSuiscanTokenMetadata } from "./utils/token";
-import { suiClient } from "./constants/suiClient";
 import { formatBalance } from "./utils/number";
 import { SUI_TYPE } from "./constants/tokens";
 import { BuildTxParams } from "./types/tx";
+import { getSuiClient } from "./suiClient";
 
 export async function estimateGasFee({
   tx: _tx,
-  sorResponse,
+  quoteResponse,
   accountAddress,
   slippage,
-  commissionPartner,
-  commissionBps,
+  commission,
 }: BuildTxParams): Promise<BigNumber> {
   if (!accountAddress) return BIG_ZERO;
 
   const tx = await buildTx({
     tx: _tx,
-    sorResponse,
+    quoteResponse,
     accountAddress,
     slippage,
-    commissionPartner,
-    commissionBps,
+    commission,
   }).catch((err) => {
     console.log("build tx error: ", err);
     return undefined;
@@ -38,7 +36,7 @@ export async function estimateGasFee({
 
   const {
     effects: { gasUsed, status },
-  } = await suiClient.devInspectTransactionBlock({
+  } = await getSuiClient().devInspectTransactionBlock({
     sender: accountAddress,
     transactionBlock: tx,
   });

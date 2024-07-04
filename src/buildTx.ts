@@ -17,24 +17,23 @@ const _7K_CONFIG =
 
 export const buildTx = async ({
   tx: _tx,
-  sorResponse,
+  quoteResponse,
   accountAddress,
   slippage,
-  commissionPartner,
-  commissionBps,
+  commission: _commission,
 }: BuildTxParams) => {
-  if (!accountAddress || !sorResponse.routes) return;
+  if (!accountAddress || !quoteResponse.routes) return;
 
   const tx = _tx || new TransactionBlock();
 
-  const routes = groupSwapRoutes(sorResponse);
+  const routes = groupSwapRoutes(quoteResponse);
 
   const splits = routes.map((group) => group[0]?.amount ?? "0");
   const { coinData } = await getSplitCoinForTx(
     accountAddress,
-    sorResponse.swapAmountWithDecimal,
+    quoteResponse.swapAmountWithDecimal,
     splits,
-    denormalizeTokenType(sorResponse.tokenIn),
+    denormalizeTokenType(quoteResponse.tokenIn),
     tx,
   );
 
@@ -60,25 +59,20 @@ export const buildTx = async ({
         : coinObjects[0];
     const minReceived = new BigNumber(1)
       .minus(slippage)
-      .multipliedBy(sorResponse.returnAmountWithDecimal)
+      .multipliedBy(quoteResponse.returnAmountWithDecimal)
       .toFixed(0);
 
-    const commission = getCommission(
-      tx,
-      commissionPartner && commissionBps && +commissionBps
-        ? { partner: commissionPartner, commissionBps: +commissionBps }
-        : undefined,
-    );
+    const commission = getCommission(tx, _commission);
 
     tx.moveCall({
       target: `${_7K_PACKAGE_ID}::settle::settle`,
-      typeArguments: [sorResponse.tokenIn, sorResponse.tokenOut],
+      typeArguments: [quoteResponse.tokenIn, quoteResponse.tokenOut],
       arguments: [
         tx.object(_7K_CONFIG),
-        tx.pure.u64(sorResponse.swapAmountWithDecimal),
+        tx.pure.u64(quoteResponse.swapAmountWithDecimal),
         mergeCoin,
         tx.pure.u64(minReceived),
-        tx.pure.u64(sorResponse.returnAmountWithDecimal),
+        tx.pure.u64(quoteResponse.returnAmountWithDecimal),
         commission,
       ],
     });

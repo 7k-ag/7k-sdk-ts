@@ -9,7 +9,7 @@ import {
 } from "@mysten/sui.js/client";
 import { parseStructTag } from "@mysten/sui.js/utils";
 import { checkIsSui } from "./token";
-import { suiClient } from "../constants/suiClient";
+import { getSuiClient } from "../suiClient";
 
 type DataPage<T> = {
   data: T[];
@@ -165,7 +165,7 @@ export const SuiUtils = {
 
     do {
       try {
-        const res = await suiClient.getCoins({
+        const res = await getSuiClient().getCoins({
           owner: address,
           coinType: type,
           cursor: cursor,
@@ -226,12 +226,13 @@ export const SuiUtils = {
     const queryAll = paginationArgs === "all";
     let nextCursor = queryAll ? null : paginationArgs.cursor;
     do {
-      const res: PaginatedObjectsResponse = await suiClient.getOwnedObjects({
-        owner,
-        ...query,
-        cursor: nextCursor,
-        limit: queryAll ? null : paginationArgs.limit,
-      });
+      const res: PaginatedObjectsResponse =
+        await getSuiClient().getOwnedObjects({
+          owner,
+          ...query,
+          cursor: nextCursor,
+          limit: queryAll ? null : paginationArgs.limit,
+        });
       if (res.data) {
         result = [...result, ...res.data];
         hasNextPage = res.hasNextPage;

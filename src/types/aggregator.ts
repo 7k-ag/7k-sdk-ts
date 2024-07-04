@@ -74,3 +74,8 @@ export interface TxSorSwap extends SorSwap {
   coinY: Coin;
   swapXtoY: boolean;
 }
+
+export interface Commission {
+  partner: string;
+  commissionBps: number;
+}

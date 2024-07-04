@@ -1,6 +1,6 @@
 import { CoinStruct, PaginatedCoins } from "@mysten/sui.js/client";
 import BigNumber from "bignumber.js";
-import { suiClient } from "../constants/suiClient";
+import { getSuiClient } from "../suiClient";
 
 const orderByKey = (array: any[], key: string, sortBy: "desc" | "asc") => {
   if (!array?.length) {
@@ -39,7 +39,7 @@ export const getCoinOjectIdsByAmount = async (
   let nextCursor = undefined;
   while (hasNextPage) {
     try {
-      const coins: PaginatedCoins = await suiClient.getCoins({
+      const coins: PaginatedCoins = await getSuiClient().getCoins({
         owner: address,
         coinType,
         cursor: nextCursor,

@@ -9,13 +9,13 @@ import {
 } from "../types/aggregator";
 import { denormalizeTokenType } from "../utils/token";
 
-export function groupSwapRoutes(sorResponse: QuoteResponse): TxSorSwap[][] {
-  if (!sorResponse.routes || !sorResponse.swaps) {
+export function groupSwapRoutes(quoteResponse: QuoteResponse): TxSorSwap[][] {
+  if (!quoteResponse.routes || !quoteResponse.swaps) {
     return [];
   }
 
-  const poolDetails = mapPoolIdsToDetails(sorResponse.routes);
-  const items = getTxSorSwaps(sorResponse.swaps, poolDetails);
+  const poolDetails = mapPoolIdsToDetails(quoteResponse.routes);
+  const items = getTxSorSwaps(quoteResponse.swaps, poolDetails);
 
   const groupedItems: TxSorSwap[][] = [];
   let currentGroup: TxSorSwap[] = [];
