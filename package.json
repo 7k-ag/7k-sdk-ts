@@ -19,8 +19,15 @@
   "files": [
     "lib/**/*"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "rm -rf ./lib",
+    "prepare": "husky",
+    "tsc": "npx tsc -p ./configs/tsconfig.base.json --noEmit",
+    "lint": "npx eslint ./src",
+    "prettier": "npx prettier --write .",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "build:esm": "tsc -p ./configs/tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
     "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
@@ -30,14 +37,27 @@
     "publish:minor": "npm version minor --no-git-tag-version && npm publish --access public",
     "publish:major": "npm version major --no-git-tag-version && npm publish --access public"
   },
-  "keywords": ["7k Protocol", "DEX Aggregator", "Sui Network"],
+  "keywords": [
+    "7k Protocol",
+    "DEX Aggregator",
+    "Sui Network"
+  ],
   "author": "7k Protocol",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.6.0",
     "@types/chai": "^4.3.3",
+    "@types/eslint__js": "^8.42.3",
     "@types/mocha": "^9.1.1",
     "chai": "^4.3.6",
+    "eslint": "^8.57.0",
+    "husky": "^9.0.11",
     "mocha": "^10.0.0",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^7.15.0"
+  },
+  "dependencies": {
+    "@mysten/sui.js": "^0.54.1"
   }
 }
