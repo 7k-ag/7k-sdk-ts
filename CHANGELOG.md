@@ -1,5 +1,23 @@
 # @7kprotocol/sdk-ts
 
+## 1.2.5
+
+### Patch Changes
+
+- Remove unused vars
+
+## 1.2.4
+
+### Patch Changes
+
+- Fix tx gas bug
+
+## 1.2.3
+
+### Patch Changes
+
+- Update 7k contract
+
 ## 1.2.2
 
 ### Patch Changes

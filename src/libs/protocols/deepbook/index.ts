@@ -1,11 +1,10 @@
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui.js/utils";
 import { BaseContract } from "../base";
+import { _7K_PACKAGE_ID } from "../../../constants/_7k";
 
 const PACKAGE_ID = "0xdee9";
 const MODULE_NAME = "clob_v2";
-const _7K_PACKAGE_ID =
-  "0xd48e7cdc9e92bec69ce3baa75578010458a0c5b2733d661a84971e8cef6806bc";
 
 export class DeepBookContract extends BaseContract {
   async swap(tx: TransactionBlock) {

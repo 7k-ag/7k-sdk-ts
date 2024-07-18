@@ -9,11 +9,7 @@ import { swapWithRoute } from "./libs/swapWithRoute";
 import { denormalizeTokenType } from "./utils/token";
 import { SuiUtils } from "./utils/sui";
 import { BuildTxParams } from "./types/tx";
-
-const _7K_PACKAGE_ID =
-  "0xd48e7cdc9e92bec69ce3baa75578010458a0c5b2733d661a84971e8cef6806bc";
-const _7K_CONFIG =
-  "0xc31272d90e0c36181b0153776c9d7c1516d4c1eca50fc2eb01f36d3f457ea90d";
+import { _7K_CONFIG, _7K_PACKAGE_ID } from "./constants/_7k";
 
 export const buildTx = async ({
   quoteResponse,

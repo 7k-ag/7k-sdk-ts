@@ -1,0 +1,5 @@
+export const _7K_PACKAGE_ID =
+  "0xa13447019cd982d6bef91cf7b46ad384a52583b1dfc2bdecf31ef0c4bd787a0f";
+//V1: "0xd48e7cdc9e92bec69ce3baa75578010458a0c5b2733d661a84971e8cef6806bc";
+export const _7K_CONFIG =
+  "0xc31272d90e0c36181b0153776c9d7c1516d4c1eca50fc2eb01f36d3f457ea90d";

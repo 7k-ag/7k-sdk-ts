@@ -3,7 +3,6 @@ import {
   TransactionResult,
 } from "@mysten/sui.js/transactions";
 import { getCoinOjectIdsByAmount } from "./getCoinOjectIdsByAmount";
-import BigNumber from "bignumber.js";
 import { SUI_TYPE } from "../constants/tokens";
 
 export const getSplitCoinForTx = async (
@@ -24,11 +23,7 @@ export const getSplitCoinForTx = async (
     coinType,
   );
   const coinObjectId: any = objectIds[0];
-  // TODO: find out why the tx.gas is limited at 950 sui
-  if (
-    coinType === SUI_TYPE &&
-    new BigNumber(amount).lt(new BigNumber("950e9"))
-  ) {
+  if (coinType === SUI_TYPE) {
     const pureAmount = [];
     for (const split of splits) {
       pureAmount.push(tx.pure(split));
