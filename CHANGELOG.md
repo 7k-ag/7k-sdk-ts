@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 1.2.2
+
+### Patch Changes
+
+- Update commission explanation in `README.md`
+
 ## 1.2.1
 
 ### Patch Changes
