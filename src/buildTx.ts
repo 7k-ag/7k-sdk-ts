@@ -10,6 +10,7 @@ import { denormalizeTokenType } from "./utils/token";
 import { SuiUtils } from "./utils/sui";
 import { BuildTxParams } from "./types/tx";
 import { _7K_CONFIG, _7K_PACKAGE_ID } from "./constants/_7k";
+import { isValidSuiAddress } from "@mysten/sui.js/utils";
 
 export const buildTx = async ({
   quoteResponse,
@@ -19,7 +20,17 @@ export const buildTx = async ({
   commission: _commission,
   isGasEstimate,
 }: BuildTxParams) => {
-  if (!accountAddress || !quoteResponse.routes) return;
+  if (!accountAddress) {
+    throw new Error("Sender address is required");
+  }
+
+  if (!quoteResponse.routes) {
+    throw new Error("Invalid quote response: 'routes' are required");
+  }
+
+  if (!isValidSuiAddress(_commission.partner)) {
+    throw new Error("Invalid commission partner address");
+  }
 
   const tx = _tx || new TransactionBlock();
 

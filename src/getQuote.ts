@@ -16,7 +16,7 @@ export async function getQuote({
     `https://api.7k.ag/quote?amount=${amountIn}&from=${normalizeTokenType(tokenIn)}&to=${normalizeTokenType(tokenOut)}`,
   );
   if (!response.ok) {
-    throw new Error("Failed to fetch aggregator sor");
+    throw new Error("Failed to fetch aggregator quote");
   }
   return response.json();
 }

@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 1.2.7
+
+### Patch Changes
+
+- Improve `buildTx` params validation
+
 ## 1.2.6
 
 ### Patch Changes
