@@ -2,7 +2,7 @@ import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { Commission, QuoteResponse } from "./aggregator";
 import BigNumber from "bignumber.js";
 
-export interface BuildTxParams {
+export interface CommonParams {
   tx?: TransactionBlock;
   quoteResponse: QuoteResponse;
   accountAddress: string;
@@ -10,6 +10,10 @@ export interface BuildTxParams {
   commission: Commission;
 }
 
-export interface EstimateGasFeeParams extends BuildTxParams {
+export interface BuildTxParams extends CommonParams {
+  isGasEstimate?: boolean;
+}
+
+export interface EstimateGasFeeParams extends CommonParams {
   suiPrice?: number;
 }

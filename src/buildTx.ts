@@ -17,6 +17,7 @@ export const buildTx = async ({
   slippage,
   tx: _tx,
   commission: _commission,
+  isGasEstimate,
 }: BuildTxParams) => {
   if (!accountAddress || !quoteResponse.routes) return;
 
@@ -31,6 +32,7 @@ export const buildTx = async ({
     splits,
     denormalizeTokenType(quoteResponse.tokenIn),
     tx,
+    isGasEstimate,
   );
 
   const coinObjects: TransactionObjectArgument[] = [];

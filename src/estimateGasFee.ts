@@ -22,6 +22,7 @@ export async function estimateGasFee({
     accountAddress,
     slippage,
     commission,
+    isGasEstimate: true,
   }).catch((err) => {
     console.log("build tx error: ", err);
     return undefined;

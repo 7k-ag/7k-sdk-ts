@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 1.2.6
+
+### Patch Changes
+
+- Improve gas estimate
+
 ## 1.2.5
 
 ### Patch Changes
