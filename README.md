@@ -43,6 +43,10 @@ const tx = await buildTx({
   quoteResponse,
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
+  commission: {
+    partner: "<address to receive partner fee if any>",
+    commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
+  },
 });
 ```
 
@@ -59,6 +63,10 @@ await buildTx({
   quoteResponse,
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
+  commission: {
+    partner: "<address to receive partner fee if any>",
+    commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
+  },
 });
 ```
 
@@ -83,6 +91,10 @@ const tx = await buildTx({
   quoteResponse,
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
+  commission: {
+    partner: "<address to receive partner fee if any>",
+    commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
+  },
 });
 
 console.log(tx);
@@ -97,6 +109,10 @@ const feeInUsd = await estimateGasFee({
   quoteResponse,
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
+  commission: {
+    partner: "<address to receive partner fee if any>",
+    commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
+  },
 });
 ```
 
@@ -113,6 +129,10 @@ const feeInUsd = await estimateGasFee({
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
   suiPrice,
+  commission: {
+    partner: "<address to receive partner fee if any>",
+    commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
+  },
 });
 ```
 

@@ -7,7 +7,7 @@ export interface BuildTxParams {
   quoteResponse: QuoteResponse;
   accountAddress: string;
   slippage: BigNumber.Value;
-  commission?: Commission;
+  commission: Commission;
 }
 
 export interface EstimateGasFeeParams extends BuildTxParams {
