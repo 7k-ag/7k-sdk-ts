@@ -49,6 +49,7 @@ const quoteResponse = await getQuote({
     "turbos",
     "cetus",
     "bluemove",
+    "kriya",
     "kriya_v3",
     "aftermath",
     "deepbook",

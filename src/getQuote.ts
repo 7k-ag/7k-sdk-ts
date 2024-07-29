@@ -13,6 +13,7 @@ const DEFAULT_SOURCES: SourceDex[] = [
   "turbos",
   "cetus",
   "bluemove",
+  "kriya",
   "kriya_v3",
   "aftermath",
   "deepbook",

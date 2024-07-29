@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 1.3.1
+
+### Patch Changes
+
+- Add `kriya` to default sources
+
 ## 1.3.0
 
 ### Minor Changes
