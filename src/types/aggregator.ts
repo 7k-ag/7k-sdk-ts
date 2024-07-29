@@ -4,6 +4,7 @@ export type SourceDex =
   | "cetus"
   | "bluemove"
   | "kriya"
+  | "kriya_v3"
   | "aftermath"
   | "deepbook"
   | "flowx";

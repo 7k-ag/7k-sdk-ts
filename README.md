@@ -34,6 +34,29 @@ const quoteResponse = await getQuote({
 });
 ```
 
+or
+
+```typescript
+import { getQuote } from "@7kprotocol/sdk-ts";
+
+const quoteResponse = await getQuote({
+  tokenIn: "0x2::sui::SUI",
+  tokenOut:
+    "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN",
+  amountIn: "1000000000",
+  sources: [
+    "suiswap",
+    "turbos",
+    "cetus",
+    "bluemove",
+    "kriya_v3",
+    "aftermath",
+    "deepbook",
+    "flowx",
+  ], // Optional: if empty, the latest sources supported by the current SDK version will be used.
+});
+```
+
 ### 3. Build Transaction
 
 ```typescript

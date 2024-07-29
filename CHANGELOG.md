@@ -1,5 +1,12 @@
 # @7kprotocol/sdk-ts
 
+## 1.3.0
+
+### Minor Changes
+
+- Update Kriya contract v3
+- Update `getQuote` to support `sources` param
+
 ## 1.2.7
 
 ### Patch Changes
