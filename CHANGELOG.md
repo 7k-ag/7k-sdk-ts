@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 1.3.3
+
+### Patch Changes
+
+- Fix `getTokenPrice` because of new api response
+
 ## 1.3.2
 
 ### Patch Changes
