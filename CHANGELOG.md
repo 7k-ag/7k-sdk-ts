@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 1.3.2
+
+### Patch Changes
+
+- Improve `getQuote` logic
+
 ## 1.3.1
 
 ### Patch Changes
