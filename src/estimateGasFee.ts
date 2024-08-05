@@ -11,13 +11,13 @@ export async function estimateGasFee({
   accountAddress,
   slippage,
   suiPrice: _suiPrice,
-  tx: _tx,
+  extendTx,
   commission,
 }: EstimateGasFeeParams): Promise<number> {
   if (!accountAddress) return 0;
 
   const tx = await buildTx({
-    tx: _tx,
+    extendTx,
     quoteResponse,
     accountAddress,
     slippage,

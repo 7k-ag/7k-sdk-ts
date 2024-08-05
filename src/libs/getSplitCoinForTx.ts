@@ -24,10 +24,7 @@ export const getSplitCoinForTx = async (
   );
   const coinObjectId: any = objectIds[0];
   if (coinType === SUI_TYPE) {
-    const pureAmount = [];
-    for (const split of splits) {
-      pureAmount.push(tx.pure(split));
-    }
+    const pureAmount = splits.map((split) => tx.pure(split));
     let coin;
     if (inspecTransaction) {
       if (objectIds.length > 1) {
@@ -50,13 +47,10 @@ export const getSplitCoinForTx = async (
     );
   }
 
-  //handle split coin
-  const pureAmount = [];
-  for (const split of splits) {
-    pureAmount.push(tx.pure(split));
-  }
-
   // split correct amount to swap
-  const coinData = tx.splitCoins(tx.object(coinObjectId), pureAmount);
+  const coinData = tx.splitCoins(
+    tx.object(coinObjectId),
+    splits.map((split) => tx.pure(split)),
+  );
   return { tx, coinData };
 };

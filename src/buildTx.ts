@@ -1,6 +1,7 @@
 import {
   TransactionBlock,
   TransactionObjectArgument,
+  TransactionResult,
 } from "@mysten/sui.js/transactions";
 import BigNumber from "bignumber.js";
 import { getSplitCoinForTx } from "./libs/getSplitCoinForTx";
@@ -16,10 +17,11 @@ export const buildTx = async ({
   quoteResponse,
   accountAddress,
   slippage,
-  tx: _tx,
   commission: _commission,
   isGasEstimate,
+  extendTx,
 }: BuildTxParams) => {
+  const { tx: _tx, coinIn } = extendTx || {};
   if (!accountAddress) {
     throw new Error("Sender address is required");
   }
@@ -37,14 +39,24 @@ export const buildTx = async ({
   const routes = groupSwapRoutes(quoteResponse);
 
   const splits = routes.map((group) => group[0]?.amount ?? "0");
-  const { coinData } = await getSplitCoinForTx(
-    accountAddress,
-    quoteResponse.swapAmountWithDecimal,
-    splits,
-    denormalizeTokenType(quoteResponse.tokenIn),
-    tx,
-    isGasEstimate,
-  );
+
+  let coinData: TransactionResult;
+  if (coinIn) {
+    coinData = tx.splitCoins(
+      coinIn,
+      splits.map((split) => tx.pure(split)),
+    );
+  } else {
+    const { coinData: _data } = await getSplitCoinForTx(
+      accountAddress,
+      quoteResponse.swapAmountWithDecimal,
+      splits,
+      denormalizeTokenType(quoteResponse.tokenIn),
+      tx,
+      isGasEstimate,
+    );
+    coinData = _data;
+  }
 
   const coinObjects: TransactionObjectArgument[] = [];
   await Promise.all(
