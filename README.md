@@ -83,13 +83,17 @@ import { buildTx } from "@7kprotocol/sdk-ts";
 const tx = new TransactionBlock();
 
 await buildTx({
-  tx,
   quoteResponse,
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
   commission: {
     partner: "<address to receive fee if any>",
     commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
+  },
+  extendTx: {
+    tx,
+    // explicit consume this coin object instead of loading all available coin objects from wallet
+    coinIn: tx.object("0xCoinObjectAddress"),
   },
 });
 ```
