@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { SUI_DECIMALS } from "@mysten/sui.js/utils";
+import { SUI_DECIMALS } from "@mysten/sui/utils";
 import { buildTx } from "./buildTx";
 import { formatBalance } from "./utils/number";
 import { EstimateGasFeeParams } from "./types/tx";

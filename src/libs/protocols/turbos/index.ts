@@ -1,5 +1,6 @@
-import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui.js/utils";
+import { Transaction } from "@mysten/sui/transactions";
+
+import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { BaseContract } from "../base";
 import { getDefaultSqrtPriceLimit } from "../utils";
 import { ONE_MINUTE } from "./constants";
@@ -11,7 +12,7 @@ const VERSION =
   "0xf1cf0e81048df168ebeb1b8030fad24b3e0b53ae827c25053fff0779c1445b6f";
 
 export class TurbosContract extends BaseContract {
-  async swap(tx: TransactionBlock) {
+  async swap(tx: Transaction) {
     const a2b = this.swapInfo.swapXtoY;
     const { poolId, address } = {
       poolId: this.swapInfo.poolId,
@@ -29,7 +30,7 @@ export class TurbosContract extends BaseContract {
       arguments: [
         tx.object(poolId),
         tx.makeMoveVec({
-          objects: [this.inputCoinObject as any],
+          elements: [this.inputCoinObject as any],
         }),
         inputAmount,
         tx.pure.u64(0),

@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 import { BaseContract } from "../base";
 import { normalizeTokenType } from "../../../utils/token";
 
@@ -7,7 +7,7 @@ const PACKAGE_ID =
 const MODULE_NAME = "spot_dex";
 
 export class KriyaContract extends BaseContract {
-  async swap(tx: TransactionBlock) {
+  async swap(tx: Transaction) {
     const swapXtoY = this.swapInfo.swapXtoY;
     const coinInType = normalizeTokenType(this.swapInfo.assetIn);
     const coinOutType = normalizeTokenType(this.swapInfo.assetOut);

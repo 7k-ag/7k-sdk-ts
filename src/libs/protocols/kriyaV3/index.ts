@@ -1,6 +1,7 @@
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { Transaction } from "@mysten/sui/transactions";
+
 import { BaseContract } from "../base";
-import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui.js/utils";
+import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { normalizeTokenType } from "../../../utils/token";
 
 const PACKAGE_ID =
@@ -9,7 +10,7 @@ const VERSION_ID =
   "0xf5145a7ac345ca8736cf8c76047d00d6d378f30e81be6f6eb557184d9de93c78";
 
 export class KriyaV3Contract extends BaseContract {
-  async swap(tx: TransactionBlock) {
+  async swap(tx: Transaction) {
     const swapXtoY = this.swapInfo.swapXtoY;
     const coinInType = normalizeTokenType(this.swapInfo.assetIn);
     const coinOutType = normalizeTokenType(this.swapInfo.assetOut);
@@ -22,10 +23,10 @@ export class KriyaV3Contract extends BaseContract {
       typeArguments: this.getTypeParams(),
       arguments: [
         tx.object(poolId),
-        tx.pure(swapXtoY),
-        tx.pure(true),
+        tx.pure.bool(swapXtoY),
+        tx.pure.bool(true),
         this.getInputCoinValue(tx),
-        tx.pure(swapXtoY ? LowLimitPrice : limitPrice),
+        tx.pure.u128(swapXtoY ? LowLimitPrice : limitPrice),
         tx.object(SUI_CLOCK_OBJECT_ID),
         tx.object(VERSION_ID),
       ],

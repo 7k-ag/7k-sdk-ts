@@ -1,6 +1,6 @@
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 import { TxSorSwap } from "../../types/aggregator";
-import { normalizeStructTag, parseStructTag } from "@mysten/sui.js/utils";
+import { normalizeStructTag, parseStructTag } from "@mysten/sui/utils";
 import { SuiUtils } from "../../utils/sui";
 import { TransactionResultItem } from "../../types/sui";
 
@@ -25,9 +25,9 @@ export abstract class BaseContract {
     this.currentAccount = currentAccount;
   }
 
-  abstract swap(tx: TransactionBlock): Promise<TransactionResultItem>;
+  abstract swap(tx: Transaction): Promise<TransactionResultItem>;
 
-  protected getInputCoinValue(tx: TransactionBlock) {
+  protected getInputCoinValue(tx: Transaction) {
     return SuiUtils.getCoinValue(
       this.swapInfo.assetIn,
       this.inputCoinObject,

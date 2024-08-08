@@ -1,8 +1,8 @@
 import {
-  TransactionBlock,
+  Transaction,
   TransactionObjectArgument,
   TransactionResult,
-} from "@mysten/sui.js/transactions";
+} from "@mysten/sui/transactions";
 import BigNumber from "bignumber.js";
 import { getSplitCoinForTx } from "./libs/getSplitCoinForTx";
 import { groupSwapRoutes } from "./libs/groupSwapRoutes";
@@ -11,7 +11,7 @@ import { denormalizeTokenType } from "./utils/token";
 import { SuiUtils } from "./utils/sui";
 import { BuildTxParams } from "./types/tx";
 import { _7K_CONFIG, _7K_PACKAGE_ID } from "./constants/_7k";
-import { isValidSuiAddress } from "@mysten/sui.js/utils";
+import { isValidSuiAddress } from "@mysten/sui/utils";
 
 export const buildTx = async ({
   quoteResponse,
@@ -34,7 +34,7 @@ export const buildTx = async ({
     throw new Error("Invalid commission partner address");
   }
 
-  const tx = _tx || new TransactionBlock();
+  const tx = _tx || new Transaction();
 
   const routes = groupSwapRoutes(quoteResponse);
 
@@ -42,10 +42,7 @@ export const buildTx = async ({
 
   let coinData: TransactionResult;
   if (coinIn) {
-    coinData = tx.splitCoins(
-      coinIn,
-      splits.map((split) => tx.pure(split)),
-    );
+    coinData = tx.splitCoins(coinIn, splits);
   } else {
     const { coinData: _data } = await getSplitCoinForTx(
       accountAddress,
@@ -104,7 +101,7 @@ export const buildTx = async ({
 };
 
 const getCommission = (
-  tx: TransactionBlock,
+  tx: Transaction,
   commission?: { partner: string; commissionBps: number },
 ) => {
   if (commission) {

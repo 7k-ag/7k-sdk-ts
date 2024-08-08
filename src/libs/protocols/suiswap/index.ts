@@ -1,5 +1,6 @@
-import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui.js/utils";
+import { Transaction } from "@mysten/sui/transactions";
+
+import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { BaseContract } from "../base";
 
 const PACKAGE_ID =
@@ -7,7 +8,7 @@ const PACKAGE_ID =
 const MODULE_NAME = "pool";
 
 export class SuiswapContract extends BaseContract {
-  async swap(tx: TransactionBlock) {
+  async swap(tx: Transaction) {
     const poolId = this.swapInfo.poolId;
     const swapXtoY = this.swapInfo.swapXtoY;
     const inputCoin = this.inputCoinObject as any;
@@ -23,7 +24,7 @@ export class SuiswapContract extends BaseContract {
       arguments: [
         tx.object(poolId),
         tx.makeMoveVec({
-          objects: [inputCoin],
+          elements: [inputCoin],
         }),
         inputAmount,
         tx.object(SUI_CLOCK_OBJECT_ID),

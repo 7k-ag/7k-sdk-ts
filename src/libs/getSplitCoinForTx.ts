@@ -1,7 +1,4 @@
-import {
-  TransactionBlock,
-  TransactionResult,
-} from "@mysten/sui.js/transactions";
+import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { getCoinOjectIdsByAmount } from "./getCoinOjectIdsByAmount";
 import { SUI_TYPE } from "../constants/tokens";
 
@@ -10,13 +7,13 @@ export const getSplitCoinForTx = async (
   amount: string,
   splits: string[],
   coinType: string,
-  inheritTx?: TransactionBlock,
+  inheritTx?: Transaction,
   inspecTransaction?: boolean,
 ): Promise<{
-  tx: TransactionBlock;
+  tx: Transaction;
   coinData: TransactionResult;
 }> => {
-  const tx = inheritTx ?? new TransactionBlock();
+  const tx = inheritTx ?? new Transaction();
   const { objectIds } = await getCoinOjectIdsByAmount(
     account,
     amount,
@@ -24,7 +21,6 @@ export const getSplitCoinForTx = async (
   );
   const coinObjectId: any = objectIds[0];
   if (coinType === SUI_TYPE) {
-    const pureAmount = splits.map((split) => tx.pure(split));
     let coin;
     if (inspecTransaction) {
       if (objectIds.length > 1) {
@@ -33,9 +29,9 @@ export const getSplitCoinForTx = async (
           objectIds.slice(1).map((item) => tx.object(item)),
         );
       }
-      coin = tx.splitCoins(tx.object(coinObjectId), pureAmount);
+      coin = tx.splitCoins(tx.object(coinObjectId), splits);
     } else {
-      coin = tx.splitCoins(tx.gas, pureAmount);
+      coin = tx.splitCoins(tx.gas, splits);
     }
     return { tx, coinData: coin };
   }
@@ -48,9 +44,6 @@ export const getSplitCoinForTx = async (
   }
 
   // split correct amount to swap
-  const coinData = tx.splitCoins(
-    tx.object(coinObjectId),
-    splits.map((split) => tx.pure(split)),
-  );
+  const coinData = tx.splitCoins(tx.object(coinObjectId), splits);
   return { tx, coinData };
 };

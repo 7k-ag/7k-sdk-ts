@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 import { BaseContract } from "../base";
 
 const PACKAGE_ID =
@@ -8,7 +8,7 @@ const CONTAINER_OBJECT_ID =
   "0xb65dcbf63fd3ad5d0ebfbf334780dc9f785eff38a4459e37ab08fa79576ee511";
 
 export class FlowXContract extends BaseContract {
-  async swap(tx: TransactionBlock) {
+  async swap(tx: Transaction) {
     const coinInType = this.swapInfo.assetIn;
     const coinOutType = this.swapInfo.assetOut;
 

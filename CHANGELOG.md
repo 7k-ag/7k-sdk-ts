@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.0.0
+
+### Major Changes
+
+- Upgrade package to use `@mysten/sui`
+
 ## 1.3.4
 
 ### Patch Changes

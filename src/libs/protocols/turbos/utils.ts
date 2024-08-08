@@ -6,7 +6,7 @@ import {
   SuiObjectRef,
   SuiObjectResponse,
   SuiParsedData,
-} from "@mysten/sui.js/client";
+} from "@mysten/sui/client";
 
 type SuiObjectResponseError = any;
 type ObjectContentFields = any;

@@ -1,5 +1,6 @@
-import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui.js/utils";
+import { Transaction } from "@mysten/sui/transactions";
+
+import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { BaseContract } from "../base";
 import { _7K_PACKAGE_ID } from "../../../constants/_7k";
 
@@ -7,7 +8,7 @@ const PACKAGE_ID = "0xdee9";
 const MODULE_NAME = "clob_v2";
 
 export class DeepBookContract extends BaseContract {
-  async swap(tx: TransactionBlock) {
+  async swap(tx: Transaction) {
     const swapXtoY = this.swapInfo.swapXtoY;
     const poolId = this.swapInfo.poolId;
     const clientOrderId = Date.now();
@@ -70,7 +71,7 @@ export class DeepBookContract extends BaseContract {
     return result;
   }
 
-  private createAccountCap(tx: TransactionBlock) {
+  private createAccountCap(tx: Transaction) {
     const [cap] = tx.moveCall({
       typeArguments: [],
       target: `${PACKAGE_ID}::${MODULE_NAME}::create_account`,
@@ -79,7 +80,7 @@ export class DeepBookContract extends BaseContract {
     return cap;
   }
 
-  private deleteAccountCap(tx: TransactionBlock, accountCap: any) {
+  private deleteAccountCap(tx: Transaction, accountCap: any) {
     tx.moveCall({
       target: `${PACKAGE_ID}::custodian_v2::delete_account_cap`,
       arguments: [accountCap],

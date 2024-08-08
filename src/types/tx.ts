@@ -1,7 +1,7 @@
 import {
-  TransactionBlock,
+  Transaction,
   TransactionObjectArgument,
-} from "@mysten/sui.js/transactions";
+} from "@mysten/sui/transactions";
 import { Commission, QuoteResponse } from "./aggregator";
 import BigNumber from "bignumber.js";
 
@@ -11,7 +11,7 @@ export interface CommonParams {
   slippage: BigNumber.Value;
   commission: Commission;
   extendTx?: {
-    tx: TransactionBlock;
+    tx: Transaction;
     coinIn?: TransactionObjectArgument;
   };
 }

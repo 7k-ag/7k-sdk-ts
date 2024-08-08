@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 import { BaseContract } from "../base";
 import { SuiUtils } from "../../../utils/sui";
 
@@ -8,7 +8,7 @@ const DEX_INFO_ID =
   "0x3f2d9f724f4a1ce5e71676448dc452be9a6243dac9c5b975a588c8c867066e92";
 
 export class BluemoveContract extends BaseContract {
-  async swap(tx: TransactionBlock) {
+  async swap(tx: Transaction) {
     const [coinOut] = tx.moveCall({
       target: `${PACKAGE_ID}::router::swap_exact_input_`,
       typeArguments: [this.swapInfo.coinX.type, this.swapInfo.coinY.type],

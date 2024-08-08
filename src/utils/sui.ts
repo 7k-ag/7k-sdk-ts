@@ -1,13 +1,10 @@
-import {
-  TransactionArgument,
-  TransactionBlock,
-} from "@mysten/sui.js/transactions";
+import { TransactionArgument, Transaction } from "@mysten/sui/transactions";
 import {
   CoinStruct,
   PaginatedObjectsResponse,
   SuiObjectResponseQuery,
-} from "@mysten/sui.js/client";
-import { parseStructTag } from "@mysten/sui.js/utils";
+} from "@mysten/sui/client";
+import { parseStructTag } from "@mysten/sui/utils";
 import { checkIsSui } from "./token";
 import { getSuiClient } from "../suiClient";
 
@@ -27,17 +24,15 @@ type PaginationArgs = "all" | PageQuery;
 export const SuiUtils = {
   getSuiCoin(
     amount: bigint | TransactionArgument,
-    txb: TransactionBlock,
+    txb: Transaction,
   ): TransactionArgument {
-    const inputCoinAmount =
-      typeof amount === "bigint" ? txb.pure(amount) : amount;
-    const [coin] = txb.splitCoins(txb.gas, [inputCoinAmount]);
+    const [coin] = txb.splitCoins(txb.gas, [amount]);
     return coin;
   },
 
   mergeCoins(
     coinObjects: Array<string | TransactionArgument>,
-    txb: TransactionBlock,
+    txb: Transaction,
   ): TransactionArgument | undefined {
     if (coinObjects.length == 1) {
       return typeof coinObjects[0] == "string"
@@ -62,7 +57,7 @@ export const SuiUtils = {
   getCoinValue(
     coinType: string,
     coinObject: string | TransactionArgument,
-    txb: TransactionBlock,
+    txb: Transaction,
   ): TransactionArgument {
     const inputCoinObject =
       typeof coinObject == "string" ? txb.object(coinObject) : coinObject;
@@ -78,10 +73,10 @@ export const SuiUtils = {
     coinType: string,
     coins: { objectId: string; balance: bigint }[],
     amount: bigint,
-    txb: TransactionBlock,
+    txb: Transaction,
   ) {
     if (checkIsSui(coinType)) {
-      const [coinA] = txb.splitCoins(txb.gas, [txb.pure(amount)]);
+      const [coinA] = txb.splitCoins(txb.gas, [amount]);
       return coinA;
     } else {
       const coinsX = SuiUtils.getCoinsGreaterThanAmount(amount, coins);
@@ -93,7 +88,7 @@ export const SuiUtils = {
         );
       }
 
-      const [coinA] = txb.splitCoins(txb.object(coinsX[0]), [txb.pure(amount)]);
+      const [coinA] = txb.splitCoins(txb.object(coinsX[0]), [amount]);
       return coinA;
     }
   },
@@ -111,11 +106,11 @@ export const SuiUtils = {
         totalBalance += BigInt(coin.balance);
       });
 
-      const txb = new TransactionBlock();
+      const txb = new Transaction();
 
       if (checkIsSui(coinType)) {
         totalBalance = totalBalance - BigInt("1000");
-        txb.splitCoins(txb.gas, [txb.pure(totalBalance.toString())]);
+        txb.splitCoins(txb.gas, [totalBalance]);
       }
 
       const coinObjectsIds = coins.map((coin) => coin.coinObjectId);
@@ -136,7 +131,7 @@ export const SuiUtils = {
   mergeAllCoinsWithoutFetch(
     coins: CoinStruct[],
     coinType: string,
-    txb: TransactionBlock,
+    txb: Transaction,
   ) {
     let totalBalance = BigInt(0);
     coins.forEach((coin) => {
@@ -145,7 +140,7 @@ export const SuiUtils = {
 
     if (checkIsSui(coinType)) {
       totalBalance = totalBalance - BigInt("1000");
-      txb.splitCoins(txb.gas, [txb.pure(totalBalance.toString())]);
+      txb.splitCoins(txb.gas, [totalBalance]);
     }
 
     const coinObjectsIds = coins.map((coin) => coin.coinObjectId);

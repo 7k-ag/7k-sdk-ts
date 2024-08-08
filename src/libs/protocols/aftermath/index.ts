@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 import { BaseContract } from "../base";
 import { normalizeTokenType } from "../../../utils/token";
 
@@ -18,7 +18,7 @@ const REFERRAL_VAULT =
   "0x35d35b0e5b177593d8c3a801462485572fc30861e6ce96a55af6dc4730709278";
 
 export class AfterMathContract extends BaseContract {
-  async swap(tx: TransactionBlock) {
+  async swap(tx: Transaction) {
     const poolId = this.swapInfo.poolId;
     const returnAmount = this.swapInfo.returnAmount;
     const coinInType = normalizeTokenType(this.swapInfo.assetIn);
@@ -38,7 +38,7 @@ export class AfterMathContract extends BaseContract {
         tx.object(INSURANCE_FUND),
         tx.object(REFERRAL_VAULT),
         inputCoinObject,
-        tx.pure(returnAmount),
+        tx.pure.u64(returnAmount),
         tx.pure.u64("1000000000000000000"), // slippage
       ],
     });

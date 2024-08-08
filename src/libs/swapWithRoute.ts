@@ -1,4 +1,4 @@
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 import { ProtocolContract } from "./protocols";
 import { TxSorSwap } from "../types/aggregator";
 import { TransactionResultItem } from "../types/sui";
@@ -12,7 +12,7 @@ export async function swapWithRoute({
   route: TxSorSwap[];
   inputCoinObject: TransactionResultItem;
   currentAccount: string;
-  tx: TransactionBlock;
+  tx: Transaction;
 }): Promise<TransactionResultItem | undefined> {
   let inputTokenObject = inputCoinObject;
   let txbResultToReturn;
