@@ -11,7 +11,7 @@ export class BluemoveContract extends BaseContract {
   async swap(tx: Transaction) {
     const [coinOut] = tx.moveCall({
       target: `${PACKAGE_ID}::router::swap_exact_input_`,
-      typeArguments: [this.swapInfo.coinX.type, this.swapInfo.coinY.type],
+      typeArguments: [this.swapInfo.assetIn, this.swapInfo.assetOut],
       arguments: [
         SuiUtils.getCoinValue(
           this.swapInfo.swapXtoY

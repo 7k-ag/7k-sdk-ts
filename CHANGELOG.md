@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.0.1
+
+### Patch Changes
+
+- Fix build transaction through Bluemove
+
 ## 2.0.0
 
 ### Major Changes
