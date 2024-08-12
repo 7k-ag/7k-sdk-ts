@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.0.4
+
+### Patch Changes
+
+- Add `.npmrc`
+
 ## 2.0.1
 
 ### Patch Changes
