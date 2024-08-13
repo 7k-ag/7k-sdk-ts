@@ -18,10 +18,12 @@ export const buildTx = async ({
   accountAddress,
   slippage,
   commission: _commission,
-  isGasEstimate,
+  devInspect,
   extendTx,
 }: BuildTxParams) => {
   const { tx: _tx, coinIn } = extendTx || {};
+  let coinOut: TransactionObjectArgument | undefined;
+
   if (!accountAddress) {
     throw new Error("Sender address is required");
   }
@@ -50,7 +52,7 @@ export const buildTx = async ({
       splits,
       denormalizeTokenType(quoteResponse.tokenIn),
       tx,
-      isGasEstimate,
+      devInspect,
     );
     coinData = _data;
   }
@@ -75,6 +77,8 @@ export const buildTx = async ({
       coinObjects.length > 1
         ? SuiUtils.mergeCoins(coinObjects, tx)
         : coinObjects[0];
+    coinOut = mergeCoin;
+
     const minReceived = new BigNumber(1)
       .minus(slippage)
       .multipliedBy(quoteResponse.returnAmountWithDecimal)
@@ -94,10 +98,13 @@ export const buildTx = async ({
         commission,
       ],
     });
-    tx.transferObjects([mergeCoin], tx.pure.address(accountAddress));
+
+    if (!extendTx) {
+      tx.transferObjects([mergeCoin], tx.pure.address(accountAddress));
+    }
   }
 
-  return tx;
+  return { tx, coinOut };
 };
 
 const getCommission = (

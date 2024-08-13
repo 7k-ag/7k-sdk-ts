@@ -17,7 +17,7 @@ export interface CommonParams {
 }
 
 export interface BuildTxParams extends CommonParams {
-  isGasEstimate?: boolean;
+  devInspect?: boolean;
 }
 
 export interface EstimateGasFeeParams extends CommonParams {

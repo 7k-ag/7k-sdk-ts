@@ -1,5 +1,12 @@
 # @7kprotocol/sdk-ts
 
+## 2.1.0
+
+### Minor Changes
+
+- Return `coinOut` in `buildTx`
+- Rename `isGasEstimate` to `devInspect`
+
 ## 2.0.4
 
 ### Patch Changes

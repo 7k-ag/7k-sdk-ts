@@ -16,17 +16,19 @@ export async function estimateGasFee({
 }: EstimateGasFeeParams): Promise<number> {
   if (!accountAddress) return 0;
 
-  const tx = await buildTx({
+  const result = await buildTx({
     extendTx,
     quoteResponse,
     accountAddress,
     slippage,
     commission,
-    isGasEstimate: true,
+    devInspect: true,
   }).catch((err) => {
     console.log("build tx error: ", err);
     return undefined;
   });
+
+  const { tx } = result || {};
 
   if (!tx) return 0;
 

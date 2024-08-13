@@ -65,7 +65,7 @@ const quoteResponse = await getQuote({
 ```typescript
 import { buildTx } from "@7kprotocol/sdk-ts";
 
-const tx = await buildTx({
+const result = await buildTx({
   quoteResponse,
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
@@ -74,6 +74,7 @@ const tx = await buildTx({
     commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
   },
 });
+const { tx, coinOut } = result || {};
 ```
 
 or
@@ -84,7 +85,7 @@ import { buildTx } from "@7kprotocol/sdk-ts";
 
 const tx = new Transaction();
 
-await buildTx({
+const result = await buildTx({
   quoteResponse,
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
@@ -98,6 +99,7 @@ await buildTx({
     coinIn: tx.object("0xCoinObjectAddress"),
   },
 });
+const { coinOut } = result || {};
 ```
 
 ### Full Example
@@ -118,7 +120,7 @@ const quoteResponse = await getQuote({
   amountIn: "1000000000",
 });
 
-const tx = await buildTx({
+const result = await buildTx({
   quoteResponse,
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
@@ -128,7 +130,7 @@ const tx = await buildTx({
   },
 });
 
-console.log(tx);
+console.log(result);
 ```
 
 ### Estimate Gas Fee
