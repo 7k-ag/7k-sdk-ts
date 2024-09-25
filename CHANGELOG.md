@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.1.1
+
+### Patch Changes
+
+- Upgrade 7k package
+
 ## 2.1.0
 
 ### Minor Changes

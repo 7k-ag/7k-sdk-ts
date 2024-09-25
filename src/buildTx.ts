@@ -10,7 +10,7 @@ import { swapWithRoute } from "./libs/swapWithRoute";
 import { denormalizeTokenType } from "./utils/token";
 import { SuiUtils } from "./utils/sui";
 import { BuildTxParams } from "./types/tx";
-import { _7K_CONFIG, _7K_PACKAGE_ID } from "./constants/_7k";
+import { _7K_CONFIG, _7K_PACKAGE_ID, _7K_VAULT } from "./constants/_7k";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 
 export const buildTx = async ({
@@ -84,18 +84,24 @@ export const buildTx = async ({
       .multipliedBy(quoteResponse.returnAmountWithDecimal)
       .toFixed(0);
 
-    const commission = getCommission(tx, _commission);
+    const [partner] = tx.moveCall({
+      target: "0x1::option::some",
+      typeArguments: [`address`],
+      arguments: [tx.pure.address(_commission.partner)],
+    });
 
     tx.moveCall({
       target: `${_7K_PACKAGE_ID}::settle::settle`,
       typeArguments: [quoteResponse.tokenIn, quoteResponse.tokenOut],
       arguments: [
         tx.object(_7K_CONFIG),
+        tx.object(_7K_VAULT),
         tx.pure.u64(quoteResponse.swapAmountWithDecimal),
         mergeCoin,
         tx.pure.u64(minReceived),
         tx.pure.u64(quoteResponse.returnAmountWithDecimal),
-        commission,
+        partner,
+        tx.pure.u64(_commission.commissionBps),
       ],
     });
 
@@ -105,31 +111,4 @@ export const buildTx = async ({
   }
 
   return { tx, coinOut };
-};
-
-const getCommission = (
-  tx: Transaction,
-  commission?: { partner: string; commissionBps: number },
-) => {
-  if (commission) {
-    const [commissionInner] = tx.moveCall({
-      target: `${_7K_PACKAGE_ID}::commission::new`,
-      typeArguments: [],
-      arguments: [
-        tx.pure.address(commission.partner),
-        tx.pure.u64(commission.commissionBps),
-      ],
-    });
-    const [result] = tx.moveCall({
-      target: "0x1::option::some",
-      typeArguments: [`${_7K_PACKAGE_ID}::commission::Commission`],
-      arguments: [commissionInner],
-    });
-    return result;
-  }
-  return tx.moveCall({
-    target: "0x1::option::none",
-    typeArguments: [`${_7K_PACKAGE_ID}::commission::Commission`],
-    arguments: [],
-  })[0];
 };
