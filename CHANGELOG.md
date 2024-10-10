@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.1.2
+
+### Patch Changes
+
+- Upgrade Bluemove package
+
 ## 2.1.1
 
 ### Patch Changes

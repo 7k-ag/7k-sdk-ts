@@ -3,7 +3,7 @@ import { BaseContract } from "../base";
 import { SuiUtils } from "../../../utils/sui";
 
 const PACKAGE_ID =
-  "0xb24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9";
+  "0x08cd33481587d4c4612865b164796d937df13747d8c763b8a178c87e3244498f";
 const DEX_INFO_ID =
   "0x3f2d9f724f4a1ce5e71676448dc452be9a6243dac9c5b975a588c8c867066e92";
 
