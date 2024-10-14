@@ -7,6 +7,7 @@ import { TurbosContract } from "./turbos";
 import { SuiswapContract } from "./suiswap";
 import { BluemoveContract } from "./bluemove";
 import { KriyaV3Contract } from "./kriyaV3";
+import { SponsoredDeepBookV3Contract } from "./deepbookV3/sponsored";
 
 export const ProtocolContract = {
   cetus: CetusContract,
@@ -16,6 +17,7 @@ export const ProtocolContract = {
   suiswap: SuiswapContract,
   aftermath: AfterMathContract,
   deepbook: DeepBookContract,
+  deepbook_v3: SponsoredDeepBookV3Contract,
   flowx: FlowXContract,
   kriya_v3: KriyaV3Contract,
 };

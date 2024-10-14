@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.1.3
+
+### Patch Changes
+
+- Support Deepbook V3
+
 ## 2.1.2
 
 ### Patch Changes

@@ -17,6 +17,7 @@ const DEFAULT_SOURCES: SourceDex[] = [
   "kriya_v3",
   "aftermath",
   "deepbook",
+  "deepbook_v3",
   "flowx",
 ];
 
@@ -27,7 +28,9 @@ export async function getQuote({
   sources = DEFAULT_SOURCES,
 }: Params): Promise<QuoteResponse> {
   const response: any = await fetch(
-    `https://api.7k.ag/quote?amount=${amountIn}&from=${normalizeTokenType(tokenIn)}&to=${normalizeTokenType(tokenOut)}&sources=${sources}`,
+    `https://api.7k.ag/quote?amount=${amountIn}&from=${normalizeTokenType(
+      tokenIn,
+    )}&to=${normalizeTokenType(tokenOut)}&sources=${sources}`,
   );
   if (!response.ok) {
     throw new Error("Failed to fetch aggregator quote");

@@ -7,6 +7,7 @@ export type SourceDex =
   | "kriya_v3"
   | "aftermath"
   | "deepbook"
+  | "deepbook_v3"
   | "flowx";
 
 export type SorSwap = {
