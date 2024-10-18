@@ -1,6 +1,6 @@
 import { Transaction } from "@mysten/sui/transactions";
 import { BaseContract } from "../base";
-import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
+import { normalizeStructTag, SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { TransactionResultItem } from "../../../types/sui";
 
 const PACKAGE_ID =
@@ -10,7 +10,9 @@ const FUND_ID =
 export class SponsoredDeepBookV3Contract extends BaseContract {
   async swap(tx: Transaction): Promise<TransactionResultItem> {
     const [coinX] = this.swapInfo.pool.allTokens;
-    const swapXtoY = coinX.address === this.swapInfo.assetIn;
+    const swapXtoY =
+      normalizeStructTag(coinX.address) ===
+      normalizeStructTag(this.swapInfo.assetIn);
     const [base, quote] = tx.moveCall({
       target: `${PACKAGE_ID}::sponsored::${
         swapXtoY ? "swap_exact_base_for_quote" : "swap_exact_quote_for_base"

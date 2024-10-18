@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.1.4
+
+### Patch Changes
+
+- Fix `CommandArgumentError` when swapping on Deepbook V3
+
 ## 2.1.3
 
 ### Patch Changes
