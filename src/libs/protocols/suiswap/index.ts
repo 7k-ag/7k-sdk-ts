@@ -2,6 +2,7 @@ import { Transaction } from "@mysten/sui/transactions";
 
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { BaseContract } from "../base";
+import { SuiUtils } from "../../../utils/sui";
 
 const PACKAGE_ID =
   "0xd075d51486df71e750872b4edf82ea3409fda397ceecc0b6aedf573d923c54a0";
@@ -31,8 +32,12 @@ export class SuiswapContract extends BaseContract {
       ],
     });
 
-    tx.transferObjects([tokenIn], this.currentAccount);
-
+    SuiUtils.transferOrDestroyZeroCoin(
+      tx,
+      this.swapInfo.assetIn,
+      tokenIn,
+      this.currentAccount,
+    );
     return tokenOut;
   }
 }

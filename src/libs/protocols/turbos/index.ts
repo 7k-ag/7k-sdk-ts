@@ -4,6 +4,7 @@ import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { BaseContract } from "../base";
 import { getDefaultSqrtPriceLimit } from "../utils";
 import { ONE_MINUTE } from "./constants";
+import { SuiUtils } from "../../../utils/sui";
 
 const PACKAGE_ID =
   "0x1a3c42ded7b75cdf4ebc7c7b7da9d1e1db49f16fcdca934fac003f35f39ecad9";
@@ -45,8 +46,12 @@ export class TurbosContract extends BaseContract {
       ],
     });
 
-    tx.transferObjects([tokenIn], address);
-
+    SuiUtils.transferOrDestroyZeroCoin(
+      tx,
+      this.swapInfo.assetIn,
+      tokenIn,
+      address,
+    );
     return tokenOut;
   }
 }

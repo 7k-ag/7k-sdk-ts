@@ -19,6 +19,7 @@ const DEFAULT_SOURCES: SourceDex[] = [
   "deepbook",
   "deepbook_v3",
   "flowx",
+  "bluefin",
 ];
 
 export async function getQuote({

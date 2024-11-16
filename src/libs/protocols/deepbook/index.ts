@@ -3,6 +3,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { BaseContract } from "../base";
 import { _7K_PACKAGE_ID } from "../../../constants/_7k";
+import { SuiUtils } from "../../../utils/sui";
 
 const PACKAGE_ID = "0xdee9";
 const MODULE_NAME = "clob_v2";
@@ -12,7 +13,6 @@ export class DeepBookContract extends BaseContract {
     const swapXtoY = this.swapInfo.swapXtoY;
     const poolId = this.swapInfo.poolId;
     const clientOrderId = Date.now();
-    const currentAddress = this.currentAccount;
 
     const typeArgs = this.getTypeParams();
     const lotSize = this.swapInfo.extra?.lotSize;
@@ -48,7 +48,12 @@ export class DeepBookContract extends BaseContract {
         ],
       });
       this.deleteAccountCap(tx, accountCap);
-      tx.transferObjects([base_coin_ret], currentAddress);
+      SuiUtils.transferOrDestroyZeroCoin(
+        tx,
+        this.swapInfo.assetIn,
+        base_coin_ret,
+        this.currentAccount,
+      );
       result = quote_coin_ret;
     } else {
       const [base_coin_ret, quote_coin_ret] = tx.moveCall({
@@ -64,7 +69,12 @@ export class DeepBookContract extends BaseContract {
         ],
       });
       this.deleteAccountCap(tx, accountCap);
-      tx.transferObjects([quote_coin_ret], currentAddress);
+      SuiUtils.transferOrDestroyZeroCoin(
+        tx,
+        this.swapInfo.assetIn,
+        quote_coin_ret,
+        this.currentAccount,
+      );
       result = base_coin_ret;
     }
 

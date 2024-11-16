@@ -2,6 +2,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import { BaseContract } from "../base";
 import { normalizeStructTag, SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { TransactionResultItem } from "../../../types/sui";
+import { SuiUtils } from "../../../utils/sui";
 
 const PACKAGE_ID =
   "0x951a01360d85b06722edf896852bf8005b81cdb26375235c935138987f629502";
@@ -29,7 +30,12 @@ export class SponsoredDeepBookV3Contract extends BaseContract {
 
     const coinIn = swapXtoY ? base : quote;
     const coinOut = swapXtoY ? quote : base;
-    tx.transferObjects([coinIn], this.currentAccount);
+    SuiUtils.transferOrDestroyZeroCoin(
+      tx,
+      this.swapInfo.assetIn,
+      coinIn,
+      this.currentAccount,
+    );
     return coinOut;
   }
 }

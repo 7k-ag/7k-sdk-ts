@@ -47,9 +47,11 @@ export class CetusContract extends BaseContract {
       ],
     });
 
-    tx.transferObjects(
-      [this.swapInfo.swapXtoY ? receiveA : receiveB],
-      tx.pure.address(this.currentAccount),
+    SuiUtils.transferOrDestroyZeroCoin(
+      tx,
+      this.swapInfo.assetIn,
+      this.swapInfo.swapXtoY ? receiveA : receiveB,
+      this.currentAccount,
     );
     return this.swapInfo.swapXtoY ? receiveB : receiveA;
   }

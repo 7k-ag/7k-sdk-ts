@@ -1,5 +1,27 @@
 # @7kprotocol/sdk-ts
 
+## 2.1.5
+
+### Patch Changes
+
+- Support Bluefin
+- Optimize gas fee
+- Destroy `extendTx.coinIn` object if its value is zero after the swap
+
+```typescript
+const tx = new Transaction();
+const coinIn = tx.splitCoins(tx.gas, [1000]);
+const { tx: extendedTx, coinOut } = buildTx({
+  extendTx: { tx, coinIn },
+  quoteResponse,
+  slippage,
+  commission,
+});
+// no need to consume the coinIn after the swap anymore
+// extendedTx.transferObjects([coinIn], address);
+// continute to use coinOut or transfer it back to the sender as normal to complete the transaction.
+```
+
 ## 2.1.4
 
 ### Patch Changes

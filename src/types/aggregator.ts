@@ -8,7 +8,8 @@ export type SourceDex =
   | "aftermath"
   | "deepbook"
   | "deepbook_v3"
-  | "flowx";
+  | "flowx"
+  | "bluefin";
 
 export type SorSwap = {
   poolId: string;

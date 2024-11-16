@@ -248,4 +248,51 @@ export const SuiUtils = {
       return false;
     }
   },
+
+  zeroBalance(tx: Transaction, coinType: string) {
+    return tx.moveCall({
+      target: `0x2::balance::zero`,
+      typeArguments: [coinType],
+      arguments: [],
+    })[0];
+  },
+
+  coinIntoBalance(
+    tx: Transaction,
+    coinType: string,
+    coinObject: TransactionArgument,
+  ) {
+    return tx.moveCall({
+      target: `0x2::coin::into_balance`,
+      typeArguments: [coinType],
+      arguments: [coinObject],
+    })[0];
+  },
+
+  coinFromBalance(
+    tx: Transaction,
+    coinType: string,
+    balance: TransactionArgument,
+  ) {
+    return tx.moveCall({
+      target: `0x2::coin::from_balance`,
+      typeArguments: [coinType],
+      arguments: [balance],
+    })[0];
+  },
+
+  transferOrDestroyZeroCoin(
+    tx: Transaction,
+    coinType: string,
+    coin: TransactionArgument,
+    to?: string,
+  ) {
+    tx.moveCall({
+      target: `0x6f5e582ede61fe5395b50c4a449ec11479a54d7ff8e0158247adfda60d98970b::utils::${
+        to ? "send_coin" : "transfer_coin_to_sender"
+      }`,
+      typeArguments: [coinType],
+      arguments: [coin, ...(to ? [tx.pure.address(to)] : [])],
+    });
+  },
 };

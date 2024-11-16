@@ -8,6 +8,7 @@ import { SuiswapContract } from "./suiswap";
 import { BluemoveContract } from "./bluemove";
 import { KriyaV3Contract } from "./kriyaV3";
 import { SponsoredDeepBookV3Contract } from "./deepbookV3/sponsored";
+import { BluefinContract } from "./bluefin";
 
 export const ProtocolContract = {
   cetus: CetusContract,
@@ -20,4 +21,5 @@ export const ProtocolContract = {
   deepbook_v3: SponsoredDeepBookV3Contract,
   flowx: FlowXContract,
   kriya_v3: KriyaV3Contract,
+  bluefin: BluefinContract,
 };
