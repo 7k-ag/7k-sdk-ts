@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.1.7
+
+### Patch Changes
+
+- New Liquidity sources: SpringSui and Obric
+
 ## 2.1.6
 
 ### Patch Changes

@@ -9,6 +9,8 @@ import { BluemoveContract } from "./bluemove";
 import { KriyaV3Contract } from "./kriyaV3";
 import { SponsoredDeepBookV3Contract } from "./deepbookV3/sponsored";
 import { BluefinContract } from "./bluefin";
+import { SpringSuiContract } from "./springsui";
+import { ObricContract } from "./obric";
 
 export const ProtocolContract = {
   cetus: CetusContract,
@@ -22,4 +24,6 @@ export const ProtocolContract = {
   flowx: FlowXContract,
   kriya_v3: KriyaV3Contract,
   bluefin: BluefinContract,
+  springsui: SpringSuiContract,
+  obric: ObricContract,
 };

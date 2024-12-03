@@ -8,7 +8,7 @@ interface Params {
   sources?: SourceDex[];
 }
 
-const DEFAULT_SOURCES: SourceDex[] = [
+export const DEFAULT_SOURCES: SourceDex[] = [
   "suiswap",
   "turbos",
   "cetus",
@@ -20,6 +20,8 @@ const DEFAULT_SOURCES: SourceDex[] = [
   "deepbook_v3",
   "flowx",
   "bluefin",
+  "springsui",
+  "obric",
 ];
 
 export async function getQuote({

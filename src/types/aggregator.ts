@@ -9,7 +9,9 @@ export type SourceDex =
   | "deepbook"
   | "deepbook_v3"
   | "flowx"
-  | "bluefin";
+  | "bluefin"
+  | "springsui"
+  | "obric";
 
 export type SorSwap = {
   poolId: string;
