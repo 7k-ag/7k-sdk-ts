@@ -8,9 +8,9 @@ npm i @7kprotocol/sdk-ts
 
 ## Usage
 
-## Swap
+## Config (Optional)
 
-### 1. Set Sui Client (Optional)
+### Set Sui Client
 
 ```typescript
 import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
@@ -23,7 +23,9 @@ setSuiClient(suiClient);
 
 Note: this package only supports **mainnet** for now.
 
-### 2. Get Quote
+## Swap
+
+### 1. Get Quote
 
 ```typescript
 import { getQuote } from "@7kprotocol/sdk-ts";
@@ -60,7 +62,7 @@ const quoteResponse = await getQuote({
 });
 ```
 
-### 3. Build Transaction
+### 2. Build Transaction
 
 ```typescript
 import { buildTx } from "@7kprotocol/sdk-ts";
@@ -70,7 +72,7 @@ const result = await buildTx({
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
   commission: {
-    partner: "<address to receive fee if any>",
+    partner: "<address to receive fee>",
     commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
   },
 });
@@ -90,7 +92,7 @@ const result = await buildTx({
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
   commission: {
-    partner: "<address to receive fee if any>",
+    partner: "<address to receive fee>",
     commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
   },
   extendTx: {
@@ -101,6 +103,9 @@ const result = await buildTx({
 });
 const { coinOut } = result || {};
 ```
+
+Note: Even when commissionBps is set to 0, you must still provide a partner
+address. This is required for partner tracking and analytics purposes.
 
 ### Full Example
 
@@ -125,7 +130,7 @@ const result = await buildTx({
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
   commission: {
-    partner: "<address to receive fee if any>",
+    partner: "<address to receive fee>",
     commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
   },
 });
@@ -143,7 +148,7 @@ const feeInUsd = await estimateGasFee({
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
   commission: {
-    partner: "<address to receive fee if any>",
+    partner: "<address to receive fee>",
     commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
   },
 });
@@ -163,7 +168,7 @@ const feeInUsd = await estimateGasFee({
   slippage: 0.01, // 1%
   suiPrice,
   commission: {
-    partner: "<address to receive fee if any>",
+    partner: "<address to receive fee>",
     commissionBps: 0, // 0 means no fee, 1bps = 0.01%, for example, 20bps = 0.2%
   },
 });
