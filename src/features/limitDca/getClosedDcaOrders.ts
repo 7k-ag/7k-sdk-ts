@@ -6,12 +6,14 @@ interface Params {
   owner: string;
   offset: number;
   limit: number;
+  tokenPair?: string;
 }
 
 export async function getClosedDcaOrders({
   owner,
   offset = 0,
   limit = 10,
+  tokenPair,
 }: Params) {
   const queryParams: LoDcaQueryParams = {
     owner,
@@ -19,6 +21,7 @@ export async function getClosedDcaOrders({
     offset,
     limit,
     orderType: "DCA",
+    tokenPair,
   };
   const paramsStr = formatQueryParams(queryParams);
 

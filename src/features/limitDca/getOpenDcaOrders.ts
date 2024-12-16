@@ -6,18 +6,21 @@ interface Params {
   owner: string;
   offset: number;
   limit: number;
+  tokenPair?: string;
 }
 
 export async function getOpenDcaOrders({
   owner,
   offset = 0,
   limit = 10,
+  tokenPair,
 }: Params) {
   const queryParams: LoDcaQueryParams = {
     owner,
     statuses: ["ACTIVE", "EXPIRED"],
     offset,
     limit,
+    tokenPair,
   };
   const paramsStr = formatQueryParams(queryParams);
 
