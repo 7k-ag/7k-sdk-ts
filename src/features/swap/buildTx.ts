@@ -4,13 +4,13 @@ import {
   TransactionResult,
 } from "@mysten/sui/transactions";
 import BigNumber from "bignumber.js";
-import { getSplitCoinForTx } from "./libs/getSplitCoinForTx";
-import { groupSwapRoutes } from "./libs/groupSwapRoutes";
-import { swapWithRoute } from "./libs/swapWithRoute";
-import { denormalizeTokenType } from "./utils/token";
-import { SuiUtils } from "./utils/sui";
-import { BuildTxParams } from "./types/tx";
-import { _7K_CONFIG, _7K_PACKAGE_ID, _7K_VAULT } from "./constants/_7k";
+import { getSplitCoinForTx } from "../../libs/getSplitCoinForTx";
+import { groupSwapRoutes } from "../../libs/groupSwapRoutes";
+import { swapWithRoute } from "../../libs/swapWithRoute";
+import { denormalizeTokenType } from "../../utils/token";
+import { SuiUtils } from "../../utils/sui";
+import { BuildTxParams } from "../../types/tx";
+import { _7K_CONFIG, _7K_PACKAGE_ID, _7K_VAULT } from "../../constants/_7k";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 
 export const buildTx = async ({

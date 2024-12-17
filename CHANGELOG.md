@@ -1,5 +1,14 @@
 # @7kprotocol/sdk-ts
 
+## 2.2.0
+
+### Minor Changes
+
+- Add Limit Orders (Beta)
+- Add DCA Orders (Beta)
+- Add NodeJS code example
+- New Liquidity sources: stSUI
+
 ## 2.1.7
 
 ### Patch Changes
@@ -31,7 +40,7 @@ const { tx: extendedTx, coinOut } = buildTx({
 });
 // no need to consume the coinIn after the swap anymore
 // extendedTx.transferObjects([coinIn], address);
-// continute to use coinOut or transfer it back to the sender as normal to complete the transaction.
+// continue to use coinOut or transfer it back to the sender as normal to complete the transaction.
 ```
 
 ## 2.1.4

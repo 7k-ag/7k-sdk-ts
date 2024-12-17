@@ -11,6 +11,7 @@ import { SponsoredDeepBookV3Contract } from "./deepbookV3/sponsored";
 import { BluefinContract } from "./bluefin";
 import { SpringSuiContract } from "./springsui";
 import { ObricContract } from "./obric";
+import { StSuiContract } from "./stsui";
 
 export const ProtocolContract = {
   cetus: CetusContract,
@@ -26,4 +27,5 @@ export const ProtocolContract = {
   bluefin: BluefinContract,
   springsui: SpringSuiContract,
   obric: ObricContract,
+  stsui: StSuiContract,
 };

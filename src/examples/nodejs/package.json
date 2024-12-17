@@ -1,0 +1,23 @@
+{
+  "name": "test-7k-sdk-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "prettier": "npx prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@7kprotocol/sdk-ts": "^2.1.7",
+    "@mysten/sui": "^1.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.7",
+    "prettier": "3.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}

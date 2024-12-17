@@ -11,8 +11,8 @@ describe("SpringSui test", () => {
   const tokenX = SUI_TYPE;
   const tokenY =
     "0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI";
-  const amountX = "1000000000"; // 1 SUI
-  const amountY = "1000000000"; // 1 sSUI
+  const amountX = "100000000"; // 0.1 SUI
+  const amountY = "100000000"; // 0.1 sSUI
   const client = new SuiClient({ url: getFullnodeUrl("mainnet") });
   setSuiClient(client);
   it("should routing success for springsui x for y", async () => {
