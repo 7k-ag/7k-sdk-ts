@@ -6,6 +6,7 @@
 
 - Add Limit Orders (Beta)
 - Add DCA Orders (Beta)
+- Add NodeJS code example
 
 ## 2.1.7
 

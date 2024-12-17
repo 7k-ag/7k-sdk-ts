@@ -52,6 +52,11 @@ const tokenPrices = await getTokenPrices([
 const suiPrice = await getSuiPrice();
 ```
 
+## Miscellaneous
+
+If you encounter issues when importing functions from this SDK in a Node.js
+environment, refer to [this code example](./src/examples/nodejs/) for guidance.
+
 ## License
 
 7K TypeScript SDK released under the MIT license. See the [LICENSE](./LICENSE)
