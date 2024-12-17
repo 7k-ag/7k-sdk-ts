@@ -55,7 +55,8 @@ const suiPrice = await getSuiPrice();
 ## Miscellaneous
 
 If you encounter issues when importing functions from this SDK in a Node.js
-environment, refer to [this code example](./src/examples/nodejs/) for guidance.
+environment, refer to [src/examples/nodejs/](./src/examples/nodejs/) for
+guidance.
 
 ## License
 
