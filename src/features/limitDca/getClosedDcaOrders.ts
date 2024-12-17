@@ -28,7 +28,7 @@ export async function getClosedDcaOrders({
   const response = await fetch(`${LO_DCA_API}/order-executions?${paramsStr}`);
 
   if (!response.ok) {
-    throw new Error("Failed to fetch closed limit orders");
+    throw new Error("Failed to fetch closed dca orders");
   }
 
   const orders = (await response.json()) as LoDcaOrderExecution[];
