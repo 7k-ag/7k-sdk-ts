@@ -1,10 +1,10 @@
 import BigNumber from "bignumber.js";
 import { SUI_DECIMALS } from "@mysten/sui/utils";
 import { buildTx } from "./buildTx";
-import { formatBalance } from "./utils/number";
-import { EstimateGasFeeParams } from "./types/tx";
-import { getSuiClient } from "./suiClient";
-import { getSuiPrice } from "./getSuiPrice";
+import { formatBalance } from "../../utils/number";
+import { EstimateGasFeeParams } from "../../types/tx";
+import { getSuiClient } from "../../suiClient";
+import { getSuiPrice } from "../prices";
 
 export async function estimateGasFee({
   quoteResponse,

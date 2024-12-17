@@ -1,5 +1,5 @@
-import { QuoteResponse, SourceDex } from "./types/aggregator";
-import { normalizeTokenType } from "./utils/token";
+import { QuoteResponse, SourceDex } from "../../types/aggregator";
+import { normalizeTokenType } from "../../utils/token";
 
 interface Params {
   tokenIn: string;
@@ -22,6 +22,7 @@ export const DEFAULT_SOURCES: SourceDex[] = [
   "bluefin",
   "springsui",
   "obric",
+  "stsui",
 ];
 
 export async function getQuote({
@@ -29,14 +30,17 @@ export async function getQuote({
   tokenOut,
   amountIn,
   sources = DEFAULT_SOURCES,
-}: Params): Promise<QuoteResponse> {
-  const response: any = await fetch(
+}: Params) {
+  const response = await fetch(
     `https://api.7k.ag/quote?amount=${amountIn}&from=${normalizeTokenType(
       tokenIn,
     )}&to=${normalizeTokenType(tokenOut)}&sources=${sources}`,
   );
+
   if (!response.ok) {
     throw new Error("Failed to fetch aggregator quote");
   }
-  return response.json();
+
+  const quoteResponse = (await response.json()) as QuoteResponse;
+  return quoteResponse;
 }
