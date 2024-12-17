@@ -5,7 +5,7 @@ export function formatQueryParams(params: Record<string, any>) {
       for (const v of value) {
         str += str ? `&${key}=${v}` : `${key}=${v}`;
       }
-    } else {
+    } else if (value !== undefined) {
       str += str ? `&${key}=${value}` : `${key}=${value}`;
     }
   });
