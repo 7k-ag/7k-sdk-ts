@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.2.2
+
+### Patch Changes
+
+- Update bluefin package
+
 ## 2.2.1
 
 ### Patch Changes

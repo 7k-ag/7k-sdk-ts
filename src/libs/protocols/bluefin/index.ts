@@ -6,7 +6,7 @@ import BN from "bn.js";
 import { SuiUtils } from "../../../utils/sui";
 
 const PACKAGE_ID =
-  "0xa31282fc0a0ad50cf5f20908cfbb1539a143f5a38912eb8823a8dd6cbf98bc44";
+  "0x6c796c3ab3421a68158e0df18e4657b2827b1f8fed5ed4b82dba9c935988711b";
 const CONFIG_ID =
   "0x03db251ba509a8d5d8777b6338836082335d93eecbdd09a11e190a1cff51c352";
 
