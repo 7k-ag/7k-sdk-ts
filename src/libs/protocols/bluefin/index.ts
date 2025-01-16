@@ -4,12 +4,6 @@ import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { getDefaultSqrtPriceLimit } from "../utils";
 import BN from "bn.js";
 import { SuiUtils } from "../../../utils/sui";
-
-const PACKAGE_ID =
-  "0x6c796c3ab3421a68158e0df18e4657b2827b1f8fed5ed4b82dba9c935988711b";
-const CONFIG_ID =
-  "0x03db251ba509a8d5d8777b6338836082335d93eecbdd09a11e190a1cff51c352";
-
 export class BluefinContract extends BaseContract {
   async swap(tx: Transaction) {
     const [coinX, coinY] = this.swapInfo.pool.allTokens;
@@ -23,12 +17,13 @@ export class BluefinContract extends BaseContract {
     );
     const coinOutBalance = SuiUtils.zeroBalance(tx, this.swapInfo.assetOut);
 
+    const config = this.config.bluefin;
     const [balanceOutX, balanceOutY] = tx.moveCall({
-      target: `${PACKAGE_ID}::pool::swap`,
+      target: `${config.package}::pool::swap`,
       typeArguments: [coinX.address, coinY.address],
       arguments: [
         tx.object(SUI_CLOCK_OBJECT_ID),
-        tx.object(CONFIG_ID),
+        tx.object(config.globalConfig),
         tx.object(this.swapInfo.poolId),
         swapXtoY ? coinInBalance : coinOutBalance,
         swapXtoY ? coinOutBalance : coinInBalance,

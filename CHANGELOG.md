@@ -1,5 +1,13 @@
 # @7kprotocol/sdk-ts
 
+## 2.3.0
+
+### Minor Changes
+
+- Added package configuration from the aggregator API.
+- Supported `targetPools` and `excludedPools` params in `getQuote`
+- New Liquidity sources: Flowx V3
+
 ## 2.2.2
 
 ### Patch Changes

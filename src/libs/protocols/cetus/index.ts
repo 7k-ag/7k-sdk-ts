@@ -6,11 +6,6 @@ import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { getDefaultSqrtPriceLimit } from "../utils";
 import { SuiUtils } from "../../../utils/sui";
 
-const GLOBAL_CONFIG_ID =
-  "0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f";
-const INTEGRATE_PACKAGE_ID =
-  "0x6f5e582ede61fe5395b50c4a449ec11479a54d7ff8e0158247adfda60d98970b";
-
 export class CetusContract extends BaseContract {
   async swap(tx: Transaction) {
     const sqrtPriceLimit = getDefaultSqrtPriceLimit(this.swapInfo.swapXtoY);
@@ -30,11 +25,12 @@ export class CetusContract extends BaseContract {
       this.inputCoinObject,
       tx,
     );
+    const config = this.config.cetus;
     const [receiveA, receiveB] = tx.moveCall({
-      target: `${INTEGRATE_PACKAGE_ID}::router::swap`,
+      target: `${config.package}::router::swap`,
       typeArguments,
       arguments: [
-        tx.object(GLOBAL_CONFIG_ID),
+        tx.object(config.globalConfig),
         tx.object(this.swapInfo.poolId),
         this.swapInfo.swapXtoY ? this.inputCoinObject : zeroOut, // coin A
         this.swapInfo.swapXtoY ? zeroOut : this.inputCoinObject, // coin B

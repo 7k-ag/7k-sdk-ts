@@ -12,6 +12,7 @@ import { SuiUtils } from "../../utils/sui";
 import { BuildTxParams } from "../../types/tx";
 import { _7K_CONFIG, _7K_PACKAGE_ID, _7K_VAULT } from "../../constants/_7k";
 import { isValidSuiAddress } from "@mysten/sui/utils";
+import { getConfig } from "./config";
 
 export const buildTx = async ({
   quoteResponse,
@@ -64,6 +65,7 @@ export const buildTx = async ({
   }
 
   const coinObjects: TransactionObjectArgument[] = [];
+  const config = await getConfig();
   await Promise.all(
     routes.map(async (route, index) => {
       const inputCoinObject = coinData[index];
@@ -72,6 +74,7 @@ export const buildTx = async ({
         inputCoinObject,
         currentAccount: accountAddress,
         tx,
+        config,
       });
       if (coinRes) {
         coinObjects.push(coinRes);

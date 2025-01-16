@@ -5,7 +5,6 @@ import { BaseContract } from "../base";
 import { _7K_PACKAGE_ID } from "../../../constants/_7k";
 import { SuiUtils } from "../../../utils/sui";
 
-const PACKAGE_ID = "0xdee9";
 const MODULE_NAME = "clob_v2";
 
 export class DeepBookContract extends BaseContract {
@@ -20,6 +19,7 @@ export class DeepBookContract extends BaseContract {
 
     const accountCap = this.createAccountCap(tx);
     const amountIn = this.getInputCoinValue(tx);
+    const config = this.config.deepbook;
     let result;
 
     if (swapXtoY) {
@@ -31,7 +31,7 @@ export class DeepBookContract extends BaseContract {
         ],
       });
       const [base_coin_ret, quote_coin_ret] = tx.moveCall({
-        target: `${PACKAGE_ID}::${MODULE_NAME}::swap_exact_base_for_quote`,
+        target: `${config.package}::${MODULE_NAME}::swap_exact_base_for_quote`,
         typeArguments: [baseAsset, quoteAsset],
         arguments: [
           tx.object(poolId),
@@ -57,7 +57,7 @@ export class DeepBookContract extends BaseContract {
       result = quote_coin_ret;
     } else {
       const [base_coin_ret, quote_coin_ret] = tx.moveCall({
-        target: `${PACKAGE_ID}::${MODULE_NAME}::swap_exact_quote_for_base`,
+        target: `${config.package}::${MODULE_NAME}::swap_exact_quote_for_base`,
         typeArguments: [baseAsset, quoteAsset],
         arguments: [
           tx.object(poolId),
@@ -84,7 +84,7 @@ export class DeepBookContract extends BaseContract {
   private createAccountCap(tx: Transaction) {
     const [cap] = tx.moveCall({
       typeArguments: [],
-      target: `${PACKAGE_ID}::${MODULE_NAME}::create_account`,
+      target: `${this.config.deepbook.package}::${MODULE_NAME}::create_account`,
       arguments: [],
     });
     return cap;
@@ -92,7 +92,7 @@ export class DeepBookContract extends BaseContract {
 
   private deleteAccountCap(tx: Transaction, accountCap: any) {
     tx.moveCall({
-      target: `${PACKAGE_ID}::custodian_v2::delete_account_cap`,
+      target: `${this.config.deepbook.package}::custodian_v2::delete_account_cap`,
       arguments: [accountCap],
     });
   }
