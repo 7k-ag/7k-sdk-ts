@@ -1,6 +1,6 @@
 {
   "name": "@7kprotocol/sdk-ts",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "",
   "exports": {
     ".": {
@@ -12,6 +12,14 @@
         "types": "./lib/cjs/types/index.d.ts",
         "default": "./lib/cjs/index.js"
       }
+    },
+    "./esm": {
+      "types": "./lib/esm/types/index.d.ts",
+      "default": "./lib/esm/index.mjs"
+    },
+    "./cjs": {
+      "types": "./lib/cjs/types/index.d.ts",
+      "default": "./lib/cjs/index.js"
     }
   },
   "types": "./lib/cjs/types/index.d.ts",

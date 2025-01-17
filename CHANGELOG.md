@@ -1,5 +1,12 @@
 # @7kprotocol/sdk-ts
 
+## 2.3.1
+
+### Patch Changes
+
+- Support new imports: `@7kprotocol/sdk-ts/esm` (es modules) and
+  `@7kprotocol/sdk-ts/cjs` (commonjs)
+
 ## 2.3.0
 
 ### Minor Changes
