@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.3.3
+
+### Patch Changes
+
+- Fix minor issues
+
 ## 2.3.2
 
 ### Patch Changes
