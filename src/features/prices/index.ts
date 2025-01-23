@@ -23,26 +23,62 @@ export async function getTokenPrice(
   }
 }
 
+const chunkArray = <T>(array: T[], chunkSize: number): T[][] => {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+  return chunks;
+};
+
+const MAX_TOTAL_IDS = 500;
+const MAX_IDS_PER_REQUEST = 100;
 export async function getTokenPrices(
   ids: string[],
   vsCoin = NATIVE_USDC_TOKEN_TYPE,
 ): Promise<Record<string, number>> {
   try {
-    const normalizedIdsStr = ids.map(normalizeTokenType).join(",");
-    const response = await fetch(
-      `${PRICES_API}/price?ids=${normalizedIdsStr}&vsCoin=${vsCoin}`,
+    const limitedIds = ids.slice(0, MAX_TOTAL_IDS).map(normalizeTokenType);
+    const idChunks = chunkArray(limitedIds, MAX_IDS_PER_REQUEST);
+
+    const responses = await Promise.all(
+      idChunks.map(async (chunk) => {
+        const response = await fetch(`${PRICES_API}/price`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ids: chunk,
+            vsCoin,
+          }),
+        });
+        const pricesRes = (await response.json()) as Record<string, TokenPrice>;
+        return pricesRes;
+      }),
     );
-    const pricesRes = (await response.json()) as Record<string, TokenPrice>;
-    const prices = ids.reduce(
-      (acc, id) => {
-        acc[id] = Number(pricesRes?.[id]?.price || 0);
+
+    const combinedPrices = responses.reduce(
+      (acc, pricesRes) => {
+        Object.keys(pricesRes).forEach((id) => {
+          acc[id] = Number(pricesRes[id]?.price || 0);
+        });
         return acc;
       },
       {} as Record<string, number>,
     );
-    return prices;
+
+    const finalPrices = limitedIds.reduce(
+      (acc, id) => {
+        acc[id] = combinedPrices[id] || 0;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    return finalPrices;
   } catch (error) {
-    return ids.reduce(
+    return ids.slice(0, MAX_TOTAL_IDS).reduce(
       (acc, id) => {
         acc[id] = 0;
         return acc;
