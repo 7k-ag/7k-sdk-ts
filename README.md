@@ -27,11 +27,11 @@ Note: this package only supports **mainnet** for now.
 
 See [Swap](docs/SWAP.md).
 
-## Limit Orders (Beta)
+## Limit Orders
 
 See [Limit Orders](docs/LIMIT.md).
 
-## DCA Orders (Beta)
+## DCA Orders
 
 See [DCA Orders](docs/DCA.md).
 

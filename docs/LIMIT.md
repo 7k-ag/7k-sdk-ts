@@ -1,4 +1,4 @@
-# Limit Orders (Beta)
+# Limit Orders
 
 Limit orders allow you to exchange one type of coin for another at a specific
 rate, with an expiration time and slippage tolerance.  

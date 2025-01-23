@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.3.4
+
+### Patch Changes
+
+- Remove Beta tags for Limit Orders and DCA Orders
+
 ## 2.3.3
 
 ### Patch Changes

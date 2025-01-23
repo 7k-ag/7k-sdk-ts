@@ -1,4 +1,4 @@
-# DCA Orders (Beta)
+# DCA Orders
 
 Dollar-Cost Averaging (DCA) allows you to automate trades at regular intervals,
 spreading your investments over time to reduce the impact of market volatility.
