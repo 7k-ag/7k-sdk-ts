@@ -28,6 +28,8 @@ export const DEFAULT_SOURCES: SourceDex[] = [
   "springsui",
   "obric",
   "stsui",
+  "steamm",
+  "magma",
 ];
 
 export async function getQuote({

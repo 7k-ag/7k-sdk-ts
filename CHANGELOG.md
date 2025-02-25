@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.3.6
+
+### Patch Changes
+
+- Add steamm, magma to default sources
+
 ## 2.3.5
 
 ### Patch Changes

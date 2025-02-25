@@ -13,7 +13,9 @@ export type SourceDex =
   | "bluefin"
   | "springsui"
   | "obric"
-  | "stsui";
+  | "stsui"
+  | "steamm"
+  | "magma";
 
 export type SorSwap = {
   poolId: string;
