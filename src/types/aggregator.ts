@@ -115,4 +115,6 @@ export interface Config {
   stsui: DexConfig;
   suiswap: DexConfig;
   turbos: DexConfig & { version: string };
+  steamm: DexConfig & { script: string };
+  magma: DexConfig & { globalConfig: string };
 }

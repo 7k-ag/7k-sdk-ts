@@ -2,10 +2,6 @@ import { Transaction } from "@mysten/sui/transactions";
 import { BaseContract } from "../base";
 import { normalizeTokenType } from "../../../utils/token";
 
-const PACKAGE_ID =
-  "0xa0eba10b173538c8fecca1dff298e488402cc9ff374f8a12ca7758eebe830b66";
-const MODULE_NAME = "spot_dex";
-
 export class KriyaContract extends BaseContract {
   async swap(tx: Transaction) {
     const swapXtoY = this.swapInfo.swapXtoY;
@@ -14,8 +10,9 @@ export class KriyaContract extends BaseContract {
     const poolId = this.swapInfo.poolId;
     const inputCoinObject = this.inputCoinObject;
 
+    const config = this.config.kriya;
     const [tokenOut] = tx.moveCall({
-      target: `${PACKAGE_ID}::${MODULE_NAME}::${
+      target: `${config.package}::spot_dex::${
         swapXtoY ? "swap_token_x" : "swap_token_y"
       }`,
       typeArguments: [

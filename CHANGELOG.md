@@ -1,5 +1,13 @@
 # @7kprotocol/sdk-ts
 
+## 2.3.5
+
+### Patch Changes
+
+- New Liquidity sources: Steamm, Magma
+- Fix: apply remote config for turbos, kriya, kriya_v3, obric, springsui, stsui,
+  suiswap
+
 ## 2.3.4
 
 ### Patch Changes

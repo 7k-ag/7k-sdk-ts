@@ -244,7 +244,7 @@ export const SuiUtils = {
   isValidStructTag(value: string) {
     try {
       return !!parseStructTag(value);
-    } catch (error) {
+    } catch (_) {
       return false;
     }
   },
@@ -252,6 +252,14 @@ export const SuiUtils = {
   zeroBalance(tx: Transaction, coinType: string) {
     return tx.moveCall({
       target: `0x2::balance::zero`,
+      typeArguments: [coinType],
+      arguments: [],
+    })[0];
+  },
+
+  zeroCoin(tx: Transaction, coinType: string) {
+    return tx.moveCall({
+      target: `0x2::coin::zero`,
       typeArguments: [coinType],
       arguments: [],
     })[0];

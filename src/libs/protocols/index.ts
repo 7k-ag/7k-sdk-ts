@@ -13,6 +13,8 @@ import { SpringSuiContract } from "./springsui";
 import { ObricContract } from "./obric";
 import { StSuiContract } from "./stsui";
 import { FlowxV3Contract } from "./flowxV3";
+import { SteammContract } from "./steamm";
+import { MagmaContract } from "./magma";
 
 export const ProtocolContract = {
   cetus: CetusContract,
@@ -30,4 +32,6 @@ export const ProtocolContract = {
   springsui: SpringSuiContract,
   obric: ObricContract,
   stsui: StSuiContract,
+  steamm: SteammContract,
+  magma: MagmaContract,
 };

@@ -1,7 +1,7 @@
 import { Config } from "../../types/aggregator";
 let config: Config | null = null;
 let configTs: number = 0;
-const DEFAULT_CONFIG: Config = {
+export const DEFAULT_CONFIG: Config = {
   aftermath: {
     name: "Aftermath",
     package:
@@ -103,15 +103,28 @@ const DEFAULT_CONFIG: Config = {
   turbos: {
     name: "Turbos Finance",
     package:
-      "0x1a3c42ded7b75cdf4ebc7c7b7da9d1e1db49f16fcdca934fac003f35f39ecad9",
+      "0x9df4666296ee324a6f11e9f664e35e7fd6b6e8c9e9058ce6ee9ad5c5343c2f87",
     version:
       "0xf1cf0e81048df168ebeb1b8030fad24b3e0b53ae827c25053fff0779c1445b6f",
   },
+  steamm: {
+    name: "Steamm",
+    package:
+      "0x4fb1cf45dffd6230305f1d269dd1816678cc8e3ba0b747a813a556921219f261",
+    script:
+      "0x13bfc09cfc1bd922d3aa53fcf7b2cd510727ee65068ce136e2ebd5f3b213fdd2",
+  },
+  magma: {
+    name: "Magma",
+    package:
+      "0x951d48bece7f6c2a3f4ba0b5791ba823c491e504feb4136497ee51331208ac33",
+    globalConfig:
+      "0x4c4e1402401f72c7d8533d0ed8d5f8949da363c7a3319ccef261ffe153d32f8a",
+  },
 };
 
-declare const window: any;
 export async function getConfig() {
-  const ttl = typeof window === "undefined" ? 60 : 10 * 60;
+  const ttl = 60;
   if (config && Date.now() - configTs < ttl * 1000) {
     return config;
   }
@@ -122,7 +135,7 @@ export async function getConfig() {
     config = quoteResponse;
     configTs = Date.now();
     return quoteResponse;
-  } catch (error) {
+  } catch (_) {
     return DEFAULT_CONFIG;
   }
 }

@@ -18,7 +18,7 @@ export async function getTokenPrice(
     );
     const pricesRes = (await response.json()) as Record<string, TokenPrice>;
     return Number(pricesRes?.[id]?.price || 0);
-  } catch (error) {
+  } catch (_) {
     return 0;
   }
 }
@@ -77,7 +77,7 @@ export async function getTokenPrices(
     );
 
     return finalPrices;
-  } catch (error) {
+  } catch (_) {
     return ids.slice(0, MAX_TOTAL_IDS).reduce(
       (acc, id) => {
         acc[id] = 0;

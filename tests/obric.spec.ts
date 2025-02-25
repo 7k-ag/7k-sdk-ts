@@ -33,7 +33,7 @@ describe("Obric test", () => {
         commissionBps: 0,
         partner: testAccount,
       },
-      slippage: 0.01,
+      slippage: 0.02,
       devInspect: true,
     });
 
@@ -61,7 +61,7 @@ describe("Obric test", () => {
         commissionBps: 0,
         partner: testAccount,
       },
-      slippage: 0.01,
+      slippage: 0.02,
       devInspect: true,
     });
 

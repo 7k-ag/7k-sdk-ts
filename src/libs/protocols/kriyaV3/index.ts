@@ -4,11 +4,6 @@ import { BaseContract } from "../base";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { normalizeTokenType } from "../../../utils/token";
 
-const PACKAGE_ID =
-  "0xbd8d4489782042c6fafad4de4bc6a5e0b84a43c6c00647ffd7062d1e2bb7549e";
-const VERSION_ID =
-  "0xf5145a7ac345ca8736cf8c76047d00d6d378f30e81be6f6eb557184d9de93c78";
-
 export class KriyaV3Contract extends BaseContract {
   async swap(tx: Transaction) {
     const swapXtoY = this.swapInfo.swapXtoY;
@@ -18,6 +13,7 @@ export class KriyaV3Contract extends BaseContract {
     const LowLimitPrice = 4295048017;
     const limitPrice = BigInt("79226673515401279992447579050");
 
+    const { package: PACKAGE_ID, version: VERSION_ID } = this.config.kriya_v3;
     const [receive_a, receive_b, flash_receipt] = tx.moveCall({
       target: `${PACKAGE_ID}::trade::flash_swap`,
       typeArguments: this.getTypeParams(),
