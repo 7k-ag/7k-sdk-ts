@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 2.4.0
+
+### Minor Changes
+
+- Support custom API key
+
 ## 2.3.6
 
 ### Patch Changes

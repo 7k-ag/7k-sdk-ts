@@ -1,5 +1,7 @@
 import { normalizeStructTag, normalizeSuiObjectId } from "@mysten/sui/utils";
 import { QuoteResponse, SourceDex } from "../../types/aggregator";
+import { API_ENDPOINTS } from "../../constants/apiEndpoints";
+import { fetchClient } from "../../config/fetchClient";
 
 interface Params {
   tokenIn: string;
@@ -58,7 +60,7 @@ export async function getQuote({
       excludedPools.map((v) => normalizeSuiObjectId(v)).join(","),
     );
   }
-  const response = await fetch(`https://api.7k.ag/quote?${params}`);
+  const response = await fetchClient(`${API_ENDPOINTS.MAIN}/quote?${params}`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch aggregator quote");

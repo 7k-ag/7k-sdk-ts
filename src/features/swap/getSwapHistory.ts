@@ -1,3 +1,5 @@
+import { fetchClient } from "../../config/fetchClient";
+import { API_ENDPOINTS } from "../../constants/apiEndpoints";
 import { formatQueryParams } from "../../libs/url";
 
 interface Params {
@@ -43,8 +45,8 @@ export async function getSwapHistory({
   };
   const paramsStr = formatQueryParams(queryParams);
 
-  const response = await fetch(
-    `https://statistic.7k.ag/trading-history?${paramsStr}`,
+  const response = await fetchClient(
+    `${API_ENDPOINTS.STATISTIC}/trading-history?${paramsStr}`,
   );
 
   if (!response.ok) {

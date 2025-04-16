@@ -8,17 +8,45 @@ npm i @7kprotocol/sdk-ts
 
 ## Usage
 
-## Config (Optional)
+You can import the entire SDK as a module:
+
+```typescript
+import SevenK from "@7kprotocol/sdk-ts";
+```
+
+or import specific functions as needed:
+
+```typescript
+import { getQuote, buildTx } from "@7kprotocol/sdk-ts";
+```
+
+## Config
+
+Configuration is optional, but if provided, it must be set before invoking any
+SDK functions.
+
+### Set API Key
+
+If you’re calling our API from your server, contact us to request dedicated API
+keys and minimize the risk of rate limiting.
+
+```typescript
+import { Config } from "@7kprotocol/sdk-ts";
+
+Config.setApiKey("YOUR_API_KEY");
+console.log("API key", Config.getApiKey());
+```
 
 ### Set Sui Client
 
 ```typescript
 import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
-import { setSuiClient } from "@7kprotocol/sdk-ts";
+import { Config } from "@7kprotocol/sdk-ts";
 
 const network = "mainnet";
 const suiClient = new SuiClient({ url: getFullnodeUrl(network) });
-setSuiClient(suiClient);
+Config.setSuiClient(suiClient);
+console.log("Sui client", Config.getSuiClient());
 ```
 
 Note: this package only supports **mainnet** for now.

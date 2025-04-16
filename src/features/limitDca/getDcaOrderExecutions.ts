@@ -1,3 +1,4 @@
+import { fetchClient } from "../../config/fetchClient";
 import { formatQueryParams } from "../../libs/url";
 import { LO_DCA_API } from "./constants";
 import { LoDcaOrderExecution, LoDcaQueryParams } from "./types";
@@ -25,7 +26,9 @@ export async function getDcaOrderExecutions({
   };
   const paramsStr = formatQueryParams(queryParams);
 
-  const response = await fetch(`${LO_DCA_API}/order-executions?${paramsStr}`);
+  const response = await fetchClient(
+    `${LO_DCA_API}/order-executions?${paramsStr}`,
+  );
 
   if (!response.ok) {
     throw new Error("Failed to fetch dca order executions");

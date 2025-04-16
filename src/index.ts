@@ -1,6 +1,6 @@
 export * from "./types/aggregator";
 
-import { getSuiClient, setSuiClient } from "./suiClient";
+import { Config } from "./config";
 
 import { getTokenPrice, getTokenPrices, getSuiPrice } from "./features/prices";
 
@@ -24,7 +24,14 @@ import {
   getDcaOrderExecutions,
 } from "./features/limitDca";
 
+// avoid breaking changes
+const getSuiClient = Config.getSuiClient;
+const setSuiClient = Config.setSuiClient;
+
 export {
+  // config
+  Config,
+
   // sui client
   getSuiClient,
   setSuiClient,
@@ -56,6 +63,9 @@ export {
 };
 
 export default {
+  // config
+  Config,
+
   // sui client
   getSuiClient,
   setSuiClient,

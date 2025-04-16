@@ -6,7 +6,7 @@ import {
 } from "@mysten/sui/client";
 import { parseStructTag } from "@mysten/sui/utils";
 import { checkIsSui } from "./token";
-import { getSuiClient } from "../suiClient";
+import { Config } from "../config";
 
 type DataPage<T> = {
   data: T[];
@@ -161,7 +161,7 @@ export const SuiUtils = {
 
     do {
       try {
-        const res = await getSuiClient().getCoins({
+        const res = await Config.getSuiClient().getCoins({
           owner: address,
           coinType: type,
           cursor: cursor,
@@ -223,7 +223,7 @@ export const SuiUtils = {
     let nextCursor = queryAll ? null : paginationArgs.cursor;
     do {
       const res: PaginatedObjectsResponse =
-        await getSuiClient().getOwnedObjects({
+        await Config.getSuiClient().getOwnedObjects({
           owner,
           ...query,
           cursor: nextCursor,

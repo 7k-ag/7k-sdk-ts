@@ -86,12 +86,7 @@ address. This is required for partner tracking and analytics purposes.
 
 ```typescript
 import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
-import { setSuiClient, getQuote, buildTx } from "@7kprotocol/sdk-ts";
-
-// optional
-const network = "mainnet";
-const suiClient = new SuiClient({ url: getFullnodeUrl(network) });
-setSuiClient(suiClient);
+import { getQuote, buildTx } from "@7kprotocol/sdk-ts";
 
 const quoteResponse = await getQuote({
   tokenIn: "0x2::sui::SUI",

@@ -3,8 +3,8 @@ import { SUI_DECIMALS } from "@mysten/sui/utils";
 import { buildTx } from "./buildTx";
 import { formatBalance } from "../../utils/number";
 import { EstimateGasFeeParams } from "../../types/tx";
-import { getSuiClient } from "../../suiClient";
 import { getSuiPrice } from "../prices";
+import { Config } from "../../config";
 
 export async function estimateGasFee({
   quoteResponse,
@@ -37,7 +37,7 @@ export async function estimateGasFee({
 
   const {
     effects: { gasUsed, status },
-  } = await getSuiClient().devInspectTransactionBlock({
+  } = await Config.getSuiClient().devInspectTransactionBlock({
     sender: accountAddress,
     transactionBlock: tx,
   });

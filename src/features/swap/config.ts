@@ -1,6 +1,9 @@
+import { fetchClient } from "../../config/fetchClient";
+import { API_ENDPOINTS } from "../../constants/apiEndpoints";
 import { Config } from "../../types/aggregator";
 let config: Config | null = null;
 let configTs: number = 0;
+
 export const DEFAULT_CONFIG: Config = {
   aftermath: {
     name: "Aftermath",
@@ -130,7 +133,7 @@ export async function getConfig() {
   }
 
   try {
-    const response = await fetch(`https://api.7k.ag/config`);
+    const response = await fetchClient(`${API_ENDPOINTS.MAIN}/config`);
     const quoteResponse = (await response.json()) as Config;
     config = quoteResponse;
     configTs = Date.now();

@@ -1,3 +1,4 @@
+import { fetchClient } from "../../config/fetchClient";
 import { formatQueryParams } from "../../libs/url";
 import { LO_DCA_API } from "./constants";
 import { DcaOrder, LoDcaQueryParams } from "./types";
@@ -24,7 +25,7 @@ export async function getOpenDcaOrders({
   };
   const paramsStr = formatQueryParams(queryParams);
 
-  const response = await fetch(`${LO_DCA_API}/dca-orders?${paramsStr}`);
+  const response = await fetchClient(`${LO_DCA_API}/dca-orders?${paramsStr}`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch open dca orders");

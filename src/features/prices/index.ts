@@ -1,7 +1,7 @@
+import { fetchClient } from "../../config/fetchClient";
+import { API_ENDPOINTS } from "../../constants/apiEndpoints";
 import { NATIVE_USDC_TOKEN_TYPE, SUI_FULL_TYPE } from "../../constants/tokens";
 import { normalizeTokenType } from "../../utils/token";
-
-export const PRICES_API = "https://prices.7k.ag";
 
 interface TokenPrice {
   price: number;
@@ -13,8 +13,8 @@ export async function getTokenPrice(
   vsCoin = NATIVE_USDC_TOKEN_TYPE,
 ): Promise<number> {
   try {
-    const response = await fetch(
-      `${PRICES_API}/price?ids=${normalizeTokenType(id)}&vsCoin=${vsCoin}`,
+    const response = await fetchClient(
+      `${API_ENDPOINTS.PRICES}/price?ids=${normalizeTokenType(id)}&vsCoin=${vsCoin}`,
     );
     const pricesRes = (await response.json()) as Record<string, TokenPrice>;
     return Number(pricesRes?.[id]?.price || 0);
@@ -43,7 +43,7 @@ export async function getTokenPrices(
 
     const responses = await Promise.all(
       idChunks.map(async (chunk) => {
-        const response = await fetch(`${PRICES_API}/price`, {
+        const response = await fetchClient(`${API_ENDPOINTS.PRICES}/price`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
