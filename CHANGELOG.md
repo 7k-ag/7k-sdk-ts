@@ -1,10 +1,22 @@
 # @7kprotocol/sdk-ts
 
+## 2.4.1
+
+### Patch Changes
+
+- Add optional `isSponsored` param for sponsored transactions
+
 ## 2.4.0
 
 ### Minor Changes
 
 - Support custom API key
+
+## 2.3.7
+
+### Patch Changes
+
+- Add optional `isSponsored` param for sponsored transactions
 
 ## 2.3.6
 

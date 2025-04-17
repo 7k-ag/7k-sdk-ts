@@ -9,6 +9,7 @@ export const getSplitCoinForTx = async (
   coinType: string,
   inheritTx?: Transaction,
   inspecTransaction?: boolean,
+  isSponsored = false,
 ): Promise<{
   tx: Transaction;
   coinData: TransactionResult;
@@ -20,7 +21,7 @@ export const getSplitCoinForTx = async (
     coinType,
   );
   const coinObjectId: any = objectIds[0];
-  if (coinType === SUI_TYPE) {
+  if (coinType === SUI_TYPE && !isSponsored) {
     let coin;
     if (inspecTransaction) {
       if (objectIds.length > 1) {

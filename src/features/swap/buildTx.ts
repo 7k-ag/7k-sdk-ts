@@ -21,6 +21,7 @@ export const buildTx = async ({
   commission: _commission,
   devInspect,
   extendTx,
+  isSponsored,
 }: BuildTxParams) => {
   const { tx: _tx, coinIn } = extendTx || {};
   let coinOut: TransactionObjectArgument | undefined;
@@ -60,6 +61,7 @@ export const buildTx = async ({
       denormalizeTokenType(quoteResponse.tokenIn),
       tx,
       devInspect,
+      isSponsored,
     );
     coinData = _data;
   }
