@@ -38,11 +38,10 @@ export class BluefinContract extends BaseContract {
 
     const coinOutX = SuiUtils.coinFromBalance(tx, coinX.address, balanceOutX);
     const coinOutY = SuiUtils.coinFromBalance(tx, coinY.address, balanceOutY);
-    SuiUtils.transferOrDestroyZeroCoin(
+    SuiUtils.collectDust(
       tx,
       this.swapInfo.assetIn,
       swapXtoY ? coinOutX : coinOutY,
-      this.currentAccount,
     );
     return swapXtoY ? coinOutY : coinOutX;
   }

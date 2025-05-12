@@ -46,12 +46,7 @@ export const buildTx = async ({
   let coinData: TransactionResult;
   if (coinIn) {
     coinData = tx.splitCoins(coinIn, splits);
-    SuiUtils.transferOrDestroyZeroCoin(
-      tx,
-      quoteResponse.tokenIn,
-      coinIn,
-      accountAddress,
-    );
+    SuiUtils.collectDust(tx, quoteResponse.tokenIn, coinIn);
   } else {
     const { coinData: _data } = await getSplitCoinForTx(
       accountAddress,
@@ -89,16 +84,13 @@ export const buildTx = async ({
         : coinObjects[0];
     coinOut = mergeCoin;
 
-    const minReceived =
-      (BigInt(1e9 - +slippage * 1e9) *
+    const returnAmountAfterCommission =
+      (BigInt(10000 - _commission.commissionBps) *
         BigInt(quoteResponse.returnAmountWithDecimal)) /
+      BigInt(10000);
+    const minReceived =
+      (BigInt(1e9 - +slippage * 1e9) * BigInt(returnAmountAfterCommission)) /
       BigInt(1e9);
-
-    const [partner] = tx.moveCall({
-      target: "0x1::option::some",
-      typeArguments: [`address`],
-      arguments: [tx.pure.address(_commission.partner)],
-    });
 
     tx.moveCall({
       target: `${_7K_PACKAGE_ID}::settle::settle`,
@@ -108,10 +100,14 @@ export const buildTx = async ({
         tx.object(_7K_VAULT),
         tx.pure.u64(quoteResponse.swapAmountWithDecimal),
         mergeCoin,
-        tx.pure.u64(minReceived),
-        tx.pure.u64(quoteResponse.returnAmountWithDecimal),
-        partner,
+        tx.pure.u64(minReceived), // minimum received
+        tx.pure.u64(returnAmountAfterCommission), // expected amount out
+        tx.pure.option(
+          "address",
+          isValidSuiAddress(_commission.partner) ? _commission.partner : null,
+        ),
         tx.pure.u64(_commission.commissionBps),
+        tx.pure.u64(0),
       ],
     });
 

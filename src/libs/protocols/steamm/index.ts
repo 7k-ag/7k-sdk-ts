@@ -84,12 +84,7 @@ export class SteammContract extends BaseContract {
     });
     const coinIn = xToY ? coinA : coinB;
     const coinOut = xToY ? coinB : coinA;
-    SuiUtils.transferOrDestroyZeroCoin(
-      tx,
-      this.swapInfo.assetIn,
-      coinIn,
-      this.currentAccount,
-    );
+    SuiUtils.collectDust(tx, this.swapInfo.assetIn, coinIn);
     return coinOut;
   }
   cpmmSwapV2(tx: Transaction) {
@@ -197,25 +192,18 @@ export class SteammContract extends BaseContract {
     const coinIn = xToY ? coinA : coinB;
     const coinOut = xToY ? coinB : coinA;
     // the coinIn was mutated by mint_btokens above, but not consumed, so we need to transfer or destroy it
-    SuiUtils.transferOrDestroyZeroCoin(
-      tx,
-      this.swapInfo.assetIn,
-      coinIn,
-      this.currentAccount,
-    );
+    SuiUtils.collectDust(tx, this.swapInfo.assetIn, coinIn);
     // bTokenIn was mutated by cpmm::swap above, but not consumed, so we need to transfer or destroy it
-    SuiUtils.transferOrDestroyZeroCoin(
+    SuiUtils.collectDust(
       tx,
       normalizeStructTag(xToY ? btokenA : bTokenB),
       bTokenIn,
-      this.currentAccount,
     );
     // bTokenOut was burned by burn_btokens above, but not consumed, so we need to transfer or destroy it
-    SuiUtils.transferOrDestroyZeroCoin(
+    SuiUtils.collectDust(
       tx,
       normalizeStructTag(xToY ? bTokenB : btokenA),
       bTokenOut,
-      this.currentAccount,
     );
     // after all we need to merge the placeholder output coin (zero) with actual output coin from swap burn
     tx.mergeCoins(coinOut, [outCoin]);

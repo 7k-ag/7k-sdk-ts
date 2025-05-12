@@ -29,12 +29,7 @@ export class SuiswapContract extends BaseContract {
       ],
     });
 
-    SuiUtils.transferOrDestroyZeroCoin(
-      tx,
-      this.swapInfo.assetIn,
-      tokenIn,
-      this.currentAccount,
-    );
+    SuiUtils.collectDust(tx, this.swapInfo.assetIn, tokenIn);
     return tokenOut;
   }
 }

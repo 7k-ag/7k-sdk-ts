@@ -1,6 +1,7 @@
 import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { getCoinOjectIdsByAmount } from "./getCoinOjectIdsByAmount";
 import { SUI_TYPE } from "../constants/tokens";
+import { SuiUtils } from "../utils/sui";
 
 export const getSplitCoinForTx = async (
   account: string,
@@ -46,5 +47,6 @@ export const getSplitCoinForTx = async (
 
   // split correct amount to swap
   const coinData = tx.splitCoins(tx.object(coinObjectId), splits);
+  SuiUtils.collectDust(tx, coinType, tx.object(coinObjectId));
   return { tx, coinData };
 };

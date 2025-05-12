@@ -48,12 +48,7 @@ export class DeepBookContract extends BaseContract {
         ],
       });
       this.deleteAccountCap(tx, accountCap);
-      SuiUtils.transferOrDestroyZeroCoin(
-        tx,
-        this.swapInfo.assetIn,
-        base_coin_ret,
-        this.currentAccount,
-      );
+      SuiUtils.collectDust(tx, this.swapInfo.assetIn, base_coin_ret);
       result = quote_coin_ret;
     } else {
       const [base_coin_ret, quote_coin_ret] = tx.moveCall({
@@ -69,12 +64,7 @@ export class DeepBookContract extends BaseContract {
         ],
       });
       this.deleteAccountCap(tx, accountCap);
-      SuiUtils.transferOrDestroyZeroCoin(
-        tx,
-        this.swapInfo.assetIn,
-        quote_coin_ret,
-        this.currentAccount,
-      );
+      SuiUtils.collectDust(tx, this.swapInfo.assetIn, quote_coin_ret);
       result = base_coin_ret;
     }
 
