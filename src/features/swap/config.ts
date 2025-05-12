@@ -120,6 +120,18 @@ export const DEFAULT_CONFIG: Config = {
     globalConfig:
       "0x4c4e1402401f72c7d8533d0ed8d5f8949da363c7a3319ccef261ffe153d32f8a",
   },
+  haedal_pmm: {
+    name: "Haedal PMM",
+    package:
+      "0xa0e3b011012b80af4957afa30e556486eb3da0a7d96eeb733cf16ccd3aec32e0",
+  },
+  momentum: {
+    name: "Momentum",
+    package:
+      "0x70285592c97965e811e0c6f98dccc3a9c2b4ad854b3594faab9597ada267b860",
+    version:
+      "0x2375a0b1ec12010aaea3b2545acfa2ad34cfbba03ce4b59f4c39e1e25eed1b2a",
+  },
 };
 
 export async function getConfig() {

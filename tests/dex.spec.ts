@@ -268,6 +268,42 @@ describe("Obric test", () => {
     });
   });
 });
+describe("Haedal PMM test", () => {
+  it("should routing success for haedal pmm x for y", async () => {
+    await testSwap(client, testAccount, {
+      amountIn: amountX,
+      tokenIn: tokenX,
+      tokenOut: tokenY,
+      sources: ["haedal_pmm"],
+    });
+  });
+  it("should routing success for haedal pmm y for x", async () => {
+    await testSwap(client, testAccount, {
+      amountIn: amountY,
+      tokenIn: tokenY,
+      tokenOut: tokenX,
+      sources: ["haedal_pmm"],
+    });
+  });
+});
+describe("Momentum test", () => {
+  it("should routing success for momentum x for y", async () => {
+    await testSwap(client, testAccount, {
+      amountIn: amountX,
+      tokenIn: tokenX,
+      tokenOut: tokenY,
+      sources: ["momentum"],
+    });
+  });
+  it("should routing success for momentum y for x", async () => {
+    await testSwap(client, testAccount, {
+      amountIn: amountY,
+      tokenIn: tokenY,
+      tokenOut: tokenX,
+      sources: ["momentum"],
+    });
+  });
+});
 describe("All sources test", () => {
   it("should routing success for all sources x for y", async () => {
     await testSwap(client, testAccount, {

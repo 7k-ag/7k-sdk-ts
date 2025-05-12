@@ -31,6 +31,8 @@ export const DEFAULT_SOURCES: SourceDex[] = [
   "stsui",
   "steamm",
   "magma",
+  "haedal_pmm",
+  "momentum",
 ];
 
 export async function getQuote({

@@ -14,6 +14,8 @@ import { StSuiContract } from "./stsui";
 import { FlowxV3Contract } from "./flowxV3";
 import { SteammContract } from "./steamm";
 import { MagmaContract } from "./magma";
+import { HaedalPMMContract } from "./haedal_pmm";
+import { MomentumContract } from "./momentum";
 
 export const ProtocolContract = {
   cetus: CetusContract,
@@ -32,4 +34,6 @@ export const ProtocolContract = {
   stsui: StSuiContract,
   steamm: SteammContract,
   magma: MagmaContract,
+  haedal_pmm: HaedalPMMContract,
+  momentum: MomentumContract,
 };

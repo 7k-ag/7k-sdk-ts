@@ -14,7 +14,9 @@ export type SourceDex =
   | "obric"
   | "stsui"
   | "steamm"
-  | "magma";
+  | "magma"
+  | "haedal_pmm"
+  | "momentum";
 
 export type SorSwap = {
   poolId: string;
@@ -117,4 +119,6 @@ export interface Config {
   turbos: DexConfig & { version: string };
   steamm: DexConfig & { script: string };
   magma: DexConfig & { globalConfig: string };
+  haedal_pmm: DexConfig;
+  momentum: DexConfig & { version: string };
 }
