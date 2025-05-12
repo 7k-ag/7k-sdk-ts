@@ -3,7 +3,6 @@ import {
   TransactionObjectArgument,
   TransactionResult,
 } from "@mysten/sui/transactions";
-import BigNumber from "bignumber.js";
 import { getSplitCoinForTx } from "../../libs/getSplitCoinForTx";
 import { groupSwapRoutes } from "../../libs/groupSwapRoutes";
 import { swapWithRoute } from "../../libs/swapWithRoute";
@@ -90,10 +89,10 @@ export const buildTx = async ({
         : coinObjects[0];
     coinOut = mergeCoin;
 
-    const minReceived = new BigNumber(1)
-      .minus(slippage)
-      .multipliedBy(quoteResponse.returnAmountWithDecimal)
-      .toFixed(0);
+    const minReceived =
+      (BigInt(1e9 - +slippage * 1e9) *
+        BigInt(quoteResponse.returnAmountWithDecimal)) /
+      BigInt(1e9);
 
     const [partner] = tx.moveCall({
       target: "0x1::option::some",

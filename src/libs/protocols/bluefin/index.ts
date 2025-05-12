@@ -2,7 +2,6 @@ import { Transaction } from "@mysten/sui/transactions";
 import { BaseContract } from "../base";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { getDefaultSqrtPriceLimit } from "../utils";
-import BN from "bn.js";
 import { SuiUtils } from "../../../utils/sui";
 export class BluefinContract extends BaseContract {
   async swap(tx: Transaction) {
@@ -32,9 +31,7 @@ export class BluefinContract extends BaseContract {
         amountIn,
         tx.pure.u64(0),
         tx.pure.u128(
-          getDefaultSqrtPriceLimit(swapXtoY)
-            .add(swapXtoY ? new BN(1) : new BN(-1))
-            .toString(10),
+          getDefaultSqrtPriceLimit(swapXtoY) + (swapXtoY ? 1n : -1n),
         ),
       ],
     });

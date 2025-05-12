@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm run tsc && npm test && npm run lint && npm run prettier && git add .
+bun tsc && bun test && bun lint && bun prettier && git add .

@@ -1,12 +1,6 @@
-import BigNumber from "bignumber.js";
-
-export function formatBalance(balance: BigNumber.Value, decimals: number) {
-  return new BigNumber(balance).dividedBy(new BigNumber(10).pow(decimals));
-}
-
-export function formatRawBalance(balance: BigNumber.Value, decimals: number) {
-  const rawBalance = new BigNumber(balance).multipliedBy(
-    new BigNumber(10).pow(decimals),
-  );
-  return new BigNumber(rawBalance.toFixed(0));
+export function formatBalance(balance: bigint, decimals: number) {
+  const exp = BigInt(Math.pow(10, decimals));
+  const whole = balance / exp;
+  const remain = balance % exp;
+  return Number(whole) + Number(remain) / Number(exp);
 }

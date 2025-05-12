@@ -1,4 +1,3 @@
-import BigNumber from "bignumber.js";
 import { SUI_DECIMALS } from "@mysten/sui/utils";
 import { buildTx } from "./buildTx";
 import { formatBalance } from "../../utils/number";
@@ -44,12 +43,11 @@ export async function estimateGasFee({
 
   if (status.status !== "success") return 0;
 
-  const fee = new BigNumber(gasUsed.computationCost)
-    .plus(gasUsed.storageCost)
-    .minus(gasUsed.storageRebate);
-  const feeUsd = new BigNumber(suiPrice).multipliedBy(
-    formatBalance(fee, suiDecimals),
-  );
+  const fee =
+    BigInt(gasUsed.computationCost) +
+    BigInt(gasUsed.storageCost) -
+    BigInt(gasUsed.storageRebate);
+  const feeUsd = Number(suiPrice) * Number(formatBalance(fee, suiDecimals));
 
-  return feeUsd.toNumber();
+  return feeUsd;
 }
