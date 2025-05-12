@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - Add optional `isSponsored` param for sponsored transactions
+- test
 
 ## 2.4.0
 
