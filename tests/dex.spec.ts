@@ -7,13 +7,17 @@ import { testSwap } from "./utils.spec";
 
 const testAccount =
   "0xa851c19ec9a5d661da8d12626b826af105f0bd6654e6dc4213c2a3202be4b413";
-const tokenX = SUI_TYPE;
-const tokenY =
+const WAL =
+  "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL";
+const USDC =
   "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC";
+const tokenX = SUI_TYPE;
+const tokenY = USDC;
 const tokenYAlt =
   "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN";
 const amountX = "1000000000"; // 1 SUI
 const amountY = "10000000"; // 10 USDC
+
 const client = new SuiClient({ url: getFullnodeUrl("mainnet") });
 setSuiClient(client);
 describe("Cetus test", () => {
@@ -301,6 +305,24 @@ describe("Momentum test", () => {
       tokenIn: tokenY,
       tokenOut: tokenX,
       sources: ["momentum"],
+    });
+  });
+});
+describe("Steamm oracle quoter test", () => {
+  // it("should routing success for steamm oracle quoter x for y", async () => {
+  //   await testSwap(client, testAccount, {
+  //     amountIn: amountX,
+  //     tokenIn: tokenX,
+  //     tokenOut: tokenY,
+  //     sources: ["steamm_oracle_quoter"],
+  //   });
+  // });
+  it("should routing success for steamm oracle quoter y for x", async () => {
+    await testSwap(client, testAccount, {
+      amountIn: amountY,
+      tokenIn: USDC,
+      tokenOut: WAL,
+      sources: ["steamm_oracle_quoter"],
     });
   });
 });

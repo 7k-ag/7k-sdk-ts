@@ -112,6 +112,8 @@ export const DEFAULT_CONFIG: Config = {
       "0x4fb1cf45dffd6230305f1d269dd1816678cc8e3ba0b747a813a556921219f261",
     script:
       "0x13bfc09cfc1bd922d3aa53fcf7b2cd510727ee65068ce136e2ebd5f3b213fdd2",
+    oracle:
+      "0xe84b649199654d18c38e727212f5d8dacfc3cf78d60d0a7fc85fd589f280eb2b",
   },
   magma: {
     name: "Magma",

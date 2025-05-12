@@ -10,8 +10,10 @@ import { denormalizeTokenType } from "../../utils/token";
 import { SuiUtils } from "../../utils/sui";
 import { BuildTxParams } from "../../types/tx";
 import { _7K_CONFIG, _7K_PACKAGE_ID, _7K_VAULT } from "../../constants/_7k";
-import { isValidSuiAddress } from "@mysten/sui/utils";
+import { isValidSuiAddress, toHex } from "@mysten/sui/utils";
 import { getConfig } from "./config";
+import { QuoteResponse } from "../../types/aggregator";
+import { Config } from "../../config";
 
 export const buildTx = async ({
   quoteResponse,
@@ -60,6 +62,8 @@ export const buildTx = async ({
     coinData = _data;
   }
 
+  const pythMap = await updatePythPriceFeedsIfAny(tx, quoteResponse);
+
   const coinObjects: TransactionObjectArgument[] = [];
   const config = await getConfig();
   await Promise.all(
@@ -71,6 +75,7 @@ export const buildTx = async ({
         currentAccount: accountAddress,
         tx,
         config,
+        pythMap,
       });
       if (coinRes) {
         coinObjects.push(coinRes);
@@ -117,4 +122,39 @@ export const buildTx = async ({
   }
 
   return { tx, coinOut };
+};
+
+const getPythPriceFeeds = (res: QuoteResponse) => {
+  const ids: string[] = [];
+  for (const s of res.swaps) {
+    for (const o of s.extra?.oracles || []) {
+      const bytes = o.Pyth?.price_identifier?.bytes;
+      if (bytes) {
+        ids.push("0x" + toHex(Uint8Array.from(bytes)));
+      }
+    }
+  }
+  return ids;
+};
+
+const updatePythPriceFeedsIfAny = async (
+  tx: Transaction,
+  quoteResponse: QuoteResponse,
+) => {
+  // update oracles price if any
+  const pythMap: Record<string, string> = {};
+  const pythIds = getPythPriceFeeds(quoteResponse);
+  if (pythIds.length > 0) {
+    const prices =
+      await Config.getPythConnection().getPriceFeedsUpdateData(pythIds);
+    const ids = await Config.getPythClient().updatePriceFeeds(
+      tx as any,
+      prices,
+      pythIds,
+    );
+    pythIds.map((id, index) => {
+      pythMap[id] = ids[index];
+    });
+  }
+  return pythMap;
 };

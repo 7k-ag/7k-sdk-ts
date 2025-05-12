@@ -14,6 +14,7 @@ export type SourceDex =
   | "obric"
   | "stsui"
   | "steamm"
+  | "steamm_oracle_quoter"
   | "magma"
   | "haedal_pmm"
   | "momentum";
@@ -117,8 +118,13 @@ export interface Config {
   stsui: DexConfig;
   suiswap: DexConfig;
   turbos: DexConfig & { version: string };
-  steamm: DexConfig & { script: string };
+  steamm: DexConfig & { script: string; oracle: string };
   magma: DexConfig & { globalConfig: string };
   haedal_pmm: DexConfig;
   momentum: DexConfig & { version: string };
 }
+
+export type ExtraOracle = {
+  Pyth?: { price_identifier: { bytes: number[] } };
+  Switchboard?: { object_id: string };
+};

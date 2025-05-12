@@ -33,6 +33,7 @@ export const ProtocolContract = {
   obric: ObricContract,
   stsui: StSuiContract,
   steamm: SteammContract,
+  steamm_oracle_quoter: SteammContract,
   magma: MagmaContract,
   haedal_pmm: HaedalPMMContract,
   momentum: MomentumContract,
