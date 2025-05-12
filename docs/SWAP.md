@@ -31,7 +31,6 @@ const quoteResponse = await getQuote({
     "kriya",
     "kriya_v3",
     "aftermath",
-    "deepbook",
     "flowx",
   ], // Optional: if empty, the latest sources supported by the current SDK version will be used.
 });

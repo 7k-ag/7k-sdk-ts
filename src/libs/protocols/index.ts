@@ -1,7 +1,6 @@
 import { FlowXContract } from "./flowx";
 import { AfterMathContract } from "./aftermath";
 import { CetusContract } from "./cetus";
-import { DeepBookContract } from "./deepbook";
 import { KriyaContract } from "./kriya";
 import { TurbosContract } from "./turbos";
 import { SuiswapContract } from "./suiswap";
@@ -23,7 +22,6 @@ export const ProtocolContract = {
   kriya: KriyaContract,
   suiswap: SuiswapContract,
   aftermath: AfterMathContract,
-  deepbook: DeepBookContract,
   deepbook_v3: SponsoredDeepBookV3Contract,
   flowx: FlowXContract,
   flowx_v3: FlowxV3Contract,

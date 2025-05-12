@@ -22,7 +22,6 @@ export const DEFAULT_SOURCES: SourceDex[] = [
   "kriya",
   "kriya_v3",
   "aftermath",
-  "deepbook",
   "deepbook_v3",
   "flowx",
   "flowx_v3",

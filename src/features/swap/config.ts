@@ -41,10 +41,6 @@ export const DEFAULT_CONFIG: Config = {
     globalConfig:
       "0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f",
   },
-  deepbook: {
-    name: "Deepbook",
-    package: "0xdee9",
-  },
   deepbook_v3: {
     name: "Deepbook V3",
     package: "",

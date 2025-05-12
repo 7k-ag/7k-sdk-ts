@@ -6,7 +6,6 @@ export type SourceDex =
   | "kriya"
   | "kriya_v3"
   | "aftermath"
-  | "deepbook"
   | "deepbook_v3"
   | "flowx"
   | "flowx_v3"
@@ -106,7 +105,6 @@ export interface Config {
   bluefin: DexConfig & { globalConfig: string };
   bluemove: DexConfig & { dexInfo: string };
   cetus: DexConfig & { globalConfig: string };
-  deepbook: DexConfig;
   deepbook_v3: DexConfig & { sponsor: string; sponsorFund: string };
   flowx: DexConfig & { container: string };
   flowx_v3: DexConfig & { registry: string; version: string };
