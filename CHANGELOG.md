@@ -1,6 +1,14 @@
 # @7kprotocol/sdk-ts
 
-##
+## 2.5.0
+
+### Minor Changes
+
+- New version of contract to optimize gas fees.
+- New dex sources: BluefinX, Haedal PMM, Steamm Oracle Quoter, Momentum
+- New quote params: `commissionBps?: number` and return
+  `returnAmountAfterCommission`, `returnAmountAfterCommissionWithDecimal` in
+  quote response
 
 ## 2.4.1
 
