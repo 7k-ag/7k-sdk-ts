@@ -1,8 +1,6 @@
 import { fetchClient } from "../../config/fetchClient";
 import { API_ENDPOINTS } from "../../constants/apiEndpoints";
 import { Config } from "../../types/aggregator";
-let config: Config | null = null;
-let configTs: number = 0;
 
 export const DEFAULT_CONFIG: Config = {
   aftermath: {
@@ -26,6 +24,13 @@ export const DEFAULT_CONFIG: Config = {
       "0x6c796c3ab3421a68158e0df18e4657b2827b1f8fed5ed4b82dba9c935988711b",
     globalConfig:
       "0x03db251ba509a8d5d8777b6338836082335d93eecbdd09a11e190a1cff51c352",
+  },
+  bluefinx: {
+    name: "BluefinX",
+    package:
+      "0xf8870f988ab09be7c5820a856bd5e9da84fc7192e095a7a8829919293b00a36c",
+    globalConfig:
+      "0xc6b29a60c3924776bedc78df72c127ea52b86aeb655432979a38f13d742dedaa",
   },
   bluemove: {
     name: "Bluemove",
@@ -135,7 +140,8 @@ export const DEFAULT_CONFIG: Config = {
       "0x2375a0b1ec12010aaea3b2545acfa2ad34cfbba03ce4b59f4c39e1e25eed1b2a",
   },
 };
-
+let config: Config | null = DEFAULT_CONFIG;
+let configTs: number = 0;
 export async function getConfig() {
   const ttl = 60;
   if (config && Date.now() - configTs < ttl * 1000) {
@@ -145,9 +151,9 @@ export async function getConfig() {
   try {
     const response = await fetchClient(`${API_ENDPOINTS.MAIN}/config`);
     const quoteResponse = (await response.json()) as Config;
-    config = quoteResponse;
+    config = { ...config, ...quoteResponse };
     configTs = Date.now();
-    return quoteResponse;
+    return config;
   } catch (_) {
     return DEFAULT_CONFIG;
   }

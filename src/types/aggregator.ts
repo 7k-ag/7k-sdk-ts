@@ -1,3 +1,10 @@
+import {
+  Transaction,
+  TransactionObjectArgument,
+} from "@mysten/sui/transactions";
+import { BluefinXTx } from "../libs/protocols/bluefinx/types";
+export { BluefinXTx };
+
 export type SourceDex =
   | "suiswap"
   | "turbos"
@@ -10,6 +17,7 @@ export type SourceDex =
   | "flowx"
   | "flowx_v3"
   | "bluefin"
+  | "bluefinx"
   | "springsui"
   | "obric"
   | "stsui"
@@ -62,6 +70,8 @@ export type QuoteResponse = {
   swapAmount: string;
   returnAmount: string;
   returnAmountWithDecimal: string;
+  returnAmountAfterCommission: string;
+  returnAmountAfterCommissionWithDecimal: string;
   returnAmountConsiderGasFees?: string;
   returnAmountWithoutSwapFees?: string;
   swapAmountWithDecimal: string;
@@ -106,6 +116,7 @@ export interface Config {
     referralVault: string;
   };
   bluefin: DexConfig & { globalConfig: string };
+  bluefinx: DexConfig & { globalConfig: string };
   bluemove: DexConfig & { dexInfo: string };
   cetus: DexConfig & { globalConfig: string };
   deepbook_v3: DexConfig & { sponsor: string; sponsorFund: string };
@@ -127,4 +138,27 @@ export interface Config {
 export type ExtraOracle = {
   Pyth?: { price_identifier: { bytes: number[] } };
   Switchboard?: { object_id: string };
+};
+
+export type AggregatorTx = Transaction | BluefinXTx;
+
+export const isSuiTransaction = (tx: AggregatorTx): tx is Transaction =>
+  tx instanceof Transaction;
+
+/**
+ * Check if the sor response is a bluefinx routing
+ * @param sor
+ * @returns boolean
+ */
+export const isBluefinXRouting = (sor: QuoteResponse) => {
+  return (
+    sor.routes?.length === 1 &&
+    sor.routes[0].hops.length === 1 &&
+    sor.routes[0].hops[0].pool.type === "bluefinx"
+  );
+};
+
+export type BuildTxResult = {
+  tx: AggregatorTx;
+  coinOut?: TransactionObjectArgument;
 };

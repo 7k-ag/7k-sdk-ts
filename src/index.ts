@@ -2,26 +2,27 @@ export * from "./types/aggregator";
 
 import { Config } from "./config";
 
-import { getTokenPrice, getTokenPrices, getSuiPrice } from "./features/prices";
+import { getSuiPrice, getTokenPrice, getTokenPrices } from "./features/prices";
 
 import {
   buildTx,
-  getQuote,
   estimateGasFee,
+  executeTx,
+  getQuote,
   getSwapHistory,
 } from "./features/swap";
 
 import {
-  placeLimitOrder,
-  getOpenLimitOrders,
+  cancelDcaOrder,
   cancelLimitOrder,
   claimExpiredLimitOrder,
-  getClosedLimitOrders,
-  placeDcaOrder,
-  getOpenDcaOrders,
-  cancelDcaOrder,
   getClosedDcaOrders,
+  getClosedLimitOrders,
   getDcaOrderExecutions,
+  getOpenDcaOrders,
+  getOpenLimitOrders,
+  placeDcaOrder,
+  placeLimitOrder,
 } from "./features/limitDca";
 
 // avoid breaking changes
@@ -46,6 +47,7 @@ export {
   estimateGasFee,
   buildTx,
   getSwapHistory,
+  executeTx,
 
   // limit order
   placeLimitOrder,
@@ -80,6 +82,7 @@ export default {
   estimateGasFee,
   buildTx,
   getSwapHistory,
+  executeTx,
 
   // limit order
   placeLimitOrder,

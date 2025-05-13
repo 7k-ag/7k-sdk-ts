@@ -6,6 +6,13 @@
 npm i @7kprotocol/sdk-ts
 ```
 
+This package requires `@pythnetwork/pyth-sui-js` as a peer dependency. If your
+project does not have it, you need to install it.
+
+```bash
+npm i @pythnetwork/pyth-sui-js
+```
+
 ## Usage
 
 You can import the entire SDK as a module:
@@ -54,6 +61,10 @@ Note: this package only supports **mainnet** for now.
 ## Swap
 
 See [Swap](docs/SWAP.md).
+
+## BluefinX
+
+See [BluefinX](docs/BLUEFINX.md).
 
 ## Limit Orders
 

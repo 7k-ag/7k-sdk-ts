@@ -3,29 +3,46 @@ import {
   TransactionObjectArgument,
   TransactionResult,
 } from "@mysten/sui/transactions";
+import { isValidSuiAddress, toBase64, toHex } from "@mysten/sui/utils";
+import { Config } from "../../config";
+import { _7K_CONFIG, _7K_PACKAGE_ID, _7K_VAULT } from "../../constants/_7k";
 import { getSplitCoinForTx } from "../../libs/getSplitCoinForTx";
 import { groupSwapRoutes } from "../../libs/groupSwapRoutes";
+import { BluefinXExtra } from "../../libs/protocols/bluefinx";
+import { sponsorBluefinX } from "../../libs/protocols/bluefinx/client";
+import { BluefinXTx } from "../../libs/protocols/bluefinx/types";
 import { swapWithRoute } from "../../libs/swapWithRoute";
-import { denormalizeTokenType } from "../../utils/token";
-import { SuiUtils } from "../../utils/sui";
+import {
+  BuildTxResult,
+  isBluefinXRouting,
+  QuoteResponse,
+} from "../../types/aggregator";
 import { BuildTxParams } from "../../types/tx";
-import { _7K_CONFIG, _7K_PACKAGE_ID, _7K_VAULT } from "../../constants/_7k";
-import { isValidSuiAddress, toHex } from "@mysten/sui/utils";
+import { SuiUtils } from "../../utils/sui";
+import { denormalizeTokenType } from "../../utils/token";
 import { getConfig } from "./config";
-import { QuoteResponse } from "../../types/aggregator";
-import { Config } from "../../config";
 
 export const buildTx = async ({
   quoteResponse,
   accountAddress,
   slippage,
-  commission: _commission,
+  commission: __commission,
   devInspect,
   extendTx,
   isSponsored,
-}: BuildTxParams) => {
+}: BuildTxParams): Promise<BuildTxResult> => {
+  const isBluefinX = isBluefinXRouting(quoteResponse);
+  const _commission = {
+    ...__commission,
+    // commission is ignored for bluefinx
+    commissionBps: isBluefinX ? 0 : __commission.commissionBps,
+  };
   const { tx: _tx, coinIn } = extendTx || {};
   let coinOut: TransactionObjectArgument | undefined;
+
+  if (isBluefinX && devInspect) {
+    throw new Error("BluefinX tx is sponsored, skip devInspect");
+  }
 
   if (!accountAddress) {
     throw new Error("Sender address is required");
@@ -57,7 +74,7 @@ export const buildTx = async ({
       denormalizeTokenType(quoteResponse.tokenIn),
       tx,
       devInspect,
-      isSponsored,
+      isSponsored || isBluefinX,
     );
     coinData = _data;
   }
@@ -87,7 +104,6 @@ export const buildTx = async ({
       coinObjects.length > 1
         ? SuiUtils.mergeCoins(coinObjects, tx)
         : coinObjects[0];
-    coinOut = mergeCoin;
 
     const returnAmountAfterCommission =
       (BigInt(10000 - _commission.commissionBps) *
@@ -118,9 +134,36 @@ export const buildTx = async ({
 
     if (!extendTx) {
       tx.transferObjects([mergeCoin], tx.pure.address(accountAddress));
+    } else {
+      coinOut = mergeCoin;
     }
   }
 
+  if (isBluefinX) {
+    const extra = quoteResponse.swaps[0].extra as BluefinXExtra;
+    if (extra.quoteExpiresAtUtcMillis < Date.now()) {
+      throw new Error("Quote expired");
+    }
+    tx.setSenderIfNotSet(accountAddress);
+    const bytes = await tx.build({
+      client: Config.getSuiClient(),
+      onlyTransactionKind: true,
+    });
+
+    const res = await sponsorBluefinX({
+      quoteId: extra.quoteId,
+      txBytes: toBase64(bytes),
+      sender: accountAddress,
+    });
+
+    if (!res.success) {
+      throw new Error("Sponsor failed");
+    }
+    return {
+      tx: new BluefinXTx(res.quoteId, res.data.txBytes),
+      coinOut,
+    };
+  }
   return { tx, coinOut };
 };
 

@@ -16,6 +16,7 @@ import { SteammContract } from "./steamm";
 import { MagmaContract } from "./magma";
 import { HaedalPMMContract } from "./haedal_pmm";
 import { MomentumContract } from "./momentum";
+import { BluefinXContract } from "./bluefinx";
 
 export const ProtocolContract = {
   cetus: CetusContract,
@@ -37,4 +38,5 @@ export const ProtocolContract = {
   magma: MagmaContract,
   haedal_pmm: HaedalPMMContract,
   momentum: MomentumContract,
+  bluefinx: BluefinXContract,
 };

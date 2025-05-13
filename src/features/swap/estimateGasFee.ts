@@ -1,9 +1,11 @@
 import { SUI_DECIMALS } from "@mysten/sui/utils";
-import { buildTx } from "./buildTx";
-import { formatBalance } from "../../utils/number";
-import { EstimateGasFeeParams } from "../../types/tx";
-import { getSuiPrice } from "../prices";
 import { Config } from "../../config";
+import { isBluefinXRouting } from "../../types/aggregator";
+import { EstimateGasFeeParams } from "../../types/tx";
+import { formatBalance } from "../../utils/number";
+import { getSuiPrice } from "../prices";
+import { buildTx } from "./buildTx";
+import { BluefinXTx } from "../../libs/protocols/bluefinx/types";
 
 export async function estimateGasFee({
   quoteResponse,
@@ -14,6 +16,8 @@ export async function estimateGasFee({
   commission,
 }: EstimateGasFeeParams): Promise<number> {
   if (!accountAddress) return 0;
+  // BluefinX is sponsored, no need to estimate gas fee
+  if (!accountAddress || isBluefinXRouting(quoteResponse)) return 0;
 
   const result = await buildTx({
     extendTx,
@@ -29,7 +33,7 @@ export async function estimateGasFee({
 
   const { tx } = result || {};
 
-  if (!tx) return 0;
+  if (!tx || tx instanceof BluefinXTx) return 0;
 
   const suiPrice = _suiPrice || (await getSuiPrice());
   const suiDecimals = SUI_DECIMALS;
