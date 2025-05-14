@@ -1,6 +1,6 @@
 {
   "name": "@7kprotocol/sdk-ts",
-  "version": "2.4.1",
+  "version": "2.4.2-beta.2",
   "description": "",
   "exports": {
     ".": {
@@ -43,7 +43,8 @@
     "test": "mocha --timeout 5000",
     "publish:patch": "npm version patch --no-git-tag-version && npm publish --access public",
     "publish:minor": "npm version minor --no-git-tag-version && npm publish --access public",
-    "publish:major": "npm version major --no-git-tag-version && npm publish --access public"
+    "publish:major": "npm version major --no-git-tag-version && npm publish --access public",
+    "publish:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm publish --tag beta --access public"
   },
   "keywords": [
     "7k Protocol",

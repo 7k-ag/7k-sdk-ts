@@ -3,6 +3,7 @@ export * from "./types/aggregator";
 import { Config } from "./config";
 
 import { getSuiPrice, getTokenPrice, getTokenPrices } from "./features/prices";
+import { executeBluefinTx } from "./libs/protocols/bluefinx/client";
 
 import {
   buildTx,
@@ -10,6 +11,7 @@ import {
   executeTx,
   getQuote,
   getSwapHistory,
+  DEFAULT_SOURCES,
 } from "./features/swap";
 
 import {
@@ -48,6 +50,8 @@ export {
   buildTx,
   getSwapHistory,
   executeTx,
+  executeBluefinTx,
+  DEFAULT_SOURCES,
 
   // limit order
   placeLimitOrder,
@@ -83,6 +87,8 @@ export default {
   buildTx,
   getSwapHistory,
   executeTx,
+  executeBluefinTx,
+  DEFAULT_SOURCES,
 
   // limit order
   placeLimitOrder,

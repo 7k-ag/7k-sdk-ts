@@ -7,10 +7,17 @@ export class BluefinXTx {
   }
 }
 
+/**
+ * Response from BluefinX swap
+ */
 export type SwapResponse = {
+  /** Whether the swap is approved */
   approved: boolean;
+  /** Whether the swap is executed */
   executed: boolean;
+  /** Transaction digest */
   txDigest: string;
+  /** Quote ID */
   quoteId: string;
 };
 

@@ -85,16 +85,21 @@ address. This is required for partner tracking and analytics purposes.
 
 ```typescript
 import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
-import { getQuote, buildTx } from "@7kprotocol/sdk-ts";
+import { getQuote, buildTx, executeTx, BluefinXTx } from "@7kprotocol/sdk-ts";
+import { useSignTransaction } from "@mysten/wallet-kit";
+
+const { mutateAsync: signTransaction } = useSignTransaction();
 
 const quoteResponse = await getQuote({
   tokenIn: "0x2::sui::SUI",
   tokenOut:
     "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
   amountIn: "1000000000",
+  // BluefinX must be explicitly specified if needed
+  sources: [...DEFAULT_SOURCES, "bluefinx"],
 });
 
-const result = await buildTx({
+const { tx } = await buildTx({
   quoteResponse,
   accountAddress: "0xSenderAddress",
   slippage: 0.01, // 1%
@@ -104,8 +109,16 @@ const result = await buildTx({
   },
 });
 
-console.log(result);
+const { signature, bytes } = await signTransaction({
+  transaction: tx instanceof BluefinXTx ? tx.txBytes : tx,
+});
+
+const res = await executeTx(tx, signature, bytes);
+
+console.log(res);
 ```
+
+For BluefinX transaction See [BluefinX](./BLUEFINX.md).
 
 ## Estimate Gas Fee
 

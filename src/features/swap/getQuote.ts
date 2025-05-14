@@ -1,12 +1,20 @@
 import { normalizeStructTag, normalizeSuiObjectId } from "@mysten/sui/utils";
 import { fetchClient } from "../../config/fetchClient";
 import { API_ENDPOINTS } from "../../constants/apiEndpoints";
-import { QuoteResponse, SourceDex } from "../../types/aggregator";
+import {
+  isBluefinXRouting,
+  QuoteResponse,
+  SourceDex,
+} from "../../types/aggregator";
 
 interface Params {
   tokenIn: string;
   tokenOut: string;
   amountIn: string;
+  /**
+   * @default DEFAULT_SOURCES
+   * @warning BluefinX must be explicitly specified if needed
+   * @example ```sources: [...DEFAULT_SOURCES, "bluefinx"]``` */
   sources?: SourceDex[];
   commissionBps?: number;
   /** Limit the route to a specific set of pools */
@@ -85,10 +93,11 @@ const computeReturnAmountAfterCommission = (
   quoteResponse: QuoteResponse,
   commissionBps?: number,
 ) => {
+  const _commissionBps = isBluefinXRouting(quoteResponse) ? 0 : commissionBps;
   if (quoteResponse.returnAmount && +quoteResponse.returnAmount > 0) {
     quoteResponse.returnAmountAfterCommissionWithDecimal = (
       (BigInt(quoteResponse.returnAmountWithDecimal || 0) *
-        BigInt(10_000 - (commissionBps ?? 0))) /
+        BigInt(10_000 - (_commissionBps ?? 0))) /
       BigInt(10_000)
     ).toString(10);
     const exp = Math.round(

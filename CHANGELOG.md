@@ -1,8 +1,8 @@
 # @7kprotocol/sdk-ts
 
-## 2.5.0
+## 2.4.2-beta.2
 
-### Minor Changes
+### Major Changes
 
 - New version of contract to optimize gas fees.
 - New dex sources: BluefinX, Haedal PMM, Steamm Oracle Quoter, Momentum
