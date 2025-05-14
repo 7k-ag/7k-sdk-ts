@@ -1,3 +1,4 @@
+import "mocha";
 import { Config } from "../src";
 import { SUI_TYPE } from "../src/constants/tokens";
 import { testSwap } from "./utils.spec";

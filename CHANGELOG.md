@@ -9,6 +9,7 @@
 - New quote params: `commissionBps?: number` and return
   `returnAmountAfterCommission`, `returnAmountAfterCommissionWithDecimal` in
   quote response
+- Sunsetting Deepbook V2
 
 ## 2.4.1
 

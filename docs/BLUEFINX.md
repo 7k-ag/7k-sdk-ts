@@ -18,7 +18,7 @@ with the following key features:
 ### Basic Swap Example
 
 ```typescript
-import { Config, getQuote, buildTx, executeTx } from "@7kprotocol/sdk-ts";
+import { getQuote, buildTx, executeTx } from "@7kprotocol/sdk-ts";
 
 // Example swap parameters
 const swapParams = {
