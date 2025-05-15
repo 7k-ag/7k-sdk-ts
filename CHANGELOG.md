@@ -1,15 +1,21 @@
 # @7kprotocol/sdk-ts
 
-## 2.4.2-beta.2
+## 3.0.0
 
 ### Major Changes
 
 - New version of contract to optimize gas fees.
-- New dex sources: BluefinX, Haedal PMM, Steamm Oracle Quoter, Momentum
+- Sunsetting Deepbook V2
+- Support to quote, build and execute BluefinX transaction
+- Remove peer dependecies: `bn.js`, `bignumber.js`
+- Require `@pythnetwork/pyth-sui-js` as peer dependency
+
+### Minor Changes
+
+- New dex sources: Haedal PMM, Steamm Oracle Quoter, Momentum
 - New quote params: `commissionBps?: number` and return
   `returnAmountAfterCommission`, `returnAmountAfterCommissionWithDecimal` in
   quote response
-- Sunsetting Deepbook V2
 
 ## 2.4.1
 
