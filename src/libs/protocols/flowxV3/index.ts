@@ -2,7 +2,6 @@ import { Transaction } from "@mysten/sui/transactions";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { BaseContract } from "../base";
 import { getDefaultSqrtPriceLimit } from "../utils";
-import { BN } from "bn.js";
 
 export class FlowxV3Contract extends BaseContract {
   async swap(tx: Transaction) {
@@ -26,9 +25,7 @@ export class FlowxV3Contract extends BaseContract {
         this.inputCoinObject,
         tx.pure.u64(0), // min amount out
         tx.pure.u128(
-          getDefaultSqrtPriceLimit(swapXtoY)
-            .add(swapXtoY ? new BN(1) : new BN(-1))
-            .toString(10),
+          getDefaultSqrtPriceLimit(swapXtoY) + (swapXtoY ? 1n : -1n),
         ), // sqrt price limit
         tx.pure.u64("18446744073709551615"), // u64 max value
         tx.object(config.version),

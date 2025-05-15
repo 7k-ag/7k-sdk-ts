@@ -3,7 +3,6 @@ import {
   TransactionObjectArgument,
 } from "@mysten/sui/transactions";
 import { Commission, QuoteResponse } from "./aggregator";
-import BigNumber from "bignumber.js";
 
 export interface CommonParams {
   /** Quote response from 7k api */
@@ -11,7 +10,7 @@ export interface CommonParams {
   /** User address */
   accountAddress: string;
   /** Slippage tolerance, ex: 0.01 (1%) */
-  slippage: BigNumber.Value;
+  slippage: number | string;
   /** Commission for partner */
   commission: Commission;
   /**

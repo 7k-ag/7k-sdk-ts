@@ -38,13 +38,11 @@ export class MagmaContract extends BaseContract {
       ],
     });
 
-    SuiUtils.transferOrDestroyZeroCoin(
+    SuiUtils.collectDust(
       tx,
       this.swapInfo.assetIn,
       swapXtoY ? receiveA : receiveB,
-      this.currentAccount,
     );
-    console.log(tx);
     return swapXtoY ? receiveB : receiveA;
   }
 }

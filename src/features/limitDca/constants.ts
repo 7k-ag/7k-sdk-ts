@@ -1,4 +1,3 @@
-import BigNumber from "bignumber.js";
 import { API_ENDPOINTS } from "../../constants/apiEndpoints";
 
 export const GLOBAL_CONFIG_ID =
@@ -10,5 +9,5 @@ export const PACKAGE =
 export const LIMIT_ORDER_MODULE_ID = `${PACKAGE}::limit_order`;
 export const DCA_ORDER_MODULE_ID = `${PACKAGE}::dca_order`;
 export const CONFIG_MODULE_ID = `${PACKAGE}::config`;
-export const DCA_MAX_RATE = new BigNumber("18446744073709551615");
+export const DCA_MAX_RATE = BigInt("18446744073709551615");
 export const LO_DCA_API = `${API_ENDPOINTS.LO_DCA}/api`;

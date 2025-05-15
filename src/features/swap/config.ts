@@ -1,8 +1,6 @@
 import { fetchClient } from "../../config/fetchClient";
 import { API_ENDPOINTS } from "../../constants/apiEndpoints";
 import { Config } from "../../types/aggregator";
-let config: Config | null = null;
-let configTs: number = 0;
 
 export const DEFAULT_CONFIG: Config = {
   aftermath: {
@@ -27,6 +25,13 @@ export const DEFAULT_CONFIG: Config = {
     globalConfig:
       "0x03db251ba509a8d5d8777b6338836082335d93eecbdd09a11e190a1cff51c352",
   },
+  bluefinx: {
+    name: "BluefinX",
+    package:
+      "0xf8870f988ab09be7c5820a856bd5e9da84fc7192e095a7a8829919293b00a36c",
+    globalConfig:
+      "0xc6b29a60c3924776bedc78df72c127ea52b86aeb655432979a38f13d742dedaa",
+  },
   bluemove: {
     name: "Bluemove",
     package:
@@ -40,10 +45,6 @@ export const DEFAULT_CONFIG: Config = {
       "0x6f5e582ede61fe5395b50c4a449ec11479a54d7ff8e0158247adfda60d98970b",
     globalConfig:
       "0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f",
-  },
-  deepbook: {
-    name: "Deepbook",
-    package: "0xdee9",
   },
   deepbook_v3: {
     name: "Deepbook V3",
@@ -116,6 +117,8 @@ export const DEFAULT_CONFIG: Config = {
       "0x4fb1cf45dffd6230305f1d269dd1816678cc8e3ba0b747a813a556921219f261",
     script:
       "0x13bfc09cfc1bd922d3aa53fcf7b2cd510727ee65068ce136e2ebd5f3b213fdd2",
+    oracle:
+      "0xe84b649199654d18c38e727212f5d8dacfc3cf78d60d0a7fc85fd589f280eb2b",
   },
   magma: {
     name: "Magma",
@@ -124,8 +127,21 @@ export const DEFAULT_CONFIG: Config = {
     globalConfig:
       "0x4c4e1402401f72c7d8533d0ed8d5f8949da363c7a3319ccef261ffe153d32f8a",
   },
+  haedal_pmm: {
+    name: "Haedal PMM",
+    package:
+      "0xa0e3b011012b80af4957afa30e556486eb3da0a7d96eeb733cf16ccd3aec32e0",
+  },
+  momentum: {
+    name: "Momentum",
+    package:
+      "0x70285592c97965e811e0c6f98dccc3a9c2b4ad854b3594faab9597ada267b860",
+    version:
+      "0x2375a0b1ec12010aaea3b2545acfa2ad34cfbba03ce4b59f4c39e1e25eed1b2a",
+  },
 };
-
+let config: Config | null = DEFAULT_CONFIG;
+let configTs: number = 0;
 export async function getConfig() {
   const ttl = 60;
   if (config && Date.now() - configTs < ttl * 1000) {
@@ -135,9 +151,9 @@ export async function getConfig() {
   try {
     const response = await fetchClient(`${API_ENDPOINTS.MAIN}/config`);
     const quoteResponse = (await response.json()) as Config;
-    config = quoteResponse;
+    config = { ...config, ...quoteResponse };
     configTs = Date.now();
-    return quoteResponse;
+    return config;
   } catch (_) {
     return DEFAULT_CONFIG;
   }
