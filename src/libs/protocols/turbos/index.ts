@@ -10,10 +10,6 @@ const ONE_MINUTE = 60 * 1000;
 export class TurbosContract extends BaseContract {
   async swap(tx: Transaction) {
     const a2b = this.swapInfo.swapXtoY;
-    const { poolId, address } = {
-      poolId: this.swapInfo.poolId,
-      address: this.currentAccount,
-    };
 
     const { package: PACKAGE_ID, version: VERSION } = this.config.turbos;
     const inputAmount = this.getInputCoinValue(tx);
@@ -23,7 +19,7 @@ export class TurbosContract extends BaseContract {
       }_with_return_`,
       typeArguments: this.getTypeParams(),
       arguments: [
-        tx.object(poolId),
+        tx.object(this.swapInfo.poolId),
         tx.makeMoveVec({
           elements: [this.inputCoinObject],
         }),
@@ -40,12 +36,7 @@ export class TurbosContract extends BaseContract {
       ],
     });
 
-    SuiUtils.transferOrDestroyZeroCoin(
-      tx,
-      this.swapInfo.assetIn,
-      tokenIn,
-      address,
-    );
+    SuiUtils.collectDust(tx, this.swapInfo.assetIn, tokenIn);
     return tokenOut;
   }
 }

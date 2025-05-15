@@ -1,4 +1,3 @@
-import BigNumber from "bignumber.js";
 import {
   Coin,
   SorPool,
@@ -25,7 +24,7 @@ export function groupSwapRoutes(quoteResponse: QuoteResponse): TxSorSwap[][] {
     currentGroup.push(item);
 
     const nextItem = items[i + 1];
-    if (!nextItem || new BigNumber(nextItem.amount).gt(0)) {
+    if (!nextItem || BigInt(nextItem.amount) > 0n) {
       groupedItems.push(currentGroup);
       currentGroup = [];
     }

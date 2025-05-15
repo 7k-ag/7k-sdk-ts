@@ -8,12 +8,15 @@ export async function swapWithRoute({
   inputCoinObject,
   currentAccount,
   config,
+  pythMap,
   tx,
 }: {
   route: TxSorSwap[];
   inputCoinObject: TransactionResultItem;
   currentAccount: string;
   config: Config;
+  /** map price feed id to onchain priceInfoObject id */
+  pythMap: Record<string, string>;
   tx: Transaction;
 }): Promise<TransactionResultItem | undefined> {
   let inputTokenObject = inputCoinObject;
@@ -26,6 +29,7 @@ export async function swapWithRoute({
       inputCoinObject: inputTokenObject,
       currentAccount,
       config,
+      pythMap,
     });
     const tokenOut = await contractInstance.swap(tx);
     inputTokenObject = tokenOut;

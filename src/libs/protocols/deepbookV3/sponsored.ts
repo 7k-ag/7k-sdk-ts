@@ -27,12 +27,7 @@ export class SponsoredDeepBookV3Contract extends BaseContract {
 
     const coinIn = swapXtoY ? base : quote;
     const coinOut = swapXtoY ? quote : base;
-    SuiUtils.transferOrDestroyZeroCoin(
-      tx,
-      this.swapInfo.assetIn,
-      coinIn,
-      this.currentAccount,
-    );
+    SuiUtils.collectDust(tx, this.swapInfo.assetIn, coinIn);
     return coinOut;
   }
 }

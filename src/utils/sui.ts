@@ -7,6 +7,7 @@ import {
 import { parseStructTag } from "@mysten/sui/utils";
 import { checkIsSui } from "./token";
 import { Config } from "../config";
+import { _7K_CONFIG, _7K_PACKAGE_ID, _7K_VAULT } from "../constants/_7k";
 
 type DataPage<T> = {
   data: T[];
@@ -289,18 +290,11 @@ export const SuiUtils = {
     })[0];
   },
 
-  transferOrDestroyZeroCoin(
-    tx: Transaction,
-    coinType: string,
-    coin: TransactionArgument,
-    to?: string,
-  ) {
+  collectDust(tx: Transaction, coinType: string, coin: TransactionArgument) {
     tx.moveCall({
-      target: `0x6f5e582ede61fe5395b50c4a449ec11479a54d7ff8e0158247adfda60d98970b::utils::${
-        to ? "send_coin" : "transfer_coin_to_sender"
-      }`,
+      target: `${_7K_PACKAGE_ID}::vault::collect_dust`,
       typeArguments: [coinType],
-      arguments: [coin, ...(to ? [tx.pure.address(to)] : [])],
+      arguments: [tx.object(_7K_VAULT), tx.object(_7K_CONFIG), coin],
     });
   },
 };

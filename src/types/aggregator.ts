@@ -1,3 +1,10 @@
+import {
+  Transaction,
+  TransactionObjectArgument,
+} from "@mysten/sui/transactions";
+import { BluefinXTx } from "../libs/protocols/bluefinx/types";
+export { BluefinXTx };
+
 export type SourceDex =
   | "suiswap"
   | "turbos"
@@ -6,16 +13,19 @@ export type SourceDex =
   | "kriya"
   | "kriya_v3"
   | "aftermath"
-  | "deepbook"
   | "deepbook_v3"
   | "flowx"
   | "flowx_v3"
   | "bluefin"
+  | "bluefinx"
   | "springsui"
   | "obric"
   | "stsui"
   | "steamm"
-  | "magma";
+  | "steamm_oracle_quoter"
+  | "magma"
+  | "haedal_pmm"
+  | "momentum";
 
 export type SorSwap = {
   poolId: string;
@@ -60,6 +70,8 @@ export type QuoteResponse = {
   swapAmount: string;
   returnAmount: string;
   returnAmountWithDecimal: string;
+  returnAmountAfterCommission: string;
+  returnAmountAfterCommissionWithDecimal: string;
   returnAmountConsiderGasFees?: string;
   returnAmountWithoutSwapFees?: string;
   swapAmountWithDecimal: string;
@@ -104,9 +116,9 @@ export interface Config {
     referralVault: string;
   };
   bluefin: DexConfig & { globalConfig: string };
+  bluefinx: DexConfig & { globalConfig: string };
   bluemove: DexConfig & { dexInfo: string };
   cetus: DexConfig & { globalConfig: string };
-  deepbook: DexConfig;
   deepbook_v3: DexConfig & { sponsor: string; sponsorFund: string };
   flowx: DexConfig & { container: string };
   flowx_v3: DexConfig & { registry: string; version: string };
@@ -117,6 +129,36 @@ export interface Config {
   stsui: DexConfig;
   suiswap: DexConfig;
   turbos: DexConfig & { version: string };
-  steamm: DexConfig & { script: string };
+  steamm: DexConfig & { script: string; oracle: string };
   magma: DexConfig & { globalConfig: string };
+  haedal_pmm: DexConfig;
+  momentum: DexConfig & { version: string };
 }
+
+export type ExtraOracle = {
+  Pyth?: { price_identifier: { bytes: number[] } };
+  Switchboard?: { object_id: string };
+};
+
+export type AggregatorTx = Transaction | BluefinXTx;
+
+export const isSuiTransaction = (tx: AggregatorTx): tx is Transaction =>
+  tx instanceof Transaction;
+
+/**
+ * Check if the sor response is a bluefinx routing
+ * @param sor
+ * @returns boolean
+ */
+export const isBluefinXRouting = (sor: QuoteResponse) => {
+  return (
+    sor.routes?.length === 1 &&
+    sor.routes[0].hops.length === 1 &&
+    sor.routes[0].hops[0].pool.type === "bluefinx"
+  );
+};
+
+export type BuildTxResult = {
+  tx: AggregatorTx;
+  coinOut?: TransactionObjectArgument;
+};
