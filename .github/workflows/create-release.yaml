@@ -38,7 +38,7 @@ jobs:
 
           # Prefix the version with a "v"
           version="v${raw_version}"
-          
+
           # Extract the release notes (everything after the version line until the next version or end of file)
           notes=$(echo "$entry" | tail -n +2 | sed '/^## /q' | sed '/^$/d')
 
