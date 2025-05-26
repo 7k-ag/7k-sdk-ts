@@ -65,7 +65,12 @@ export const buildTx = async ({
   let coinData: TransactionResult;
   if (coinIn) {
     coinData = tx.splitCoins(coinIn, splits);
-    SuiUtils.collectDust(tx, quoteResponse.tokenIn, coinIn);
+    SuiUtils.transferOrDestroyZeroCoin(
+      tx,
+      quoteResponse.tokenIn,
+      coinIn,
+      accountAddress,
+    );
   } else {
     const { coinData: _data } = await getSplitCoinForTx(
       accountAddress,
