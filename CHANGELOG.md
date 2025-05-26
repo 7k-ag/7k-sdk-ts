@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Fix: consume `coinIn` if its value is zero after being splited instead of
+- Fix: transfer or destroy zero `coinIn` after being splited instead of
   collecting as dust
 - Update DEX package configs
 
