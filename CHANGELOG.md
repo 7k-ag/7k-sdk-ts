@@ -1,5 +1,13 @@
 # @7kprotocol/sdk-ts
 
+## 3.0.1
+
+### Patch Changes
+
+- Fix: consume `coinIn` if its value is zero after being splited instead of
+  collecting as dust
+- Update DEX package configs
+
 ## 3.0.0
 
 ### Major Changes

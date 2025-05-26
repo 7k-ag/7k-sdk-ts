@@ -21,7 +21,7 @@ export const DEFAULT_CONFIG: Config = {
   bluefin: {
     name: "Bluefin",
     package:
-      "0x6c796c3ab3421a68158e0df18e4657b2827b1f8fed5ed4b82dba9c935988711b",
+      "0x406f52151e7dd65addd93b0bdad7989e82aec20c3ae6971954a5140f14a59e4b",
     globalConfig:
       "0x03db251ba509a8d5d8777b6338836082335d93eecbdd09a11e190a1cff51c352",
   },
@@ -42,7 +42,7 @@ export const DEFAULT_CONFIG: Config = {
   cetus: {
     name: "Cetus",
     package:
-      "0x6f5e582ede61fe5395b50c4a449ec11479a54d7ff8e0158247adfda60d98970b",
+      "0x15c0555d7601d98ca2659a8387d377a81b1e285ee0808484e101f96d05806187",
     globalConfig:
       "0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f",
   },
@@ -64,7 +64,7 @@ export const DEFAULT_CONFIG: Config = {
   flowx_v3: {
     name: "Flowx Finance V3",
     package:
-      "0x25929e7f29e0a30eb4e692952ba1b5b65a3a4d65ab5f2a32e1ba3edcb587f26d",
+      "0x3974baf3c1fb21edba6407feff33e77c8fd05670b5cd8815e8fdc289b1f30267",
     registry:
       "0x27565d24a4cd51127ac90e4074a841bbe356cca7bf5759ddc14a975be1632abc",
     version:
@@ -78,7 +78,7 @@ export const DEFAULT_CONFIG: Config = {
   kriya_v3: {
     name: "Kriya V3",
     package:
-      "0xbd8d4489782042c6fafad4de4bc6a5e0b84a43c6c00647ffd7062d1e2bb7549e",
+      "0x7cfee19b76f44a30cd7b8edcbb24eff1cc3fdc3495d3d07e99f1af46f5719861",
     version:
       "0xf5145a7ac345ca8736cf8c76047d00d6d378f30e81be6f6eb557184d9de93c78",
   },
@@ -114,16 +114,16 @@ export const DEFAULT_CONFIG: Config = {
   steamm: {
     name: "Steamm",
     package:
-      "0x4fb1cf45dffd6230305f1d269dd1816678cc8e3ba0b747a813a556921219f261",
+      "0x4454d95507deb17d5017db11105bd95027d434776af1d0049ce27a3510a9a1ba",
     script:
-      "0x13bfc09cfc1bd922d3aa53fcf7b2cd510727ee65068ce136e2ebd5f3b213fdd2",
+      "0xa5eda33c0829a546b55fdf0bb1ad88175df00e1c72690b79ac966c49082b9834",
     oracle:
       "0xe84b649199654d18c38e727212f5d8dacfc3cf78d60d0a7fc85fd589f280eb2b",
   },
   magma: {
     name: "Magma",
     package:
-      "0x951d48bece7f6c2a3f4ba0b5791ba823c491e504feb4136497ee51331208ac33",
+      "0x97aa7a842f53ccafc3514fb875fee9b9cd65cf9e6e39087ee327c94f77a4e319",
     globalConfig:
       "0x4c4e1402401f72c7d8533d0ed8d5f8949da363c7a3319ccef261ffe153d32f8a",
   },
@@ -135,11 +135,12 @@ export const DEFAULT_CONFIG: Config = {
   momentum: {
     name: "Momentum",
     package:
-      "0x70285592c97965e811e0c6f98dccc3a9c2b4ad854b3594faab9597ada267b860",
+      "0x9c12f3aa14a449a0a23c066589e269086f021a98939f21158cfacb16d19787c3",
     version:
       "0x2375a0b1ec12010aaea3b2545acfa2ad34cfbba03ce4b59f4c39e1e25eed1b2a",
   },
 };
+
 let config: Config | null = DEFAULT_CONFIG;
 let configTs: number = 0;
 export async function getConfig() {
