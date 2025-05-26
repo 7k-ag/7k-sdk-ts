@@ -1,13 +1,13 @@
-import { TransactionArgument, Transaction } from "@mysten/sui/transactions";
 import {
   CoinStruct,
   PaginatedObjectsResponse,
   SuiObjectResponseQuery,
 } from "@mysten/sui/client";
+import { Transaction, TransactionArgument } from "@mysten/sui/transactions";
 import { parseStructTag } from "@mysten/sui/utils";
-import { checkIsSui } from "./token";
 import { Config } from "../config";
 import { _7K_CONFIG, _7K_PACKAGE_ID, _7K_VAULT } from "../constants/_7k";
+import { checkIsSui } from "./token";
 
 type DataPage<T> = {
   data: T[];
@@ -295,6 +295,19 @@ export const SuiUtils = {
       target: `${_7K_PACKAGE_ID}::vault::collect_dust`,
       typeArguments: [coinType],
       arguments: [tx.object(_7K_VAULT), tx.object(_7K_CONFIG), coin],
+    });
+  },
+
+  transferOrDestroyZeroCoin(
+    tx: Transaction,
+    coinType: string,
+    coin: TransactionArgument,
+    address: string,
+  ) {
+    tx.moveCall({
+      target: `${_7K_PACKAGE_ID}::utils::transfer_or_destroy`,
+      typeArguments: [coinType],
+      arguments: [coin, tx.pure.address(address)],
     });
   },
 };
