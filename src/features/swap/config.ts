@@ -116,7 +116,7 @@ export const DEFAULT_CONFIG: Config = {
     package:
       "0x4454d95507deb17d5017db11105bd95027d434776af1d0049ce27a3510a9a1ba",
     script:
-      "0xa5eda33c0829a546b55fdf0bb1ad88175df00e1c72690b79ac966c49082b9834",
+      "0xbef015f8fe24f324cc4a7939a88c164e78d2d859aa925a75bd8f8472b6ae7d0e",
     oracle:
       "0xe84b649199654d18c38e727212f5d8dacfc3cf78d60d0a7fc85fd589f280eb2b",
   },
