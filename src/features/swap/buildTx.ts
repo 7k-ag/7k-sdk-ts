@@ -173,16 +173,16 @@ export const buildTx = async ({
 };
 
 const getPythPriceFeeds = (res: QuoteResponse) => {
-  const ids: string[] = [];
+  const ids: Set<string> = new Set();
   for (const s of res.swaps) {
     for (const o of s.extra?.oracles || []) {
       const bytes = o.Pyth?.price_identifier?.bytes;
       if (bytes) {
-        ids.push("0x" + toHex(Uint8Array.from(bytes)));
+        ids.add("0x" + toHex(Uint8Array.from(bytes)));
       }
     }
   }
-  return ids;
+  return Array.from(ids);
 };
 
 const updatePythPriceFeedsIfAny = async (

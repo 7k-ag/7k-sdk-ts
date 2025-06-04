@@ -309,14 +309,14 @@ describe("Momentum test", () => {
   });
 });
 describe("Steamm oracle quoter test", () => {
-  // it("should routing success for steamm oracle quoter x for y", async () => {
-  //   await testSwap(client, testAccount, {
-  //     amountIn: amountX,
-  //     tokenIn: tokenX,
-  //     tokenOut: tokenY,
-  //     sources: ["steamm_oracle_quoter"],
-  //   });
-  // });
+  it("should routing success for steamm oracle quoter x for y", async () => {
+    await testSwap(client, testAccount, {
+      amountIn: amountX,
+      tokenIn: tokenX,
+      tokenOut: tokenY,
+      sources: ["steamm_oracle_quoter"],
+    });
+  });
   it("should routing success for steamm oracle quoter y for x", async () => {
     await testSwap(client, testAccount, {
       amountIn: amountY,
