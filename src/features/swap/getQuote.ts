@@ -42,6 +42,7 @@ export const DEFAULT_SOURCES: SourceDex[] = [
   "stsui",
   "steamm",
   "steamm_oracle_quoter",
+  "steamm_oracle_quoter_v2",
   "magma",
   "haedal_pmm",
   "momentum",
