@@ -1,8 +1,8 @@
 import { Transaction } from "@mysten/sui/transactions";
-import { Config, TxSorSwap } from "../../types/aggregator";
-import { normalizeStructTag, parseStructTag } from "@mysten/sui/utils";
-import { SuiUtils } from "../../utils/sui";
+import { normalizeStructTag, parseStructTag, toHex } from "@mysten/sui/utils";
+import { Config, ExtraOracle, TxSorSwap } from "../../types/aggregator";
 import { TransactionResultItem } from "../../types/sui";
+import { SuiUtils } from "../../utils/sui";
 
 export interface BaseContractParams {
   swapInfo: TxSorSwap;
@@ -56,5 +56,20 @@ export abstract class BaseContract<T = any> {
       throw new Error(`Invalid extra info for getExtra`);
     }
     return extra;
+  }
+
+  protected getPythPriceInfoId(oracle?: ExtraOracle) {
+    // FIXME: deprecation price_identifier in the next version
+    const bytes =
+      oracle?.Pyth?.bytes || (oracle?.Pyth as any)?.price_identifier?.bytes;
+    if (!bytes) {
+      throw new Error(`Invalid oracle info for getPythPriceInfoId`);
+    }
+    const feedId = "0x" + toHex(Uint8Array.from(bytes));
+    const id = this.pythMap[feedId];
+    if (!id) {
+      throw new Error(`Missing price info for oracle ${feedId}`);
+    }
+    return id;
   }
 }

@@ -1,5 +1,5 @@
 import { Transaction } from "@mysten/sui/transactions";
-import { SUI_CLOCK_OBJECT_ID, toHex } from "@mysten/sui/utils";
+import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { ExtraOracle } from "../../../types/aggregator";
 import { BaseContract } from "../base";
 
@@ -11,11 +11,8 @@ export class ObricContract extends BaseContract<ObricExtra> {
     const [coinX, coinY] = this.swapInfo.pool.allTokens;
     const xToY = this.swapInfo.swapXtoY;
 
-    const oracleX = this.extra.oracles[0].Pyth?.bytes;
-    const oracleY = this.extra.oracles[1].Pyth?.bytes;
-    if (!oracleX || !oracleY) {
-      throw new Error(`Invalid oracle info for swap`);
-    }
+    const oracleX = this.getPythPriceInfoId(this.extra.oracles?.[0]);
+    const oracleY = this.getPythPriceInfoId(this.extra.oracles?.[1]);
 
     const { package: PACKAGE_ID, pythState: PYTH_STATE } = this.config.obric;
     const [coinOut] = tx.moveCall({
@@ -25,8 +22,8 @@ export class ObricContract extends BaseContract<ObricExtra> {
         tx.object(this.swapInfo.poolId),
         tx.object(SUI_CLOCK_OBJECT_ID),
         tx.object(PYTH_STATE),
-        tx.object(this.pythMap["0x" + toHex(Uint8Array.from(oracleX))]), // pyth pricefeed for x
-        tx.object(this.pythMap["0x" + toHex(Uint8Array.from(oracleY))]), // pyth pricefeed for y
+        tx.object(oracleX), // pyth pricefeed for x
+        tx.object(oracleY), // pyth pricefeed for y
         this.inputCoinObject,
       ],
     });

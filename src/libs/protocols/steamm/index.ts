@@ -3,7 +3,6 @@ import {
   normalizeStructTag,
   parseStructTag,
   SUI_CLOCK_OBJECT_ID,
-  toHex,
 } from "@mysten/sui/utils";
 import { ExtraOracle } from "../../../types/aggregator";
 import { SuiUtils } from "../../../utils/sui";
@@ -172,16 +171,11 @@ export class SteammContract extends BaseContract<SteamExtra> {
     return coinOut;
   }
   getOraclePriceUpdate(tx: Transaction) {
-    const oracleA = this.extra.oracles?.[0]?.Pyth;
-    const oracleB = this.extra.oracles?.[1]?.Pyth;
-    // FIXME: deprecation price_identifier in the next version
-    const oracleABytes =
-      oracleA?.bytes || (oracleA as any)?.price_identifier?.bytes;
-    const oracleBBytes =
-      oracleB?.bytes || (oracleB as any)?.price_identifier?.bytes;
+    const oracleA = this.getPythPriceInfoId(this.extra.oracles?.[0]);
+    const oracleB = this.getPythPriceInfoId(this.extra.oracles?.[1]);
     const registry = this.extra.oracleRegistry;
     const indexes = this.extra.oracleIndexes;
-    if (!oracleABytes || !oracleBBytes || !registry || indexes?.length !== 2) {
+    if (!registry || indexes?.length !== 2) {
       throw new Error(`Invalid oracle info for getOraclePriceUpdate`);
     }
 
@@ -189,7 +183,7 @@ export class SteammContract extends BaseContract<SteamExtra> {
       target: `${this.config.steamm.oracle}::oracles::get_pyth_price`,
       arguments: [
         tx.object(registry),
-        tx.object(this.pythMap["0x" + toHex(Uint8Array.from(oracleABytes))]),
+        tx.object(oracleA),
         tx.pure.u64(indexes[0]),
         tx.object(SUI_CLOCK_OBJECT_ID),
       ],
@@ -199,7 +193,7 @@ export class SteammContract extends BaseContract<SteamExtra> {
       target: `${this.config.steamm.oracle}::oracles::get_pyth_price`,
       arguments: [
         tx.object(registry),
-        tx.object(this.pythMap["0x" + toHex(Uint8Array.from(oracleBBytes))]),
+        tx.object(oracleB),
         tx.pure.u64(indexes[1]),
         tx.object(SUI_CLOCK_OBJECT_ID),
       ],
