@@ -23,6 +23,7 @@ export type SourceDex =
   | "stsui"
   | "steamm"
   | "steamm_oracle_quoter"
+  | "steamm_oracle_quoter_v2"
   | "magma"
   | "haedal_pmm"
   | "momentum";
@@ -136,8 +137,7 @@ export interface Config {
 }
 
 export type ExtraOracle = {
-  Pyth?: { price_identifier: { bytes: number[] } };
-  Switchboard?: { object_id: string };
+  Pyth?: { bytes: number[] };
 };
 
 export type AggregatorTx = Transaction | BluefinXTx;

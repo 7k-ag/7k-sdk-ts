@@ -7,7 +7,7 @@ import { testSwap } from "./utils.spec";
 
 describe("SpringSui test", () => {
   const testAccount =
-    "0x95c67f42b58440c914a376d00473ab5eea52726db8af3ebf5b17ca0c5489a916";
+    "0x02c1d18325782b70819b0a82b975e235acc4309a80bdbe315ab2c805434a1fdd";
   const tokenX = SUI_TYPE;
   const tokenY =
     "0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI";

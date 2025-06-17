@@ -1,6 +1,6 @@
 {
   "name": "@7kprotocol/sdk-ts",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "description": "",
   "exports": {
     ".": {
@@ -40,7 +40,7 @@
     "build:esm": "tsc -p ./configs/tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
     "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
     "prepack": "npm run build",
-    "test": "mocha --timeout 10000",
+    "test": "mocha --timeout 20000",
     "publish:patch": "npm version patch --no-git-tag-version && npm publish --access public",
     "publish:minor": "npm version minor --no-git-tag-version && npm publish --access public",
     "publish:major": "npm version major --no-git-tag-version && npm publish --access public",
@@ -58,20 +58,20 @@
   "author": "7k Protocol",
   "license": "MIT",
   "devDependencies": {
-    "@eslint/js": "^9.26.0",
+    "@eslint/js": "^9.29.0",
     "@types/chai": "^5.2.2",
     "@types/eslint__js": "^8.42.3",
     "@types/mocha": "^10.0.10",
     "chai": "^5.2.0",
-    "eslint": "^9.26.0",
+    "eslint": "^9.29.0",
     "husky": "^9.1.7",
-    "mocha": "^11.2.2",
+    "mocha": "^11.6.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.32.0"
+    "typescript-eslint": "^8.34.1"
   },
   "peerDependencies": {
-    "@mysten/sui": "^1.29.1",
+    "@mysten/sui": "^1.33.0",
     "@pythnetwork/pyth-sui-js": "^2.1.0"
   }
 }
