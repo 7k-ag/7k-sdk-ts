@@ -1,5 +1,16 @@
 # @7kprotocol/sdk-ts
 
+## 3.1.0
+
+### Minor Changes
+
+- Upgrade @mysten/sui SDK.
+- New liquidity: Steamm oracle quoter v2.
+
+### Patch Changes
+
+- Refactor oracle based DEX command.
+
 ## 3.0.2
 
 ### Patch Changes

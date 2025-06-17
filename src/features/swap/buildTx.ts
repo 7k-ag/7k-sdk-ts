@@ -14,6 +14,7 @@ import { BluefinXTx } from "../../libs/protocols/bluefinx/types";
 import { swapWithRoute } from "../../libs/swapWithRoute";
 import {
   BuildTxResult,
+  ExtraOracle,
   isBluefinXRouting,
   QuoteResponse,
 } from "../../types/aggregator";
@@ -175,8 +176,9 @@ export const buildTx = async ({
 const getPythPriceFeeds = (res: QuoteResponse) => {
   const ids: Set<string> = new Set();
   for (const s of res.swaps) {
-    for (const o of s.extra?.oracles || []) {
-      const bytes = o.Pyth?.price_identifier?.bytes;
+    for (const o of (s.extra?.oracles || []) as ExtraOracle[]) {
+      // FIXME: deprecation price_identifier in the next version
+      const bytes = o.Pyth?.bytes || (o.Pyth as any)?.price_identifier?.bytes;
       if (bytes) {
         ids.add("0x" + toHex(Uint8Array.from(bytes)));
       }

@@ -21,16 +21,9 @@ export const DEFAULT_CONFIG: Config = {
   bluefin: {
     name: "Bluefin",
     package:
-      "0x406f52151e7dd65addd93b0bdad7989e82aec20c3ae6971954a5140f14a59e4b",
+      "0x67b34b728c4e28e704dcfecf7c5cf55c7fc593b6c65c20d1836d97c209c1928a",
     globalConfig:
       "0x03db251ba509a8d5d8777b6338836082335d93eecbdd09a11e190a1cff51c352",
-  },
-  bluefinx: {
-    name: "BluefinX",
-    package:
-      "0xf8870f988ab09be7c5820a856bd5e9da84fc7192e095a7a8829919293b00a36c",
-    globalConfig:
-      "0xc6b29a60c3924776bedc78df72c127ea52b86aeb655432979a38f13d742dedaa",
   },
   bluemove: {
     name: "Bluemove",
@@ -42,7 +35,7 @@ export const DEFAULT_CONFIG: Config = {
   cetus: {
     name: "Cetus",
     package:
-      "0x15c0555d7601d98ca2659a8387d377a81b1e285ee0808484e101f96d05806187",
+      "0xb2db7142fa83210a7d78d9c12ac49c043b3cbbd482224fea6e3da00aa5a5ae2d",
     globalConfig:
       "0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f",
   },
@@ -64,7 +57,7 @@ export const DEFAULT_CONFIG: Config = {
   flowx_v3: {
     name: "Flowx Finance V3",
     package:
-      "0x3974baf3c1fb21edba6407feff33e77c8fd05670b5cd8815e8fdc289b1f30267",
+      "0xe882cd54551e73e64ff5b257146a0c5264546974cf00d78ecc871017cb22df67",
     registry:
       "0x27565d24a4cd51127ac90e4074a841bbe356cca7bf5759ddc14a975be1632abc",
     version:
@@ -78,7 +71,7 @@ export const DEFAULT_CONFIG: Config = {
   kriya_v3: {
     name: "Kriya V3",
     package:
-      "0x7cfee19b76f44a30cd7b8edcbb24eff1cc3fdc3495d3d07e99f1af46f5719861",
+      "0x0d7305a7475ed54adc905365bd081939a81926636b4c438cf2f75f4924b8d960",
     version:
       "0xf5145a7ac345ca8736cf8c76047d00d6d378f30e81be6f6eb557184d9de93c78",
   },
@@ -107,7 +100,7 @@ export const DEFAULT_CONFIG: Config = {
   turbos: {
     name: "Turbos Finance",
     package:
-      "0x9df4666296ee324a6f11e9f664e35e7fd6b6e8c9e9058ce6ee9ad5c5343c2f87",
+      "0xd02012c71c1a6a221e540c36c37c81e0224907fe1ee05bfe250025654ff17103",
     version:
       "0xf1cf0e81048df168ebeb1b8030fad24b3e0b53ae827c25053fff0779c1445b6f",
   },
@@ -123,7 +116,7 @@ export const DEFAULT_CONFIG: Config = {
   magma: {
     name: "Magma",
     package:
-      "0x97aa7a842f53ccafc3514fb875fee9b9cd65cf9e6e39087ee327c94f77a4e319",
+      "0x49e9f06c58a36830fe0d83291f002012e72b00a4ec9b3a6304c40fc5712bb6e3",
     globalConfig:
       "0x4c4e1402401f72c7d8533d0ed8d5f8949da363c7a3319ccef261ffe153d32f8a",
   },
@@ -135,9 +128,16 @@ export const DEFAULT_CONFIG: Config = {
   momentum: {
     name: "Momentum",
     package:
-      "0x9c12f3aa14a449a0a23c066589e269086f021a98939f21158cfacb16d19787c3",
+      "0xc84b1ef2ac2ba5c3018e2b8c956ba5d0391e0e46d1daa1926d5a99a6a42526b4",
     version:
       "0x2375a0b1ec12010aaea3b2545acfa2ad34cfbba03ce4b59f4c39e1e25eed1b2a",
+  },
+  bluefinx: {
+    name: "BluefinX",
+    package:
+      "0xf8870f988ab09be7c5820a856bd5e9da84fc7192e095a7a8829919293b00a36c",
+    globalConfig:
+      "0xc6b29a60c3924776bedc78df72c127ea52b86aeb655432979a38f13d742dedaa",
   },
 };
 
