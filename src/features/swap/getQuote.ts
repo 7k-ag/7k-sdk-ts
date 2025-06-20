@@ -46,6 +46,7 @@ export const DEFAULT_SOURCES: SourceDex[] = [
   "magma",
   "haedal_pmm",
   "momentum",
+  "sevenk_v1",
 ];
 
 export async function getQuote({
