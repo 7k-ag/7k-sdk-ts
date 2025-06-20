@@ -346,6 +346,24 @@ describe("Steamm oracle quoter v2 test", () => {
     });
   });
 });
+describe("SevenK V1 test", () => {
+  it("should routing success for sevenk v1 x for y", async () => {
+    await testSwap(client, testAccount, {
+      amountIn: amountX,
+      tokenIn: tokenX,
+      tokenOut: tokenY,
+      sources: ["sevenk_v1"],
+    });
+  });
+  it("should routing success for sevenk v1 y for x", async () => {
+    await testSwap(client, testAccount, {
+      amountIn: amountY,
+      tokenIn: tokenY,
+      tokenOut: tokenX,
+      sources: ["sevenk_v1"],
+    });
+  });
+});
 describe("All sources test", () => {
   it("should routing success for all sources x for y", async () => {
     await testSwap(client, testAccount, {
