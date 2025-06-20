@@ -26,7 +26,8 @@ export type SourceDex =
   | "steamm_oracle_quoter_v2"
   | "magma"
   | "haedal_pmm"
-  | "momentum";
+  | "momentum"
+  | "sevenk_v1";
 
 export type SorSwap = {
   poolId: string;
@@ -134,6 +135,7 @@ export interface Config {
   magma: DexConfig & { globalConfig: string };
   haedal_pmm: DexConfig;
   momentum: DexConfig & { version: string };
+  sevenk_v1: DexConfig & { oracle: string };
 }
 
 export type ExtraOracle = {

@@ -139,6 +139,13 @@ export const DEFAULT_CONFIG: Config = {
     globalConfig:
       "0xc6b29a60c3924776bedc78df72c127ea52b86aeb655432979a38f13d742dedaa",
   },
+  sevenk_v1: {
+    name: "7K DEX",
+    package:
+      "0x4142285db093ba0cf0623b3cbc07372fb4f5ed00af1fb62be6d55f49a42c0b0e",
+    oracle:
+      "0x8c36ea167c5e6da8c3d60b4fc897416105dcb986471bd81cfbfd38720a4487c0",
+  },
 };
 
 let config: Config | null = DEFAULT_CONFIG;

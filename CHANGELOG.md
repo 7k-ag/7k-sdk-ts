@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 3.2.0
+
+### Minor Changes
+
+- New liquidity: SevenK V1.
+
 ## 3.1.0
 
 ### Minor Changes
