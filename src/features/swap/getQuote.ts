@@ -83,7 +83,13 @@ export async function getQuote({
   const response = await fetchClient(`${API_ENDPOINTS.MAIN}/quote?${params}`);
 
   if (!response.ok) {
-    throw new Error("Failed to fetch aggregator quote");
+    let responseText: string;
+    try {
+      responseText = await response.text();
+    } catch {
+      responseText = "Failed to fetch aggregator quote";
+    }
+    throw new Error(responseText);
   }
 
   const quoteResponse = (await response.json()) as QuoteResponse;
