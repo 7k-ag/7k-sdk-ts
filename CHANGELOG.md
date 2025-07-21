@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 3.3.0
+
+### Minor Changes
+
+- Send commission directly to partner address after swap
+
 ## 3.2.0
 
 ### Minor Changes
