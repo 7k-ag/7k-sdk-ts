@@ -6,7 +6,7 @@ import { setSuiClient } from "../src/index";
 import { testSwap } from "./utils.spec";
 
 const testAccount =
-  "0xee34ad8d735cf8c4d984807a4a315a0f007f9c0ba2e0bd097267e2e70d512070";
+  "0xbfe6e6f61455f9150f4da998878088adc18e8bae4fef4e5725f8ba26a8f5605d";
 const testAccount2 =
   "0xb2e6286dad58b03231709402a3094a10886dd22ffb3751e7b59e709f5df77492";
 const WAL =
