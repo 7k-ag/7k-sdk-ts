@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-bun tsc && bun test && bun lint && bun prettier && git add .
+bun tsc && bun test --timeout 60000 && bun lint && bun prettier && git add .

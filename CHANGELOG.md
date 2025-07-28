@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 3.3.1
+
+### Patch Changes
+
+- Add BluefinX API key config
+
 ## 3.3.0
 
 ### Minor Changes

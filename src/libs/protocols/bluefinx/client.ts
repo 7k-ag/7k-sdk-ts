@@ -1,3 +1,4 @@
+import { Config } from "../../../config";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import {
   BluefinXTx,
@@ -7,12 +8,17 @@ import {
 } from "./types";
 
 const request = async <T = any>(path: string, body: any) => {
+  const headers = new Headers({
+    "Content-Type": "application/json",
+  });
+  const bluefinXApiKey = (Config.getBluefinXApiKey() || "").trim();
+  if (bluefinXApiKey) {
+    headers.set("Bluefin-X-API-Key", bluefinXApiKey);
+  }
   const res = await fetch(`${API_ENDPOINTS.MAIN}/${path}`, {
     method: "POST",
     body: JSON.stringify(body),
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
   });
   return res.json() as T;
 };

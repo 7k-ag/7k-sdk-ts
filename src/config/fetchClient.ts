@@ -6,8 +6,13 @@ export async function fetchClient(
 ): Promise<Response> {
   const headers = new Headers(init?.headers);
   const apiKey = (Config.getApiKey() || "").trim();
+  const bluefinXApiKey = (Config.getBluefinXApiKey() || "").trim();
   if (apiKey) {
     headers.set("apiKey", apiKey);
+  }
+
+  if (bluefinXApiKey) {
+    headers.set("Bluefin-X-API-Key", bluefinXApiKey);
   }
 
   const modifiedInit: RequestInit = {
