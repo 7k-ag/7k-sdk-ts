@@ -60,6 +60,15 @@ Config.setApiKey("YOUR_API_KEY");
 console.log("API key", Config.getApiKey());
 ```
 
+### Set BluefinX API key
+
+```typescript
+import { Config } from "@7kprotocol/sdk-ts";
+
+Config.setBluefinXApiKey("YOUR__BLUEFINX_API_KEY");
+console.log("BluefinX API key", Config.getBluefinXApiKey());
+```
+
 ### Set Sui Client
 
 ```typescript
