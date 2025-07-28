@@ -20,6 +20,15 @@ describe("NPM Package", () => {
     assert.equal(npmPackage.Config.getApiKey(), "test_api_key");
   });
 
+  // bluefin x api key
+  it("should be able to set and get bluefin x api key", () => {
+    npmPackage.Config.setBluefinXApiKey("test_bluefin_x_api_key");
+    assert.equal(
+      npmPackage.Config.getBluefinXApiKey(),
+      "test_bluefin_x_api_key",
+    );
+  });
+
   // sui client
   it("should be able to set and get sui client", () => {
     const suiClient = new SuiClient({

@@ -60,6 +60,19 @@ Config.setApiKey("YOUR_API_KEY");
 console.log("API key", Config.getApiKey());
 ```
 
+### Set BluefinX API key
+
+Setting a BluefinX API key is optional. However, if you'd like to use one — for
+example, to avoid rate limits when routing through BluefinX — you'll need to
+request an API key directly from Bluefin.
+
+```typescript
+import { Config } from "@7kprotocol/sdk-ts";
+
+Config.setBluefinXApiKey("YOUR_BLUEFINX_API_KEY");
+console.log("BluefinX API key", Config.getBluefinXApiKey());
+```
+
 ### Set Sui Client
 
 ```typescript

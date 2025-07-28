@@ -2,11 +2,11 @@ import "mocha";
 
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { SUI_TYPE } from "../src/constants/tokens";
-import { setSuiClient } from "../src/index";
+import { Config } from "../src/index";
 import { testSwap } from "./utils.spec";
 
 const testAccount =
-  "0xbfe6e6f61455f9150f4da998878088adc18e8bae4fef4e5725f8ba26a8f5605d";
+  "0x693e8160ce164b094bcd1ee57ff2ed5d3954287be0022211e07fe36403c8c24f";
 const testAccount2 =
   "0xb2e6286dad58b03231709402a3094a10886dd22ffb3751e7b59e709f5df77492";
 const WAL =
@@ -21,7 +21,8 @@ const amountX = "1000000000"; // 1 SUI
 const amountY = "10000000"; // 10 USDC
 
 const client = new SuiClient({ url: getFullnodeUrl("mainnet") });
-setSuiClient(client);
+Config.setSuiClient(client);
+Config.setApiKey(process.env.API_KEY || "");
 describe("Cetus test", () => {
   it("should routing success for cetus x for y", async () => {
     await testSwap(client, testAccount, {
