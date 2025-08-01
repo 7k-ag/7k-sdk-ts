@@ -47,7 +47,10 @@ export const testSwap = async (
     transactionBlock: tx,
   });
 
-  assert(result.effects.status.status === "success", "Transaction failed");
+  assert(
+    result.effects.status.status === "success",
+    `Transaction failed: ${result.error}`,
+  );
   const swapEvent = result.events.find((e) =>
     e.type.endsWith("::settle::Swap"),
   )?.parsedJson;

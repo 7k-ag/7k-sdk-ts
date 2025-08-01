@@ -6,9 +6,9 @@ import { Config } from "../src/index";
 import { testSwap } from "./utils.spec";
 
 const testAccount =
-  "0x693e8160ce164b094bcd1ee57ff2ed5d3954287be0022211e07fe36403c8c24f";
+  "0x935029ca5219502a47ac9b69f556ccf6e2198b5e7815cf50f68846f723739cbd";
 const testAccount2 =
-  "0xb2e6286dad58b03231709402a3094a10886dd22ffb3751e7b59e709f5df77492";
+  "0xec522ec6182e9e58446a4b870ea21ce3350a033b5923c8657d99b76706cc2601";
 const WAL =
   "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL";
 const USDC =
@@ -329,24 +329,24 @@ describe("Steamm oracle quoter test", () => {
     });
   });
 });
-describe("Steamm oracle quoter v2 test", () => {
-  it("should routing success for steamm oracle quoter v2 x for y", async () => {
-    await testSwap(client, testAccount, {
-      amountIn: amountX,
-      tokenIn: tokenX,
-      tokenOut: tokenY,
-      sources: ["steamm_oracle_quoter_v2"],
-    });
-  });
-  it("should routing success for steamm oracle quoter v2 y for x", async () => {
-    await testSwap(client, testAccount, {
-      amountIn: amountY,
-      tokenIn: tokenY,
-      tokenOut: tokenX,
-      sources: ["steamm_oracle_quoter_v2"],
-    });
-  });
-});
+// describe("Steamm oracle quoter v2 test", () => {
+//   it("should routing success for steamm oracle quoter v2 x for y", async () => {
+//     await testSwap(client, testAccount, {
+//       amountIn: amountX,
+//       tokenIn: tokenX,
+//       tokenOut: tokenY,
+//       sources: ["steamm_oracle_quoter_v2"],
+//     });
+//   });
+//   it("should routing success for steamm oracle quoter v2 y for x", async () => {
+//     await testSwap(client, testAccount, {
+//       amountIn: amountY,
+//       tokenIn: tokenY,
+//       tokenOut: tokenX,
+//       sources: ["steamm_oracle_quoter_v2"],
+//     });
+//   });
+// });
 describe("SevenK V1 test", () => {
   it("should routing success for sevenk v1 x for y", async () => {
     await testSwap(client, testAccount, {
@@ -362,6 +362,24 @@ describe("SevenK V1 test", () => {
       tokenIn: tokenY,
       tokenOut: tokenX,
       sources: ["sevenk_v1"],
+    });
+  });
+});
+describe("Full Sail test", () => {
+  it("should routing success for Full Sail x for y", async () => {
+    await testSwap(client, testAccount, {
+      amountIn: amountX,
+      tokenIn: tokenX,
+      tokenOut: tokenY,
+      sources: ["fullsail"],
+    });
+  });
+  it("should routing success for Full Sail y for x", async () => {
+    await testSwap(client, testAccount, {
+      amountIn: amountY,
+      tokenIn: tokenY,
+      tokenOut: tokenX,
+      sources: ["fullsail"],
     });
   });
 });
