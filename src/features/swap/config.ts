@@ -146,6 +146,18 @@ export const DEFAULT_CONFIG: Config = {
     oracle:
       "0x8c36ea167c5e6da8c3d60b4fc897416105dcb986471bd81cfbfd38720a4487c0",
   },
+  fullsail: {
+    name: "Fullsail",
+    package:
+      "0xe1b7d5fd116fea5a8f8e85c13754248d56626a8d0a614b7d916c2348d8323149",
+    globalConfig:
+      "0xe93baa80cb570b3a494cbf0621b2ba96bc993926d34dc92508c9446f9a05d615",
+    rewarderGlobalVault:
+      "0xfb971d3a2fb98bde74e1c30ba15a3d8bef60a02789e59ae0b91660aeed3e64e1",
+    priceProvider:
+      "0x854b2d2c0381bb656ec962f8b443eb082654384cf97885359d1956c7d76e33c9",
+    stats: "0x6822a33d1d971e040c32f7cc74507010d1fe786f7d06ab89135083ddb07d2dc2",
+  },
 };
 
 let config: Config | null = DEFAULT_CONFIG;

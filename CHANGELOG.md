@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 3.4.0
+
+### Minor Changes
+
+- New liquidity: Full Sail
+
 ## 3.3.1
 
 ### Patch Changes

@@ -6,6 +6,7 @@ import { CetusContract } from "./cetus";
 import { SponsoredDeepBookV3Contract } from "./deepbookV3/sponsored";
 import { FlowXContract } from "./flowx";
 import { FlowxV3Contract } from "./flowxV3";
+import { FullsailContract } from "./fullsail";
 import { HaedalPMMContract } from "./haedal_pmm";
 import { KriyaContract } from "./kriya";
 import { KriyaV3Contract } from "./kriyaV3";
@@ -42,4 +43,5 @@ export const ProtocolContract = {
   momentum: MomentumContract,
   bluefinx: BluefinXContract,
   sevenk_v1: SevenKV1,
+  fullsail: FullsailContract,
 };

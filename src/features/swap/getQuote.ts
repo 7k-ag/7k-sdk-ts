@@ -47,6 +47,7 @@ export const DEFAULT_SOURCES: SourceDex[] = [
   "haedal_pmm",
   "momentum",
   "sevenk_v1",
+  "fullsail",
 ];
 
 export async function getQuote({
