@@ -17,11 +17,13 @@ import {
   ExtraOracle,
   isBluefinXRouting,
   QuoteResponse,
+  TxSorSwap,
 } from "../../types/aggregator";
 import { BuildTxParams } from "../../types/tx";
 import { SuiUtils } from "../../utils/sui";
 import { denormalizeTokenType } from "../../utils/token";
 import { getConfig } from "./config";
+import { ORACLE_BASED_SOURCES } from "./getQuote";
 
 export const buildTx = async ({
   quoteResponse,
@@ -60,6 +62,7 @@ export const buildTx = async ({
   const tx = _tx || new Transaction();
 
   const routes = groupSwapRoutes(quoteResponse);
+  validateRoutes(routes, isSponsored);
 
   const splits = routes.map((group) => group[0]?.amount ?? "0");
 
@@ -207,4 +210,16 @@ const updatePythPriceFeedsIfAny = async (
     });
   }
   return pythMap;
+};
+
+const validateRoutes = (routes: TxSorSwap[][], isSponsored?: boolean) => {
+  if (!isSponsored) {
+    return;
+  }
+  const hasOracleBasedSource = routes.some((g) =>
+    g.some((s) => ORACLE_BASED_SOURCES.has(s.pool.type)),
+  );
+  if (hasOracleBasedSource) {
+    throw new Error("Oracle based sources are not supported for sponsored tx");
+  }
 };
