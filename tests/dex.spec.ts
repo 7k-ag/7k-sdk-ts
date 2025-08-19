@@ -1,8 +1,11 @@
 import "mocha";
 
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
+import { normalizeSuiAddress } from "@mysten/sui/utils";
+import { expect } from "chai";
 import { SUI_TYPE } from "../src/constants/tokens";
-import { Config } from "../src/index";
+import { ORACLE_BASED_SOURCES } from "../src/features/swap";
+import { buildTx, Config, getQuote } from "../src/index";
 import { testSwap } from "./utils.spec";
 
 const testAccount =
@@ -397,5 +400,36 @@ describe("All sources test", () => {
       tokenIn: tokenY,
       tokenOut: tokenX,
     });
+  });
+});
+describe("sponsored tx", () => {
+  it("should validate sponsored tx", async () => {
+    const quote = await getQuote({
+      amountIn: amountX,
+      tokenIn: tokenX,
+      tokenOut: tokenY,
+      sources: [...ORACLE_BASED_SOURCES],
+    });
+
+    try {
+      await buildTx({
+        quoteResponse: quote,
+        accountAddress: testAccount,
+        slippage: 0.01,
+        commission: {
+          commissionBps: 0,
+          partner: normalizeSuiAddress("0x0"),
+        },
+        isSponsored: true,
+      });
+      // If we reach here, the function didn't throw an error, so the test should fail
+      expect.fail(
+        "Expected buildTx to throw an error for sponsored tx with oracle sources",
+      );
+    } catch (error) {
+      expect(error.message).to.equal(
+        "Oracle based sources are not supported for sponsored tx",
+      );
+    }
   });
 });
