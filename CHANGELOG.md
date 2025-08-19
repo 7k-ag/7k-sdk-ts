@@ -1,5 +1,12 @@
 # @7kprotocol/sdk-ts
 
+## 3.4.1
+
+### Patch Changes
+
+- Add an optional `isSponsored` parameter to `getQuote` – automatically excludes
+  all liquidity sources that rely on Pyth price feeds for sponsored swaps.
+
 ## 3.4.0
 
 ### Minor Changes
