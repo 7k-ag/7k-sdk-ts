@@ -1,5 +1,4 @@
-import { getSplitCoinForTx } from "../../libs/getSplitCoinForTx";
-import { denormalizeTokenType } from "../../utils/token";
+import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import { GLOBAL_CONFIG_ID, LIMIT_ORDER_MODULE_ID } from "./constants";
 
 export interface PlaceLimitOrderParams {
@@ -23,13 +22,13 @@ export async function placeLimitOrder({
   expireTs,
   devInspect,
 }: PlaceLimitOrderParams) {
-  const { tx, coinData: payCoin } = await getSplitCoinForTx(
-    accountAddress,
-    payCoinAmount.toString(),
-    [payCoinAmount.toString()],
-    denormalizeTokenType(payCoinType),
-    undefined,
-    devInspect,
+  const tx = new Transaction();
+  const payCoin = tx.add(
+    coinWithBalance({
+      type: payCoinType,
+      balance: payCoinAmount,
+      useGasCoin: !devInspect,
+    }),
   );
 
   tx.moveCall({
@@ -45,5 +44,6 @@ export async function placeLimitOrder({
     typeArguments: [payCoinType, targetCoinType],
   });
 
+  tx.setSenderIfNotSet(accountAddress);
   return tx;
 }

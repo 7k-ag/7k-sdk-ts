@@ -7,11 +7,13 @@ import { executeBluefinTx } from "./libs/protocols/bluefinx/client";
 
 import {
   buildTx,
+  buildTxV2,
+  DEFAULT_SOURCES,
   estimateGasFee,
   executeTx,
   getQuote,
   getSwapHistory,
-  DEFAULT_SOURCES,
+  multiSwap,
 } from "./features/swap";
 
 import {
@@ -32,40 +34,37 @@ const getSuiClient = Config.getSuiClient;
 const setSuiClient = Config.setSuiClient;
 
 export {
+  buildTx,
+  buildTxV2,
+  cancelDcaOrder,
+  cancelLimitOrder,
+  claimExpiredLimitOrder,
   // config
   Config,
-
+  DEFAULT_SOURCES,
+  estimateGasFee,
+  executeBluefinTx,
+  executeTx,
+  getClosedDcaOrders,
+  getClosedLimitOrders,
+  getDcaOrderExecutions,
+  getOpenDcaOrders,
+  getOpenLimitOrders,
+  // swap
+  getQuote,
   // sui client
   getSuiClient,
-  setSuiClient,
-
+  getSuiPrice,
+  getSwapHistory,
   // prices
   getTokenPrice,
   getTokenPrices,
-  getSuiPrice,
-
-  // swap
-  getQuote,
-  estimateGasFee,
-  buildTx,
-  getSwapHistory,
-  executeTx,
-  executeBluefinTx,
-  DEFAULT_SOURCES,
-
-  // limit order
-  placeLimitOrder,
-  getOpenLimitOrders,
-  cancelLimitOrder,
-  claimExpiredLimitOrder,
-  getClosedLimitOrders,
-
+  multiSwap,
   // dca
   placeDcaOrder,
-  getOpenDcaOrders,
-  cancelDcaOrder,
-  getClosedDcaOrders,
-  getDcaOrderExecutions,
+  // limit order
+  placeLimitOrder,
+  setSuiClient,
 };
 
 export default {
@@ -85,6 +84,8 @@ export default {
   getQuote,
   estimateGasFee,
   buildTx,
+  buildTxV2,
+  multiSwap,
   getSwapHistory,
   executeTx,
   executeBluefinTx,

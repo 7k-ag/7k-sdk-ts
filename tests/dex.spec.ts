@@ -6,7 +6,7 @@ import { expect } from "chai";
 import { SUI_TYPE } from "../src/constants/tokens";
 import { ORACLE_BASED_SOURCES } from "../src/features/swap";
 import { buildTx, Config, getQuote } from "../src/index";
-import { testSwap } from "./utils.spec";
+import { testBuildTxV2, testMultiSwap, testSwap } from "./utils.spec";
 
 const testAccount =
   "0x935029ca5219502a47ac9b69f556ccf6e2198b5e7815cf50f68846f723739cbd";
@@ -431,5 +431,31 @@ describe("sponsored tx", () => {
         "Oracle based sources are not supported for sponsored tx",
       );
     }
+  });
+});
+
+describe("multi swap", () => {
+  it("should routing success for multi swap", async () => {
+    await testMultiSwap(client, testAccount, [
+      { amountIn: amountX, tokenIn: tokenX, tokenOut: tokenY },
+      { amountIn: amountY, tokenIn: tokenY, tokenOut: tokenX },
+    ]);
+  });
+});
+
+describe("Compare gas usage between build tx v1 and build tx v2", () => {
+  it("should routing success for build tx v2", async () => {
+    await testBuildTxV2(
+      client,
+      "0xcff206e8a38a6d2cb0d47aa1315243bf2472b099cb98120a57a91e07b7cf7516",
+      {
+        amountIn: "10000000000000",
+        tokenIn:
+          "0x8b4d553839b219c3fd47608a0cc3d5fcc572cb25d41b7df3833208586a8d2470::hawal::HAWAL",
+        tokenOut:
+          "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
+      },
+      true,
+    );
   });
 });

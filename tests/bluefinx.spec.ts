@@ -4,7 +4,7 @@ import { SUI_TYPE } from "../src/constants/tokens";
 import { testSwap } from "./utils.spec";
 
 const testAccount =
-  "0xa851c19ec9a5d661da8d12626b826af105f0bd6654e6dc4213c2a3202be4b413";
+  "0x935029ca5219502a47ac9b69f556ccf6e2198b5e7815cf50f68846f723739cbd";
 const USDC =
   "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC";
 const tokenX = SUI_TYPE;

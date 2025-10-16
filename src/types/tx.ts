@@ -57,3 +57,18 @@ export interface EstimateGasFeeParams extends CommonParams {
   /** Sui price in usd for gas estimation */
   suiPrice?: number;
 }
+
+export interface SwapInfo {
+  quote: QuoteResponse;
+  /** @warning this `coinIn` will be consumed completely, no `coinIn` left, user must pass the coinIn object with the balance required for the swap - ie in quote */
+  coinIn: TransactionObjectArgument;
+}
+
+export interface MultiSwapParams {
+  swaps: SwapInfo[];
+  sender: string;
+  slippageBps: number;
+  tx: Transaction;
+  /** Commission for partner */
+  commission: Commission;
+}
