@@ -290,6 +290,18 @@ export const SuiUtils = {
     })[0];
   },
 
+  balanceDestroyZero(
+    tx: Transaction,
+    coinType: string,
+    balance: TransactionArgument,
+  ) {
+    tx.moveCall({
+      target: `0x2::balance::destroy_zero`,
+      typeArguments: [coinType],
+      arguments: [balance],
+    });
+  },
+
   collectDust(tx: Transaction, coinType: string, coin: TransactionArgument) {
     tx.moveCall({
       target: `${_7K_PACKAGE_ID}::vault::collect_dust`,

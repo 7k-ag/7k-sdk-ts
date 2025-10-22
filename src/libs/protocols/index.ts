@@ -3,7 +3,10 @@ import { BluefinContract } from "./bluefin";
 import { BluefinXContract } from "./bluefinx";
 import { BluemoveContract } from "./bluemove";
 import { CetusContract } from "./cetus";
+import { CetusDLMMContract } from "./cetus_dlmm";
 import { SponsoredDeepBookV3Contract } from "./deepbookV3/sponsored";
+import { FerraCLMMContract } from "./ferra_clmm";
+import { FerraDLMMContract } from "./ferra_dlmm";
 import { FlowXContract } from "./flowx";
 import { FlowxV3Contract } from "./flowxV3";
 import { FullsailContract } from "./fullsail";
@@ -44,4 +47,7 @@ export const ProtocolContract = {
   bluefinx: BluefinXContract,
   sevenk_v1: SevenKV1,
   fullsail: FullsailContract,
+  cetus_dlmm: CetusDLMMContract,
+  ferra_dlmm: FerraDLMMContract,
+  ferra_clmm: FerraCLMMContract,
 };
