@@ -27,6 +27,8 @@ interface Params {
   isSponsored?: boolean;
   /** Custom API endpoint */
   api?: string;
+  /** Maximum number of paths to consider for the quote */
+  maxPaths?: number;
 }
 
 export const DEFAULT_SOURCES: SourceDex[] = [
@@ -76,6 +78,7 @@ export async function getQuote({
   taker,
   isSponsored,
   api,
+  maxPaths,
 }: Params) {
   let sources = _sources;
   if (isSponsored) {
@@ -101,6 +104,9 @@ export async function getQuote({
   }
   if (taker) {
     params.append("taker", taker);
+  }
+  if (maxPaths) {
+    params.append("max_paths", maxPaths.toString());
   }
   const response = await fetchClient(
     `${api || API_ENDPOINTS.MAIN}/quote?${params}`,
