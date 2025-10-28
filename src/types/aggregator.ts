@@ -28,7 +28,10 @@ export type SourceDex =
   | "haedal_pmm"
   | "momentum"
   | "sevenk_v1"
-  | "fullsail";
+  | "fullsail"
+  | "cetus_dlmm"
+  | "ferra_dlmm"
+  | "ferra_clmm";
 
 export type SorSwap = {
   poolId: string;
@@ -143,6 +146,9 @@ export interface Config {
     priceProvider: string;
     stats: string;
   };
+  cetus_dlmm: DexConfig & { globalConfig: string; version: string };
+  ferra_dlmm: DexConfig & { globalConfig: string };
+  ferra_clmm: DexConfig & { integrate: string; globalConfig: string };
 }
 
 export type ExtraOracle = {

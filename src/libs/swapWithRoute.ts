@@ -1,7 +1,9 @@
-import { Transaction } from "@mysten/sui/transactions";
-import { ProtocolContract } from "./protocols";
+import {
+  Transaction,
+  TransactionObjectArgument,
+} from "@mysten/sui/transactions";
 import { Config, TxSorSwap } from "../types/aggregator";
-import { TransactionResultItem } from "../types/sui";
+import { ProtocolContract } from "./protocols";
 
 export async function swapWithRoute({
   route,
@@ -12,13 +14,13 @@ export async function swapWithRoute({
   tx,
 }: {
   route: TxSorSwap[];
-  inputCoinObject: TransactionResultItem;
+  inputCoinObject: TransactionObjectArgument;
   currentAccount: string;
   config: Config;
   /** map price feed id to onchain priceInfoObject id */
   pythMap: Record<string, string>;
   tx: Transaction;
-}): Promise<TransactionResultItem | undefined> {
+}): Promise<TransactionObjectArgument | undefined> {
   let inputTokenObject = inputCoinObject;
   let txbResultToReturn;
 
