@@ -25,6 +25,10 @@ interface Params {
   taker?: string;
   /** If true, excludes all liquidity sources that depend on pyth price feeds - pyth client use tx.gas to pay the fee*/
   isSponsored?: boolean;
+  /** Custom API endpoint */
+  api?: string;
+  /** Maximum number of paths to consider for the quote */
+  maxPaths?: number;
 }
 
 export const DEFAULT_SOURCES: SourceDex[] = [
@@ -50,6 +54,9 @@ export const DEFAULT_SOURCES: SourceDex[] = [
   "momentum",
   "sevenk_v1",
   "fullsail",
+  "cetus_dlmm",
+  "ferra_dlmm",
+  "ferra_clmm",
 ];
 
 export const ORACLE_BASED_SOURCES = new Set<SourceDex>([
@@ -70,6 +77,8 @@ export async function getQuote({
   excludedPools,
   taker,
   isSponsored,
+  api,
+  maxPaths,
 }: Params) {
   let sources = _sources;
   if (isSponsored) {
@@ -96,7 +105,12 @@ export async function getQuote({
   if (taker) {
     params.append("taker", taker);
   }
-  const response = await fetchClient(`${API_ENDPOINTS.MAIN}/quote?${params}`);
+  if (maxPaths) {
+    params.append("max_paths", maxPaths.toString());
+  }
+  const response = await fetchClient(
+    `${api || API_ENDPOINTS.MAIN}/quote?${params}`,
+  );
 
   if (!response.ok) {
     let responseText: string;

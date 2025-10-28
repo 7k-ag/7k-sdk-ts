@@ -35,7 +35,7 @@ export const DEFAULT_CONFIG: Config = {
   cetus: {
     name: "Cetus",
     package:
-      "0xb2db7142fa83210a7d78d9c12ac49c043b3cbbd482224fea6e3da00aa5a5ae2d",
+      "0xfbb32ac0fa89a3cb0c56c745b688c6d2a53ac8e43447119ad822763997ffb9c3",
     globalConfig:
       "0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f",
   },
@@ -107,9 +107,9 @@ export const DEFAULT_CONFIG: Config = {
   steamm: {
     name: "Steamm",
     package:
-      "0x4454d95507deb17d5017db11105bd95027d434776af1d0049ce27a3510a9a1ba",
+      "0x5ef2a1bca239764c8381ba26b758833060eadb8903682e4fb15e58c6406e2488",
     script:
-      "0xbef015f8fe24f324cc4a7939a88c164e78d2d859aa925a75bd8f8472b6ae7d0e",
+      "0x0755429cba577decc090009348987a89f4fb8397da27a3eaafc366794078af7d",
     oracle:
       "0xe84b649199654d18c38e727212f5d8dacfc3cf78d60d0a7fc85fd589f280eb2b",
   },
@@ -123,19 +123,19 @@ export const DEFAULT_CONFIG: Config = {
   haedal_pmm: {
     name: "Haedal PMM",
     package:
-      "0xa0e3b011012b80af4957afa30e556486eb3da0a7d96eeb733cf16ccd3aec32e0",
+      "0x486622af8a7250a192e6ee97eed4f54e30343b764d9148bf1535b55f85155204",
   },
   momentum: {
     name: "Momentum",
     package:
-      "0xc84b1ef2ac2ba5c3018e2b8c956ba5d0391e0e46d1daa1926d5a99a6a42526b4",
+      "0xcf60a40f45d46fc1e828871a647c1e25a0915dec860d2662eb10fdb382c3c1d1",
     version:
       "0x2375a0b1ec12010aaea3b2545acfa2ad34cfbba03ce4b59f4c39e1e25eed1b2a",
   },
   bluefinx: {
     name: "BluefinX",
     package:
-      "0xf8870f988ab09be7c5820a856bd5e9da84fc7192e095a7a8829919293b00a36c",
+      "0x9633d611ea4b3a30751135cede2c7871980955473c1c7c883d43567e7e9b164e",
     globalConfig:
       "0xc6b29a60c3924776bedc78df72c127ea52b86aeb655432979a38f13d742dedaa",
   },
@@ -149,7 +149,7 @@ export const DEFAULT_CONFIG: Config = {
   fullsail: {
     name: "Fullsail",
     package:
-      "0xe1b7d5fd116fea5a8f8e85c13754248d56626a8d0a614b7d916c2348d8323149",
+      "0xb3b98d4fda36acc2c2e66dba61f9149b341c38e97a532af802ebbb0c037b9d1f",
     globalConfig:
       "0xe93baa80cb570b3a494cbf0621b2ba96bc993926d34dc92508c9446f9a05d615",
     rewarderGlobalVault:
@@ -157,6 +157,31 @@ export const DEFAULT_CONFIG: Config = {
     priceProvider:
       "0x854b2d2c0381bb656ec962f8b443eb082654384cf97885359d1956c7d76e33c9",
     stats: "0x6822a33d1d971e040c32f7cc74507010d1fe786f7d06ab89135083ddb07d2dc2",
+  },
+  cetus_dlmm: {
+    name: "Cetus DLMM",
+    package:
+      "0xa4c6f46bd6b456e6477bcddf0652e0d2d8fb4767e306533e6e885302ee28cfab",
+    globalConfig:
+      "0xf31b605d117f959b9730e8c07b08b856cb05143c5e81d5751c90d2979e82f599",
+    version:
+      "0x05370b2d656612dd5759cbe80463de301e3b94a921dfc72dd9daa2ecdeb2d0a8",
+  },
+  ferra_dlmm: {
+    name: "Ferra DLMM",
+    package:
+      "0x5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac",
+    globalConfig:
+      "0x5c9dacf5a678ea15b8569d65960330307e23d429289ca380e665b1aa175ebeca",
+  },
+  ferra_clmm: {
+    name: "Ferra CLMM",
+    package:
+      "0xc895342d87127c9c67b76c8ad7f9a22b8bfe1dcdc2c5af82bd85266783115e31",
+    integrate:
+      "0x1dd5538aeb1066315969d87ae9a920ce2692824385342f49854b764ac730a64b",
+    globalConfig:
+      "0x2cd8382c19e6994f16df204e9b8cddd04bdc486c251de75ac66ac4e48e3e7081",
   },
 };
 

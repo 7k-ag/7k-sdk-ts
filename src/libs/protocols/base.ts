@@ -1,12 +1,14 @@
-import { Transaction } from "@mysten/sui/transactions";
+import {
+  Transaction,
+  TransactionObjectArgument,
+} from "@mysten/sui/transactions";
 import { normalizeStructTag, parseStructTag, toHex } from "@mysten/sui/utils";
 import { Config, ExtraOracle, TxSorSwap } from "../../types/aggregator";
-import { TransactionResultItem } from "../../types/sui";
 import { SuiUtils } from "../../utils/sui";
 
 export interface BaseContractParams {
   swapInfo: TxSorSwap;
-  inputCoinObject: TransactionResultItem;
+  inputCoinObject: TransactionObjectArgument;
   currentAccount: string;
   config: Config;
   /** map price feed id to onchain priceInfoObject id */
@@ -15,7 +17,7 @@ export interface BaseContractParams {
 
 export abstract class BaseContract<T = any> {
   protected swapInfo: TxSorSwap;
-  protected inputCoinObject: TransactionResultItem;
+  protected inputCoinObject: TransactionObjectArgument;
   protected currentAccount: string;
   protected config: Config;
   protected pythMap: Record<string, string>;
@@ -34,7 +36,7 @@ export abstract class BaseContract<T = any> {
     this.pythMap = pythMap;
   }
 
-  abstract swap(tx: Transaction): Promise<TransactionResultItem>;
+  abstract swap(tx: Transaction): Promise<TransactionObjectArgument>;
 
   protected getInputCoinValue(tx: Transaction) {
     return SuiUtils.getCoinValue(

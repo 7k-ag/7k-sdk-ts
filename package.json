@@ -1,6 +1,6 @@
 {
   "name": "@7kprotocol/sdk-ts",
-  "version": "3.4.1",
+  "version": "3.4.2-beta.4",
   "description": "",
   "exports": {
     ".": {
@@ -71,7 +71,7 @@
     "typescript-eslint": "^8.34.1"
   },
   "peerDependencies": {
-    "@mysten/sui": "^1.33.0",
-    "@pythnetwork/pyth-sui-js": "^2.1.0"
+    "@mysten/sui": "^1.39.0",
+    "@pythnetwork/pyth-sui-js": "^2.2.0"
   }
 }
