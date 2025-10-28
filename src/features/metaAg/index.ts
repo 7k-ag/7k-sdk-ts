@@ -225,6 +225,39 @@ export class MetaAg {
     options.tx.setSenderIfNotSet(options.signer);
     return coinOut;
   }
+
+  /**
+   * Update meta aggregator options
+   * @param options - update options payload
+   */
+  updateMetaAgOptions(options: MetaAgOptions) {
+    if (Object.keys(options).length === 0) return;
+    this.options.slippageBps = options.slippageBps ?? this.options.slippageBps;
+    this.options.partner = options.partner ?? this.options.partner;
+    this.options.partnerCommissionBps =
+      options.partnerCommissionBps ?? this.options.partnerCommissionBps;
+    this.options.tipBps = options.tipBps ?? this.options.tipBps;
+    if (
+      options.fullnodeUrl &&
+      options.fullnodeUrl !== this.options.fullnodeUrl
+    ) {
+      this.client = new SuiClient({ url: options.fullnodeUrl });
+      this.inspector = new SuiClientUtils(this.client);
+      this.options.fullnodeUrl = options.fullnodeUrl;
+    }
+    if (options.hermesApi && options.hermesApi !== this.options.hermesApi) {
+      this.providers = {};
+      this.options.hermesApi = options.hermesApi;
+    }
+    // if update provider's options, we need to re-initialize the provider
+    for (const [provider, opt] of Object.entries(options.providers || {})) {
+      this.options.providers[provider as EProvider] = {
+        ...opt,
+        ...this.options.providers[provider as EProvider],
+      } as any;
+      delete this.providers[provider as EProvider];
+    }
+  }
 }
 
 /**

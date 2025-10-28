@@ -1,6 +1,6 @@
 {
   "name": "@7kprotocol/sdk-ts",
-  "version": "3.4.2-beta.6",
+  "version": "3.4.2-beta.7",
   "description": "",
   "exports": {
     ".": {
