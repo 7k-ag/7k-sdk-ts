@@ -1,7 +1,9 @@
 export * from "./types/aggregator";
+export * from "./types/metaAg";
 
 import { Config } from "./config";
 
+import { MetaAg } from "./features/metaAg";
 import { getSuiPrice, getTokenPrice, getTokenPrices } from "./features/prices";
 import { executeBluefinTx } from "./libs/protocols/bluefinx/client";
 
@@ -59,6 +61,7 @@ export {
   // prices
   getTokenPrice,
   getTokenPrices,
+  MetaAg,
   multiSwap,
   // dca
   placeDcaOrder,
@@ -104,4 +107,7 @@ export default {
   cancelDcaOrder,
   getClosedDcaOrders,
   getDcaOrderExecutions,
+
+  // Meta aggregator
+  MetaAg,
 };

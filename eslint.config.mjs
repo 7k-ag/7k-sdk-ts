@@ -8,7 +8,7 @@ export default tsEslint.config(
   ...tsEslint.configs.recommended,
   {
     rules: {
-      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -21,6 +21,7 @@ export default tsEslint.config(
           ignoreRestSiblings: true,
         },
       ],
+      "no-case-declarations": "off",
     },
   },
 );

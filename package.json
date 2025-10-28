@@ -1,6 +1,6 @@
 {
   "name": "@7kprotocol/sdk-ts",
-  "version": "3.4.2-beta.4",
+  "version": "3.4.2-beta.6",
   "description": "",
   "exports": {
     ".": {
@@ -73,5 +73,12 @@
   "peerDependencies": {
     "@mysten/sui": "^1.39.0",
     "@pythnetwork/pyth-sui-js": "^2.2.0"
+  },
+  "dependencies": {
+    "uuid": "^13.0.0"
+  },
+  "optionalDependencies": {
+    "@cetusprotocol/aggregator-sdk": "^1.4.1",
+    "@flowx-finance/sdk": "^1.13.8"
   }
 }

@@ -6,12 +6,60 @@
 npm i @7kprotocol/sdk-ts
 ```
 
-This package requires `@pythnetwork/pyth-sui-js` as a peer dependency. If your
-project does not have it, you need to install it.
+### Peer Dependencies
+
+This package has peer dependencies that are required for core functionality:
+
+| Package                    | Version   | Purpose                      | Required For       |
+| -------------------------- | --------- | ---------------------------- | ------------------ |
+| `@mysten/sui`              | `^1.39.0` | Sui blockchain interaction   | Core functionality |
+| `@pythnetwork/pyth-sui-js` | `^2.2.0`  | Pyth price feeds integration | Price feeds        |
+
+**Required peer dependencies:**
 
 ```bash
-npm i @pythnetwork/pyth-sui-js
+npm i @mysten/sui@^1.39.0 @pythnetwork/pyth-sui-js@^2.2.0
 ```
+
+### Optional Dependencies (for MetaAg providers)
+
+The following dependencies are **optional** and only needed for specific MetaAg
+providers:
+
+| Package                         | Version   | Provider              |
+| ------------------------------- | --------- | --------------------- |
+| `@flowx-finance/sdk`            | `^1.13.8` | Flowx MetaAg provider |
+| `@cetusprotocol/aggregator-sdk` | `^1.4.1`  | Cetus MetaAg provider |
+
+**Note**: The Bluefin7K MetaAg provider is built-in and requires no additional
+dependencies.
+
+To use Flowx or Cetus providers, install their respective dependencies:
+
+```bash
+# For Flowx MetaAg provider
+npm i @flowx-finance/sdk@^1.13.8
+
+# For Cetus MetaAg provider
+npm i @cetusprotocol/aggregator-sdk@^1.4.1
+```
+
+### Graceful Degradation
+
+The SDK is designed to work gracefully even when optional dependencies are
+missing:
+
+- **Missing `@flowx-finance/sdk`**: Flowx MetaAg provider will not be available,
+  and a helpful warning with installation instructions will be shown
+- **Missing `@cetusprotocol/aggregator-sdk`**: Cetus MetaAg provider will not be
+  available, and a helpful warning with installation instructions will be shown
+- **Missing `@mysten/sui`**: Core functionality will fail (this is required)
+
+The SDK will provide clear error messages and installation instructions when
+optional dependencies are missing.
+
+**Note**: The Bluefin7K provider works out-of-the-box with no additional
+dependencies.
 
 ## Usage
 
@@ -102,6 +150,105 @@ See [Limit Orders](docs/LIMIT.md).
 ## DCA Orders
 
 See [DCA Orders](docs/DCA.md).
+
+## MetaAg (Multi-Provider Aggregation)
+
+The MetaAg feature allows you to aggregate quotes from multiple DEX Aggregator
+providers. By default, all available providers are enabled. You can optionally
+configure specific providers or install optional dependencies to enable
+additional providers.
+
+### Using Default Providers
+
+The Bluefin7K provider is built-in and works without additional dependencies:
+
+```typescript
+import { MetaAg, EProvider } from "@7kprotocol/sdk-ts";
+
+const metaAg = new MetaAg();
+
+// Get quotes from all available providers
+const quotes = await metaAg.quote({
+  amountIn: "1000000000", // 1 SUI (9 decimals)
+  coinInType:
+    "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+  coinOutType:
+    "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
+});
+
+// Find the best quote
+const bestQuote = quotes.reduce((best, current) =>
+  Number(current.amountOut) > Number(best.amountOut) ? current : best,
+);
+```
+
+### Configuring Specific Providers
+
+You can configure specific providers and their options:
+
+```typescript
+const metaAg = new MetaAg({
+  providers: {
+    [EProvider.BLUEFIN7K]: {
+      apiKey: "your-bluefin-api-key", // Optional
+    },
+    [EProvider.FLOWX]: {
+      apiKey: "your-flowx-api-key", // Optional
+    },
+    [EProvider.CETUS]: {
+      apiKey: "your-cetus-api-key", // Optional
+    },
+  },
+});
+```
+
+**Note**: To use Flowx or Cetus providers, you must install their respective
+optional dependencies. See the
+[Optional Dependencies](#optional-dependencies-for-metaag-providers) section
+above.
+
+### Sponsored Transactions
+
+When building sponsored transactions, `tx.gas` can not be used for swap.
+
+**Important considerations:**
+
+1.  **Gas coin usage**: Set `useGasCoin: false` when creating your coin input
+    object to prevent the SDK from trying to use `tx.gas`.
+
+2.  **Pyth oracle dependencies**: Transactions that use the gas coin cannot be
+    sponsored because Pyth oracle fees are paid from `tx.gas`. Exclude DEX
+    sources that depend on Pyth oracles.
+
+**Example configuration:**
+
+```typescript
+import { MetaAg, EProvider } from "@7kprotocol/sdk-ts";
+import { coinWithBalance } from "@mysten/sui/transactions";
+import { Protocol } from "@flowx-finance/sdk"; // Required for Flowx sources
+import { CETUS, BLUEFIN } from "@cetusprotocol/aggregator-sdk
+
+const metaAg = new MetaAg({
+  providers: {
+    [EProvider.BLUEFIN7K]: {
+      sources: ["cetus", "bluefin"], // Excludes Pyth oracle-based DEX
+    },
+    [EProvider.FLOWX]: {
+      sources: [Protocol.BLUEFIN, Protocol.CETUS, Protocol.FLOWX_V3],
+    },
+    [EProvider.CETUS]: {
+      sources: [CETUS, BLUEFIN],
+    },
+  },
+});
+
+// Create coin input WITHOUT using the gas coin
+const coinIn = coinWithBalance({
+  balance: 1000000000n, // 1 SUI
+  type: "0x2::sui::SUI",
+  useGasCoin: false, // Important: must be false for sponsored transactions
+});
+```
 
 ## Prices
 
