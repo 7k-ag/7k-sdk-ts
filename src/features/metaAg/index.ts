@@ -4,6 +4,7 @@ import {
   Transaction,
   TransactionObjectArgument,
 } from "@mysten/sui/transactions";
+import { normalizeStructTag } from "@mysten/sui/utils";
 import {
   _7K_META_CONFIG,
   _7K_META_PACKAGE_ID,
@@ -188,10 +189,15 @@ export class MetaAg {
     options: MetaQuoteOptions,
     simulation?: MetaSimulationOptions,
   ): Promise<MetaQuote[]> {
+    const opts: MetaQuoteOptions = {
+      ...options,
+      coinInType: normalizeStructTag(options.coinInType),
+      coinOutType: normalizeStructTag(options.coinOutType),
+    };
     const quotes = await Promise.allSettled(
       Object.keys(this.options.providers).map(async (provider) => {
         const p = await this._getProvider(provider as EProvider);
-        return this._quote(p, options, simulation);
+        return this._quote(p, opts, simulation);
       }),
     );
     return quotes

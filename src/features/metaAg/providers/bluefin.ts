@@ -69,8 +69,8 @@ export class BluefinProvider implements AgProvider {
       amountIn: quote.swapAmountWithDecimal,
       rawAmountOut: quote.returnAmountWithDecimal,
       amountOut: expectedAmount,
-      coinTypeIn: quote.tokenIn,
-      coinTypeOut: quote.tokenOut,
+      coinTypeIn: options.coinInType,
+      coinTypeOut: options.coinOutType,
     };
   }
   async swap({ quote, signer, tx, coinIn }: MetaSwapOptions) {
