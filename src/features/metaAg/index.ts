@@ -112,6 +112,7 @@ export class MetaAg {
         coinIn: coinWithBalance({
           balance: BigInt(quote.amountIn),
           type: quote.coinTypeIn,
+          useGasCoin: false,
         }),
         signer: simulation.sender,
         tx,
@@ -136,6 +137,9 @@ export class MetaAg {
         simulation.timeout ?? 2000,
         `simulation for ${provider.kind} provider with id ${id}`,
       );
+      if (res.effects.status.status === "failure") {
+        throw new Error(res.error ?? "Simulation failed");
+      }
       const amountOut = extractAmountOutWrapper(res.events);
       return {
         id,
