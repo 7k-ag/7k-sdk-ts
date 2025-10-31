@@ -18,7 +18,6 @@ import {
   MetaSwapOptions,
 } from "../../../types/metaAg";
 import { assert } from "../../../utils/condition";
-import { getExpectedReturn } from "../../swap/buildTx";
 import { buildTxV2 } from "../../swap/buildTxV2";
 import { getQuote } from "../../swap/getQuote";
 const WORMHOLE_STATE_ID =
@@ -56,19 +55,13 @@ export class BluefinProvider implements AgProvider {
       excludedPools: this.options.excludedPools,
       targetPools: this.options.targetPools,
     });
-    const { expectedAmount } = getExpectedReturn(
-      quote.returnAmountWithDecimal.toString(),
-      0,
-      this.metaOptions.partnerCommissionBps ?? 0,
-      this.metaOptions.tipBps ?? 0,
-    );
     return {
       id: v4(),
       provider: EProvider.BLUEFIN7K,
       quote,
       amountIn: quote.swapAmountWithDecimal,
       rawAmountOut: quote.returnAmountWithDecimal,
-      amountOut: expectedAmount,
+      amountOut: quote.returnAmountWithDecimal,
       coinTypeIn: options.coinInType,
       coinTypeOut: options.coinOutType,
     };
@@ -79,8 +72,8 @@ export class BluefinProvider implements AgProvider {
       quoteResponse: quote.quote,
       accountAddress: signer,
       commission: {
-        commissionBps: this.metaOptions.partnerCommissionBps ?? 0,
-        partner: this.metaOptions.partner ?? SUI_ADDRESS_ZERO,
+        commissionBps: 0,
+        partner: SUI_ADDRESS_ZERO,
       },
       slippage: 1,
       extendTx: {

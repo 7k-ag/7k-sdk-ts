@@ -3,7 +3,7 @@ import "mocha";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import { SUI_TYPE } from "../src/constants/tokens";
-import { Config, MetaAg } from "../src/index";
+import { MetaAg } from "../src/index";
 
 const testAccount =
   "0x935029ca5219502a47ac9b69f556ccf6e2198b5e7815cf50f68846f723739cbd";
@@ -14,8 +14,6 @@ const tokenY = USDC;
 const amountX = "1000000000"; // 1 SUI
 
 const client = new SuiClient({ url: getFullnodeUrl("mainnet") });
-Config.setSuiClient(client);
-Config.setApiKey(process.env.API_KEY || "");
 const metaAg = new MetaAg({
   tipBps: 100,
   partner: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf",

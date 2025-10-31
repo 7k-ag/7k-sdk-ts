@@ -15,32 +15,31 @@ export enum EProvider {
   CETUS = "cetus",
   FLOWX = "flowx",
 }
-export type BluefinProviderOptions = {
+type ProviderBaseOptions = {
+  api?: string;
+  apiKey?: string;
+  disabled?: boolean;
+};
+export type BluefinProviderOptions = ProviderBaseOptions & {
   sources?: SourceDex[];
   maxPaths?: number;
   excludedPools?: string[];
   targetPools?: string[];
-  api?: string;
-  apiKey?: string;
 };
-export type FlowxProviderOptions = {
+export type FlowxProviderOptions = ProviderBaseOptions & {
   sources?: Protocol[];
   excludePools?: string[];
   excludeSources?: Protocol[];
   maxHops?: number;
   splitDistributionPercent?: number;
-  api?: string;
-  apiKey?: string;
 };
-export type CetusProviderOptions = {
+export type CetusProviderOptions = ProviderBaseOptions & {
   sources?: string[];
   splitCount?: number;
   splitAlgorithm?: string;
   splitFactor?: number;
   depth?: number;
   liquidityChanges?: PreSwapLpChangeParams[];
-  api?: string;
-  apiKey?: string;
 };
 export interface MetaAgOptions {
   /**If not specified, all providers will be used */

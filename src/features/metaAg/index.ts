@@ -43,7 +43,7 @@ export class MetaAg {
   private options: Required<MetaAgOptions>;
   constructor(options?: MetaAgOptions) {
     this.options = {
-      providers: options?.providers ?? DEFAULT_PROVIDERS,
+      providers: { ...DEFAULT_PROVIDERS, ...options?.providers },
       slippageBps: options?.slippageBps ?? 100,
       fullnodeUrl: options?.fullnodeUrl ?? getFullnodeUrl("mainnet"),
       hermesApi: options?.hermesApi ?? HERMES_API,
@@ -65,7 +65,6 @@ export class MetaAg {
 
     const providerOptions = this.options.providers[provider];
     assert(!!providerOptions, `Provider not found: ${provider}`);
-    // eslint-disable-next-line no-case-declarations
     switch (provider) {
       case EProvider.BLUEFIN7K:
         this.providers[EProvider.BLUEFIN7K] = new BluefinProvider(
@@ -80,7 +79,6 @@ export class MetaAg {
         );
         this.providers[EProvider.FLOWX] = new FlowxProvider(
           providerOptions as FlowxProviderOptions,
-          this.options,
           this.client,
         );
         break;
@@ -159,7 +157,17 @@ export class MetaAg {
     simulation?: MetaSimulationOptions,
   ) {
     const quote = await timeout(
-      () => provider.quote(options),
+      async () => {
+        const quote = await provider.quote(options);
+        const { expectedAmount } = getExpectedReturn(
+          quote.rawAmountOut,
+          0,
+          this.options.partnerCommissionBps,
+          this.options.tipBps,
+        );
+        quote.amountOut = expectedAmount;
+        return quote;
+      },
       options.timeout ?? 2000,
       `quote for ${provider.kind} provider from ${options.coinInType} to ${options.coinOutType}`,
     );
@@ -195,10 +203,12 @@ export class MetaAg {
       coinOutType: normalizeStructTag(options.coinOutType),
     };
     const quotes = await Promise.allSettled(
-      Object.keys(this.options.providers).map(async (provider) => {
-        const p = await this._getProvider(provider as EProvider);
-        return this._quote(p, opts, simulation);
-      }),
+      Object.entries(this.options.providers)
+        .filter(([_k, v]) => !v.disabled)
+        .map(async ([provider]) => {
+          const p = await this._getProvider(provider as EProvider);
+          return this._quote(p, opts, simulation);
+        }),
     );
     return quotes
       .map((quote) =>
@@ -290,7 +300,7 @@ const metaSettle = (
     const { minAmount, expectedAmount } = getExpectedReturn(
       quote.rawAmountOut,
       slippageBps,
-      commissionBps, // use for calculate expected amount out
+      commissionBps,
       tipBps,
     );
 
@@ -318,7 +328,7 @@ const metaSettle = (
         tx.pure.u64(minAmount),
         tx.pure.u64(expectedAmount),
         tx.pure.option("address", partner),
-        tx.pure.u64(0), // commission must be 0 since all integrated aggregators already charge commission fee for partner
+        tx.pure.u64(commissionBps),
         tx.pure.u64(0), // ps
       ],
     });

@@ -12,22 +12,17 @@ import {
   MetaSwapOptions,
 } from "../../../types/metaAg";
 import { assert } from "../../../utils/condition";
-import { getExpectedReturn } from "../../swap/buildTx";
 
 export class CetusProvider implements AgProvider {
   kind = EProvider.CETUS;
   private readonly cetusClient: AggregatorClient;
   constructor(
     private readonly options: CetusProviderOptions,
-    private readonly metaOptions: MetaAgOptions,
+    metaOptions: MetaAgOptions,
     client: SuiClient,
   ) {
     this.cetusClient = new AggregatorClient({
       apiKey: options.apiKey,
-      overlayFeeReceiver: metaOptions.partner,
-      overlayFeeRate: metaOptions.partnerCommissionBps
-        ? metaOptions.partnerCommissionBps / 10000
-        : undefined,
       client,
       endpoint: options.api,
       env: Env.Mainnet,
@@ -49,25 +44,13 @@ export class CetusProvider implements AgProvider {
       liquidityChanges: this.options.liquidityChanges,
     });
     assert(!!quote, "No quote found");
-    const bps = BigInt(this.metaOptions.partnerCommissionBps ?? 0);
-    // calc amount out before any commission fees
-    const amountOut = (
-      (BigInt(quote.amountOut.toString()) * 10000n) /
-      (10000n - bps)
-    ).toString();
-    const { expectedAmount } = getExpectedReturn(
-      amountOut,
-      0,
-      this.metaOptions.partnerCommissionBps ?? 0,
-      this.metaOptions.tipBps ?? 0,
-    );
     return {
       id: v4(),
       provider: EProvider.CETUS,
       quote,
-      amountIn: quote.amountIn.toString(),
-      rawAmountOut: amountOut,
-      amountOut: expectedAmount,
+      amountIn: quote.amountIn.toString() || "0",
+      rawAmountOut: quote.amountOut.toString() || "0",
+      amountOut: quote.amountOut.toString() || "0",
       coinTypeIn: quoteOptions.coinInType,
       coinTypeOut: quoteOptions.coinOutType,
     };
