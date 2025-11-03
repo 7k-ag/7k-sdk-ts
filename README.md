@@ -15,10 +15,15 @@ functionality.
 
 Key features:
 
-- **Token Swaps**: Access the Bluefin7K aggregator (formerly 7K aggregator) to
-  swap tokens across multiple DEXs on Sui with optimal routing and best rates
-- **Meta Aggregator**: Compare quotes from multiple aggregators (Bluefin7K,
-  Flowx, Cetus) to find the best swap rates across providers
+- **Meta Aggregator (Active Simulation)**: The SDK includes an active simulation
+  of the Meta Aggregator, allowing developers to test and compare quotes from
+  multiple sources — including Bluefin7K, FlowX, and Cetus. This provides a
+  preview of how the unified aggregator will optimize routing and liquidity
+  aggregation across providers.
+
+  ➤ Additional aggregators and RFQ-based liquidity sources are planned for
+  integration in future releases.
+
 - **Price Service**: Fetch token prices with support for single tokens and batch
   queries
 - **Limit Orders**: Place and manage limit orders for token swaps
