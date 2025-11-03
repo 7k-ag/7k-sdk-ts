@@ -412,6 +412,49 @@ The `quote` method uses `Promise.allSettled`, so it will return quotes from
 successful providers even if some fail. Failed providers are logged to console.
 Each provider also has its own timeout mechanism.
 
+## Sponsored Transactions
+
+When building sponsored transactions, `tx.gas` can not be used for swap.
+
+**Important considerations:**
+
+1.  **Gas coin usage**: Set `useGasCoin: false` when creating your coin input
+    object to prevent the SDK from trying to use `tx.gas`.
+
+2.  **Pyth oracle dependencies**: Transactions that use the gas coin cannot be
+    sponsored because Pyth oracle fees are paid from `tx.gas`. Exclude DEX
+    sources that depend on Pyth oracles.
+
+**Example configuration:**
+
+```typescript
+import { MetaAg, EProvider } from "@7kprotocol/sdk-ts";
+import { coinWithBalance } from "@mysten/sui/transactions";
+import { Protocol } from "@flowx-finance/sdk"; // Required for Flowx sources
+import { CETUS, BLUEFIN } from "@cetusprotocol/aggregator-sdk
+
+const metaAg = new MetaAg({
+  providers: {
+    [EProvider.BLUEFIN7K]: {
+      sources: ["cetus", "bluefin"], // Excludes Pyth oracle-based DEX
+    },
+    [EProvider.FLOWX]: {
+      sources: [Protocol.BLUEFIN, Protocol.CETUS, Protocol.FLOWX_V3],
+    },
+    [EProvider.CETUS]: {
+      sources: [CETUS, BLUEFIN],
+    },
+  },
+});
+
+// Create coin input WITHOUT using the gas coin
+const coinIn = coinWithBalance({
+  balance: 1000000000n, // 1 SUI
+  type: "0x2::sui::SUI",
+  useGasCoin: false, // Important: must be false for sponsored transactions
+});
+```
+
 ## Tips and Best Practices
 
 1. **Always enable simulation** to get accurate output amounts and gas estimates
