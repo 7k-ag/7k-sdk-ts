@@ -11,3 +11,11 @@ export const _7K_CONFIG =
 export const _7K_VAULT =
   "0x442ad50389ed5cda6f7a6f5a7ae6361a4c05ef1d9fb2e54fbba5a268d690bfe6";
 //legacy v3: "0x39a3c55742c0e011b6f65548e73cf589e1ae5e82dbfab449ca57f24c3bcd9514";
+export const _7K_META_PUBLISHED_AT =
+  "0x17c0b1f7a6ad73f51268f16b8c06c049eecc2f28a270cdd29c06e3d2dea23302";
+export const _7K_META_PACKAGE_ID =
+  "0x17c0b1f7a6ad73f51268f16b8c06c049eecc2f28a270cdd29c06e3d2dea23302";
+export const _7K_META_VAULT =
+  "0x9a8abd32fe5721307ce3b697cf982ee84e9ffbd58d667a4a199f1683c1a3d23c";
+export const _7K_META_CONFIG =
+  "0xbbb3a51877ed9b492f26f4e2181811cfb2bd70c532f6f7621263d122d5e96b56";

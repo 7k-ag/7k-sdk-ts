@@ -1,5 +1,95 @@
 # Swap
 
+## Introduction
+
+The Swap Service provides access to the Bluefin7K aggregator (formerly known as
+the 7K aggregator), which aggregates liquidity from multiple decentralized
+exchanges (DEXs) on the Sui blockchain. It intelligently routes swaps across
+various protocols to find the best available rates and execution paths for your
+token swaps.
+
+Key features:
+
+- **Multi-DEX aggregation**: Automatically routes through multiple Sui DEXs
+  including SuiSwap, Turbos, Cetus, Bluemove, Kriya, Aftermath, Flowx, Bluefin,
+  and many others
+- **Optimized routing**: Finds the best swap paths across different protocols to
+  maximize output amounts
+- **Quote generation**: Get accurate quotes with expected output amounts before
+  executing swaps
+- **Transaction building**: Build ready-to-sign transactions with configurable
+  slippage protection and commission options
+- **Gas estimation**: Estimate transaction costs in USD before execution
+- **Swap history**: Track your past swap transactions with detailed filtering
+  options
+- **Flexible configuration**: Customize sources, slippage tolerance, commission
+  rates, and more
+- **Source filtering**: Optionally specify which DEX sources to use or exclude
+  specific pools for routing optimization
+- **Commission system**: Built-in support for partner commissions and fee
+  distribution
+
+The aggregator uses advanced routing algorithms to split orders across multiple
+paths and protocols, ensuring you get the best possible exchange rates while
+minimizing price impact and gas costs.
+
+## Config
+
+Configuration is optional, but if provided, it must be set before invoking any
+SDK functions.
+
+### Set API Key
+
+You can use our SDK with a default rate limit without needing an API key.
+
+- For **frontend (in-browser) usage**, no API key is required, and the rate
+  limit cannot be increased.
+
+- For **backend (server-side) usage**, the API key is **optional** for default
+  usage. However, to request a **higher rate limit**, you must provide both an
+  **API key** and **partner information**.
+
+To request a rate limit increase, please submit your request at:
+
+🔗 <https://7k.ag/collab> and select **"SDK - increase request rate"**.
+
+| Usage    | API Key Required                      | Can Request Higher Rate Limit                |
+| -------- | ------------------------------------- | -------------------------------------------- |
+| Frontend | No                                    | No                                           |
+| Backend  | Optional (required to increase limit) | Yes (requires API Key & partner information) |
+
+```typescript
+import { Config } from "@7kprotocol/sdk-ts";
+
+Config.setApiKey("YOUR_API_KEY");
+console.log("API key", Config.getApiKey());
+```
+
+### Set BluefinX API key
+
+Setting a BluefinX API key is optional. However, if you'd like to use one — for
+example, to avoid rate limits when routing through BluefinX — you'll need to
+request an API key directly from Bluefin.
+
+```typescript
+import { Config } from "@7kprotocol/sdk-ts";
+
+Config.setBluefinXApiKey("YOUR_BLUEFINX_API_KEY");
+console.log("BluefinX API key", Config.getBluefinXApiKey());
+```
+
+### Set Sui Client
+
+```typescript
+import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
+import { Config } from "@7kprotocol/sdk-ts";
+
+const network = "mainnet";
+const suiClient = new SuiClient({ url: getFullnodeUrl(network) });
+Config.setSuiClient(suiClient);
+console.log("Sui client", Config.getSuiClient());
+```
+
 ## 1. Get Quote
 
 ```typescript

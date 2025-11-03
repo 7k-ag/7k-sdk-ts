@@ -1,5 +1,12 @@
 # @7kprotocol/sdk-ts
 
+## 3.5.0
+
+### Minor Changes
+
+- Meta Aggregator
+- New Liquidity: Cetus DLMM, Ferra DLMM + CLMM
+
 ## 3.4.1
 
 ### Patch Changes
