@@ -53,8 +53,9 @@ describe("Meta aggregator test", () => {
     });
     // console.log({
     //   status: res.effects.status.status,
-    //   events: res.events.find((e) => e.type.endsWith("::settle::Swap"))
-    //     ?.parsedJson,
+    //   events: res.events
+    //     .reverse()
+    //     .find((e) => e.type.endsWith("::settle::Swap"))?.parsedJson,
     //   quote,
     // });
   });

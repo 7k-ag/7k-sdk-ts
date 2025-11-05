@@ -19,3 +19,5 @@ export const _7K_META_VAULT =
   "0x9a8abd32fe5721307ce3b697cf982ee84e9ffbd58d667a4a199f1683c1a3d23c";
 export const _7K_META_CONFIG =
   "0xbbb3a51877ed9b492f26f4e2181811cfb2bd70c532f6f7621263d122d5e96b56";
+export const _7K_PARTNER_ADDRESS =
+  "0x93ead46c1e48a9b62e25b6787f2ea6f75caedabb21726f12431acc4381f5f4c5";
