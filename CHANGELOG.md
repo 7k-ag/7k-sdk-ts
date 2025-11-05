@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 3.5.1
+
+### Patch Changes
+
+- Add 7k's partner address to underlying aggregator.
+
 ## 3.5.0
 
 ### Minor Changes

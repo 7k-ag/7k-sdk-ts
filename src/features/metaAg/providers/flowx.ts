@@ -1,7 +1,13 @@
-import { AggregatorQuoter, TradeBuilder } from "@flowx-finance/sdk";
+import {
+  AggregatorQuoter,
+  Commission,
+  CommissionType,
+  TradeBuilder,
+} from "@flowx-finance/sdk";
 import { SuiClient } from "@mysten/sui/client";
 import { TransactionObjectArgument } from "@mysten/sui/transactions";
 import { v4 } from "uuid";
+import { _7K_PARTNER_ADDRESS } from "../../../constants/_7k";
 import {
   AgProvider,
   EProvider,
@@ -50,6 +56,15 @@ export class FlowxProvider implements AgProvider {
     const builder = new TradeBuilder("mainnet", options.quote.quote.routes);
     builder.sender(options.signer);
     builder.slippage(10000 * 100);
+    builder.commission(
+      new Commission(
+        _7K_PARTNER_ADDRESS,
+        options.quote.quote.coinOut,
+        CommissionType.PERCENTAGE,
+        0,
+        true,
+      ),
+    );
     const res = await builder.build().swap({
       tx: options.tx as any,
       client: this.client as any,

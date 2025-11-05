@@ -45,7 +45,7 @@ The Bluefin7K provider is built-in and doesn't require additional packages.
 Here's a simple example to get started:
 
 ```typescript
-import { Config, MetaAg } from "@7kprotocol/sdk-ts";
+import { MetaAg } from "@7kprotocol/sdk-ts";
 
 // Create MetaAggregator instance (using all default providers)
 const metaAg = new MetaAg();

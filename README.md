@@ -52,7 +52,7 @@ This package has peer dependencies that are required for core functionality:
 
 | Package                    | Version   | Purpose                      | Required For       |
 | -------------------------- | --------- | ---------------------------- | ------------------ |
-| `@mysten/sui`              | `^1.39.0` | Sui blockchain interaction   | Core functionality |
+| `@mysten/sui`              | `^1.44.0` | Sui blockchain interaction   | Core functionality |
 | `@pythnetwork/pyth-sui-js` | `^2.2.0`  | Pyth price feeds integration | Price feeds        |
 
 **Required peer dependencies:**

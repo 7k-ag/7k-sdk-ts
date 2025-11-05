@@ -5,8 +5,8 @@ import {
 } from "@pythnetwork/pyth-sui-js";
 import { v4 } from "uuid";
 import { Config } from "../../../config";
+import { _7K_PARTNER_ADDRESS } from "../../../constants/_7k";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
-import { SUI_ADDRESS_ZERO } from "../../../constants/sui";
 import { SourceDex } from "../../../types/aggregator";
 import {
   AgProvider,
@@ -73,7 +73,7 @@ export class BluefinProvider implements AgProvider {
       accountAddress: signer,
       commission: {
         commissionBps: 0,
-        partner: SUI_ADDRESS_ZERO,
+        partner: _7K_PARTNER_ADDRESS,
       },
       slippage: 1,
       extendTx: {

@@ -2,6 +2,7 @@ import { AggregatorClient, Env } from "@cetusprotocol/aggregator-sdk";
 import { SuiClient } from "@mysten/sui/client";
 import { TransactionObjectArgument } from "@mysten/sui/transactions";
 import { v4 } from "uuid";
+import { _7K_PARTNER_ADDRESS } from "../../../constants/_7k";
 import {
   AgProvider,
   CetusProviderOptions,
@@ -27,6 +28,8 @@ export class CetusProvider implements AgProvider {
       endpoint: options.api,
       env: Env.Mainnet,
       pythUrls: metaOptions.hermesApi ? [metaOptions.hermesApi] : [],
+      overlayFeeRate: 0,
+      overlayFeeReceiver: _7K_PARTNER_ADDRESS,
     });
   }
 
