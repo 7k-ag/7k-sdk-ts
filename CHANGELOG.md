@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 3.5.4
+
+### Patch Changes
+
+- Use 7K quote endpoint
+
 ## 3.5.2
 
 ### Patch Changes
