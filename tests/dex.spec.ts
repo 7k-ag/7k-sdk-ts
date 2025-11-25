@@ -447,7 +447,7 @@ describe("Compare gas usage between build tx v1 and build tx v2", () => {
   it("should routing success for build tx v2", async () => {
     await testBuildTxV2(
       client,
-      "0xc53c8cc31554dcf7e30b0432c998ffab5263bd6fd78907cf31515e6b16e4b6f0",
+      "0x56c9a128e9eb14f15f9a7f690ef47980c39fdaf4745163ce3fc38f86d068b856",
       {
         amountIn: "10000000000000",
         tokenIn:
