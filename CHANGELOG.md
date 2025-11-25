@@ -1,5 +1,11 @@
 # @7kprotocol/sdk-ts
 
+## 3.5.2
+
+### Patch Changes
+
+- Use Bluefin quote endpoint
+
 ## 3.5.1
 
 ### Patch Changes
