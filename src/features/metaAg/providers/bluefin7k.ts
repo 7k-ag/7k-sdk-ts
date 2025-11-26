@@ -26,13 +26,6 @@ export class Bluefin7kProvider implements QuoteProvider, AggregatorProvider {
     client: SuiClient,
   ) {
     if (options.apiKey) Config.setApiKey(options.apiKey);
-    if (
-      options.api &&
-      "setApi" in Config &&
-      typeof Config.setApi === "function"
-    ) {
-      Config.setApi(options.api);
-    }
     Config.setSuiClient(client);
   }
 
