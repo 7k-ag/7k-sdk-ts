@@ -10,10 +10,18 @@ import type {
   TransactionObjectArgument,
 } from "@mysten/sui/transactions";
 import type { Quote, SwapOptions } from "@naviprotocol/astros-aggregator-sdk";
-import { QuoteResponse, SourceDex } from "./aggregator";
+import type {
+  QuoteResponse,
+  SourceDex,
+} from "@bluefin-exchange/bluefin7k-aggregator-sdk";
+import {
+  QuoteResponse as LegacyQuoteResponse,
+  SourceDex as LegacySourceDex,
+} from "./aggregator";
 import { OkxSwapResponseData } from "./okx";
 
 export enum EProvider {
+  BLUEFIN7K_LEGACY = "bluefin7k_legacy",
   BLUEFIN7K = "bluefin7k",
   CETUS = "cetus",
   FLOWX = "flowx",
@@ -26,9 +34,14 @@ type ProviderBaseOptions = {
   apiKey?: string;
   disabled?: boolean;
 };
-export type BluefinProviderOptions = ProviderBaseOptions & {
-  sources?: SourceDex[];
+export type BluefinLegacyProviderOptions = ProviderBaseOptions & {
+  sources?: LegacySourceDex[];
   maxPaths?: number;
+  excludedPools?: string[];
+  targetPools?: string[];
+};
+export type Bluefin7kProviderOptions = ProviderBaseOptions & {
+  sources?: SourceDex[];
   excludedPools?: string[];
   targetPools?: string[];
 };
@@ -59,7 +72,8 @@ export type AstroProviderOptions = ProviderBaseOptions &
 export interface MetaAgOptions {
   /**If not specified, all providers will be used */
   providers?: {
-    [EProvider.BLUEFIN7K]?: BluefinProviderOptions;
+    [EProvider.BLUEFIN7K_LEGACY]?: BluefinLegacyProviderOptions;
+    [EProvider.BLUEFIN7K]?: Bluefin7kProviderOptions;
     [EProvider.FLOWX]?: FlowxProviderOptions;
     [EProvider.CETUS]?: CetusProviderOptions;
     [EProvider.OKX]?: OkxProviderOptions;
@@ -138,6 +152,10 @@ export type FlowxQuoteResponse = Awaited<
 >;
 export type MetaQuote = (
   | {
+      provider: EProvider.BLUEFIN7K_LEGACY;
+      quote: LegacyQuoteResponse;
+    }
+  | {
       provider: EProvider.BLUEFIN7K;
       quote: QuoteResponse;
     }
@@ -153,7 +171,7 @@ export type MetaQuote = (
       provider: EProvider.OKX;
       quote: OkxSwapResponseData;
     }
-  | { provider: EProvider.BLUEFINX; quote: QuoteResponse }
+  | { provider: EProvider.BLUEFINX; quote: LegacyQuoteResponse }
   | { provider: EProvider.ASTRO; quote: Quote }
 ) & {
   /** uuid to keep track the quote result, used to apply simulation result on quote on callback `onSimulated`*/
@@ -185,6 +203,7 @@ export interface SwapAPIProvider extends QuoteProvider {
 
 export interface AggregatorProvider extends QuoteProvider {
   readonly kind:
+    | EProvider.BLUEFIN7K_LEGACY
     | EProvider.BLUEFIN7K
     | EProvider.CETUS
     | EProvider.FLOWX
@@ -195,6 +214,7 @@ export interface AggregatorProvider extends QuoteProvider {
 export const isAggregatorProvider = (
   provider: QuoteProvider,
 ): provider is AggregatorProvider =>
+  provider.kind === EProvider.BLUEFIN7K_LEGACY ||
   provider.kind === EProvider.BLUEFIN7K ||
   provider.kind === EProvider.CETUS ||
   provider.kind === EProvider.FLOWX ||

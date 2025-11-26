@@ -9,7 +9,7 @@ import { _7K_PARTNER_ADDRESS } from "../../../constants/_7k";
 import { SourceDex } from "../../../types/aggregator";
 import {
   AggregatorProvider,
-  BluefinProviderOptions,
+  BluefinLegacyProviderOptions,
   EProvider,
   MetaAgOptions,
   MetaQuote,
@@ -24,10 +24,12 @@ const WORMHOLE_STATE_ID =
   "0xaeab97f96cf9877fee2883315d459552b2b921edc16d7ceac6eab944dd88919c";
 const PYTH_STATE_ID =
   "0x1f9310238ee9298fb703c3419030b35b22bb1cc37113e3bb5007c99aec79e5b8";
-export class BluefinProvider implements QuoteProvider, AggregatorProvider {
-  readonly kind = EProvider.BLUEFIN7K;
+export class BluefinLegacyProvider
+  implements QuoteProvider, AggregatorProvider
+{
+  readonly kind = EProvider.BLUEFIN7K_LEGACY;
   constructor(
-    private readonly options: BluefinProviderOptions,
+    private readonly options: BluefinLegacyProviderOptions,
     private readonly metaOptions: Required<MetaAgOptions>,
     client: SuiClient,
   ) {
@@ -57,7 +59,7 @@ export class BluefinProvider implements QuoteProvider, AggregatorProvider {
     });
     return {
       id: v4(),
-      provider: EProvider.BLUEFIN7K,
+      provider: EProvider.BLUEFIN7K_LEGACY,
       quote,
       amountIn: quote.swapAmountWithDecimal,
       rawAmountOut: quote.returnAmountWithDecimal,
@@ -67,7 +69,7 @@ export class BluefinProvider implements QuoteProvider, AggregatorProvider {
     };
   }
   async swap({ quote, signer, tx, coinIn }: MetaSwapOptions) {
-    assert(quote.provider === EProvider.BLUEFIN7K, "Invalid quote");
+    assert(quote.provider === EProvider.BLUEFIN7K_LEGACY, "Invalid quote");
     const { coinOut } = await buildTxV2({
       quoteResponse: quote.quote,
       accountAddress: signer,

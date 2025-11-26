@@ -13,7 +13,8 @@ import { normalizeStructTag, toBase64 } from "@mysten/sui/utils";
 import { SUI_ADDRESS_ZERO } from "../../constants/sui";
 import {
   AstroProviderOptions,
-  BluefinProviderOptions,
+  Bluefin7kProviderOptions,
+  BluefinLegacyProviderOptions,
   BluefinXProviderOptions,
   CetusProviderOptions,
   EProvider,
@@ -38,7 +39,7 @@ import {
   simulateBluefinX,
   timeout,
 } from "./common";
-import { BluefinProvider } from "./providers/bluefin";
+import { BluefinLegacyProvider } from "./providers/bluefin7kLegacy";
 import { BluefinXProvider } from "./providers/bluefinx";
 import { OkxProvider, simulateOKXSwap } from "./providers/okx";
 
@@ -82,9 +83,19 @@ export class MetaAg {
     const providerOptions = this.options.providers[provider];
     assert(!!providerOptions, `Provider not found: ${provider}`);
     switch (provider) {
+      case EProvider.BLUEFIN7K_LEGACY:
+        this.providers[EProvider.BLUEFIN7K_LEGACY] = new BluefinLegacyProvider(
+          providerOptions as BluefinLegacyProviderOptions,
+          this.options,
+          this.client,
+        );
+        break;
       case EProvider.BLUEFIN7K:
-        this.providers[EProvider.BLUEFIN7K] = new BluefinProvider(
-          providerOptions as BluefinProviderOptions,
+        const { Bluefin7kProvider } = await import(
+          "./providers/bluefin7k"
+        ).catch(catchImportError(EProvider.BLUEFIN7K));
+        this.providers[EProvider.BLUEFIN7K] = new Bluefin7kProvider(
+          providerOptions as Bluefin7kProviderOptions,
           this.options,
           this.client,
         );
@@ -357,7 +368,8 @@ const catchImportError = (provider: EProvider) => {
     const map = {
       [EProvider.CETUS]: "@cetusprotocol/aggregator-sdk",
       [EProvider.FLOWX]: "@flowx-finance/sdk",
-      [EProvider.BLUEFIN7K]: "@7kprotocol/sdk-ts",
+      [EProvider.BLUEFIN7K_LEGACY]: "@7kprotocol/sdk-ts",
+      [EProvider.BLUEFIN7K]: "@bluefin-exchange/bluefin7k-aggregator-sdk",
       [EProvider.ASTRO]: "@naviprotocol/astros-aggregator-sdk",
       [EProvider.OKX]: "",
       [EProvider.BLUEFINX]: "",

@@ -1,4 +1,5 @@
 import "mocha";
+import "./setup";
 
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { normalizeSuiAddress } from "@mysten/sui/utils";
