@@ -28,15 +28,27 @@ import { getConfig } from "./config";
  * 2. Merging redundant swaps to the same pool within each wave
  * 3. Processing waves sequentially, passing intermediate tokens between waves
  */
-export const buildTxV2 = async ({
-  quoteResponse,
-  accountAddress,
-  slippage,
-  commission: __commission,
-  devInspect,
-  extendTx,
-  isSponsored,
-}: BuildTxParams): Promise<BuildTxResult> => {
+export const buildTxV2 = async (
+  params: BuildTxParams,
+): Promise<BuildTxResult> => {
+  return buildTxV2Int(params);
+};
+
+export const buildTxV2Int = async (
+  {
+    quoteResponse,
+    accountAddress,
+    slippage,
+    commission: __commission,
+    devInspect,
+    extendTx,
+    isSponsored,
+  }: BuildTxParams,
+  beforeBuildBluefinXTx?: (
+    tx: Transaction,
+    coinOut: TransactionObjectArgument | undefined,
+  ) => void,
+): Promise<BuildTxResult> => {
   const isBluefinX = isBluefinXRouting(quoteResponse);
   const _commission = {
     ...__commission,
@@ -116,6 +128,7 @@ export const buildTxV2 = async ({
   }
 
   if (isBluefinX) {
+    beforeBuildBluefinXTx?.(tx, coinOut);
     return {
       tx: await buildBluefinXTx(tx, accountAddress, quoteResponse),
       coinOut,
@@ -125,7 +138,7 @@ export const buildTxV2 = async ({
   return { tx, coinOut };
 };
 
-export const optimize = async (
+const optimize = async (
   pythMap: Record<string, string>,
   config: Config,
   routes: TxSorSwap[][],

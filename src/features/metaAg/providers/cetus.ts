@@ -1,21 +1,21 @@
 import { AggregatorClient, Env } from "@cetusprotocol/aggregator-sdk";
 import { SuiClient } from "@mysten/sui/client";
-import { TransactionObjectArgument } from "@mysten/sui/transactions";
 import { v4 } from "uuid";
 import { _7K_PARTNER_ADDRESS } from "../../../constants/_7k";
 import {
-  AgProvider,
+  AggregatorProvider,
   CetusProviderOptions,
   EProvider,
   MetaAgOptions,
   MetaQuote,
   MetaQuoteOptions,
   MetaSwapOptions,
+  QuoteProvider,
 } from "../../../types/metaAg";
 import { assert } from "../../../utils/condition";
 
-export class CetusProvider implements AgProvider {
-  kind = EProvider.CETUS;
+export class CetusProvider implements QuoteProvider, AggregatorProvider {
+  readonly kind = EProvider.CETUS;
   private readonly cetusClient: AggregatorClient;
   constructor(
     private readonly options: CetusProviderOptions,
@@ -37,8 +37,8 @@ export class CetusProvider implements AgProvider {
     const quote = await this.cetusClient.findRouters({
       amount: quoteOptions.amountIn,
       byAmountIn: true,
-      from: quoteOptions.coinInType,
-      target: quoteOptions.coinOutType,
+      from: quoteOptions.coinTypeIn,
+      target: quoteOptions.coinTypeOut,
       providers: this.options.sources,
       splitCount: this.options.splitCount,
       splitAlgorithm: this.options.splitAlgorithm,
@@ -54,12 +54,12 @@ export class CetusProvider implements AgProvider {
       amountIn: quote.amountIn.toString() || "0",
       rawAmountOut: quote.amountOut.toString() || "0",
       amountOut: quote.amountOut.toString() || "0",
-      coinTypeIn: quoteOptions.coinInType,
-      coinTypeOut: quoteOptions.coinOutType,
+      coinTypeIn: quoteOptions.coinTypeIn,
+      coinTypeOut: quoteOptions.coinTypeOut,
     };
   }
 
-  async swap(options: MetaSwapOptions): Promise<TransactionObjectArgument> {
+  async swap(options: MetaSwapOptions) {
     assert(options.quote.provider === EProvider.CETUS, "Expect Cetus quote");
     const coinOut = await this.cetusClient.routerSwap({
       inputCoin: options.coinIn,

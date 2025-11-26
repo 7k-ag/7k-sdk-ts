@@ -1,6 +1,6 @@
 {
   "name": "@7kprotocol/sdk-ts",
-  "version": "3.5.1",
+  "version": "3.5.2-beta.1",
   "description": "",
   "exports": {
     ".": {
@@ -79,6 +79,7 @@
   },
   "optionalDependencies": {
     "@cetusprotocol/aggregator-sdk": "^1.4.1",
-    "@flowx-finance/sdk": "^1.13.8"
+    "@flowx-finance/sdk": "^1.13.8",
+    "@naviprotocol/astros-aggregator-sdk": "^1.9.1"
   }
 }

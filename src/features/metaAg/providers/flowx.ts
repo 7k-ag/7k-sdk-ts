@@ -9,17 +9,18 @@ import { TransactionObjectArgument } from "@mysten/sui/transactions";
 import { v4 } from "uuid";
 import { _7K_PARTNER_ADDRESS } from "../../../constants/_7k";
 import {
-  AgProvider,
+  AggregatorProvider,
   EProvider,
   FlowxProviderOptions,
   MetaQuote,
   MetaQuoteOptions,
   MetaSwapOptions,
+  QuoteProvider,
 } from "../../../types/metaAg";
 import { assert } from "../../../utils/condition";
 
-export class FlowxProvider implements AgProvider {
-  kind = EProvider.FLOWX;
+export class FlowxProvider implements QuoteProvider, AggregatorProvider {
+  readonly kind = EProvider.FLOWX;
   private quoter: AggregatorQuoter;
   constructor(
     private readonly options: FlowxProviderOptions,
@@ -31,8 +32,8 @@ export class FlowxProvider implements AgProvider {
   async quote(quoteOptions: MetaQuoteOptions): Promise<MetaQuote> {
     const quote = await this.quoter.getRoutes({
       amountIn: quoteOptions.amountIn,
-      tokenIn: quoteOptions.coinInType,
-      tokenOut: quoteOptions.coinOutType,
+      tokenIn: quoteOptions.coinTypeIn,
+      tokenOut: quoteOptions.coinTypeOut,
       includeSources: this.options.sources,
       excludePools: this.options.excludePools,
       excludeSources: this.options.excludeSources,
@@ -46,8 +47,8 @@ export class FlowxProvider implements AgProvider {
       amountIn: quote.amountIn?.toString() ?? "0",
       rawAmountOut: quote.amountOut?.toString() ?? "0",
       amountOut: quote.amountOut?.toString() ?? "0",
-      coinTypeIn: quoteOptions.coinInType,
-      coinTypeOut: quoteOptions.coinOutType,
+      coinTypeIn: quoteOptions.coinTypeIn,
+      coinTypeOut: quoteOptions.coinTypeOut,
     };
   }
 
@@ -70,6 +71,6 @@ export class FlowxProvider implements AgProvider {
       client: this.client as any,
       coinIn: options.coinIn as any,
     });
-    return res! as TransactionObjectArgument;
+    return res!;
   }
 }

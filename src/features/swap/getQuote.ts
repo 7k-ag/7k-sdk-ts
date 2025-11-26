@@ -1,4 +1,5 @@
 import { normalizeStructTag, normalizeSuiObjectId } from "@mysten/sui/utils";
+import { Config } from "../../config";
 import { fetchClient } from "../../config/fetchClient";
 import { API_ENDPOINTS } from "../../constants/apiEndpoints";
 import {
@@ -25,8 +26,6 @@ interface Params {
   taker?: string;
   /** If true, excludes all liquidity sources that depend on pyth price feeds - pyth client use tx.gas to pay the fee*/
   isSponsored?: boolean;
-  /** Custom API endpoint */
-  api?: string;
   /** Maximum number of paths to consider for the quote */
   maxPaths?: number;
 }
@@ -77,7 +76,6 @@ export async function getQuote({
   excludedPools,
   taker,
   isSponsored,
-  api,
   maxPaths,
 }: Params) {
   let sources = _sources;
@@ -109,7 +107,7 @@ export async function getQuote({
     params.append("max_paths", maxPaths.toString());
   }
   const response = await fetchClient(
-    `${api || API_ENDPOINTS.MAIN}/quote?${params}`,
+    `${Config.getApi() || API_ENDPOINTS.MAIN}/quote?${params}`,
   );
 
   if (!response.ok) {

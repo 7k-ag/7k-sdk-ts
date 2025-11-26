@@ -266,6 +266,9 @@ export const buildBluefinXTx = async (
   if (extra.quoteExpiresAtUtcMillis < Date.now()) {
     throw new Error("Quote expired");
   }
+  if (extra.taker !== accountAddress) {
+    throw new Error("Sender mismatch with quote");
+  }
   tx.setSenderIfNotSet(accountAddress);
   const bytes = await tx.build({
     client: Config.getSuiClient(),

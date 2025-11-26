@@ -6,16 +6,16 @@ import {
 import { v4 } from "uuid";
 import { Config } from "../../../config";
 import { _7K_PARTNER_ADDRESS } from "../../../constants/_7k";
-import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { SourceDex } from "../../../types/aggregator";
 import {
-  AgProvider,
+  AggregatorProvider,
   BluefinProviderOptions,
   EProvider,
   MetaAgOptions,
   MetaQuote,
   MetaQuoteOptions,
   MetaSwapOptions,
+  QuoteProvider,
 } from "../../../types/metaAg";
 import { assert } from "../../../utils/condition";
 import { buildTxV2 } from "../../swap/buildTxV2";
@@ -24,8 +24,8 @@ const WORMHOLE_STATE_ID =
   "0xaeab97f96cf9877fee2883315d459552b2b921edc16d7ceac6eab944dd88919c";
 const PYTH_STATE_ID =
   "0x1f9310238ee9298fb703c3419030b35b22bb1cc37113e3bb5007c99aec79e5b8";
-export class BluefinProvider implements AgProvider {
-  kind = EProvider.BLUEFIN7K;
+export class BluefinProvider implements QuoteProvider, AggregatorProvider {
+  readonly kind = EProvider.BLUEFIN7K;
   constructor(
     private readonly options: BluefinProviderOptions,
     private readonly metaOptions: Required<MetaAgOptions>,
@@ -40,6 +40,7 @@ export class BluefinProvider implements AgProvider {
       this.metaOptions.hermesApi,
     );
     if (options.apiKey) Config.setApiKey(options.apiKey);
+    if (options.api) Config.setApi(options.api);
     Config.setSuiClient(client);
     Config.setPythClient(pythClient);
     Config.setPythConnection(pythConnection);
@@ -47,9 +48,8 @@ export class BluefinProvider implements AgProvider {
   async quote(options: MetaQuoteOptions): Promise<MetaQuote> {
     const quote = await getQuote({
       amountIn: options.amountIn,
-      tokenIn: options.coinInType,
-      tokenOut: options.coinOutType,
-      api: this.options.api || API_ENDPOINTS.MAIN,
+      tokenIn: options.coinTypeIn,
+      tokenOut: options.coinTypeOut,
       sources: this.options.sources as SourceDex[],
       maxPaths: this.options.maxPaths,
       excludedPools: this.options.excludedPools,
@@ -62,8 +62,8 @@ export class BluefinProvider implements AgProvider {
       amountIn: quote.swapAmountWithDecimal,
       rawAmountOut: quote.returnAmountWithDecimal,
       amountOut: quote.returnAmountWithDecimal,
-      coinTypeIn: options.coinInType,
-      coinTypeOut: options.coinOutType,
+      coinTypeIn: options.coinTypeIn,
+      coinTypeOut: options.coinTypeOut,
     };
   }
   async swap({ quote, signer, tx, coinIn }: MetaSwapOptions) {

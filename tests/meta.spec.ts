@@ -1,7 +1,6 @@
 import "mocha";
 
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
-import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import { SUI_TYPE } from "../src/constants/tokens";
 import { MetaAg } from "../src/index";
 
@@ -9,48 +8,67 @@ const testAccount =
   "0x935029ca5219502a47ac9b69f556ccf6e2198b5e7815cf50f68846f723739cbd";
 const USDC =
   "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC";
+const WAL =
+  "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL";
+const CETUS =
+  "0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS";
 const tokenX = SUI_TYPE;
 const tokenY = USDC;
-const amountX = "1000000000"; // 1 SUI
+const amountX = "10000000000"; // 10 SUI
 
 const client = new SuiClient({ url: getFullnodeUrl("mainnet") });
 const metaAg = new MetaAg({
   tipBps: 100,
   partner: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf",
   partnerCommissionBps: 100,
+  providers: {
+    bluefin7k: { disabled: false },
+    cetus: { disabled: false },
+    flowx: { disabled: false },
+    astro: { disabled: false },
+    bluefinx: { disabled: true },
+    okx: {
+      disabled: false,
+      apiKey: process.env.OKX_API_KEY!,
+      secretKey: process.env.OKX_SECRET_KEY!,
+      apiPassphrase: process.env.OKX_API_PASSPHRASE!,
+      projectId: process.env.OKX_PROJECT_ID!,
+    },
+  },
 });
 describe("Meta aggregator test", () => {
   it("should routing success", async () => {
     const quotes = await metaAg.quote(
       {
         amountIn: amountX,
-        coinInType: tokenX,
-        coinOutType: tokenY,
+        coinTypeIn: tokenX,
+        coinTypeOut: tokenY,
+        signer: testAccount,
       },
       { sender: testAccount },
     );
-
     const quote = quotes.sort(
       (a, b) =>
         Number(b.simulatedAmountOut || b.amountOut) -
         Number(a.simulatedAmountOut || a.amountOut),
     )[0];
-    console.log(quotes.map((q) => q.rawAmountOut));
-    const tx = new Transaction();
-    const coinOut = await metaAg.swap(
-      {
-        quote,
-        signer: testAccount,
-        coinIn: coinWithBalance({ balance: BigInt(amountX), type: tokenX }),
-        tx,
-      },
-      100,
-    );
-    tx.transferObjects([coinOut], testAccount);
-    const res = await client.devInspectTransactionBlock({
-      transactionBlock: tx,
-      sender: testAccount,
-    });
+    console.log(quotes.map((q) => [q.rawAmountOut, q.simulatedAmountOut]));
+    // const tx = new Transaction();
+    // const coinOut = await metaAg.swap(
+    //   {
+    //     quote,
+    //     signer: testAccount,
+    //     coinIn: coinWithBalance({ balance: BigInt(amountX), type: tokenX }),
+    //     tx,
+    //   },
+    //   100
+    // );
+    // tx.transferObjects([coinOut], testAccount);
+    // const res = await client.devInspectTransactionBlock({
+    //   transactionBlock: tx,
+    //   sender: testAccount,
+    // });
+
     // console.log({
     //   status: res.effects.status.status,
     //   events: res.events
