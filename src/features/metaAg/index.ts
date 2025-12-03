@@ -31,6 +31,7 @@ import {
   QuoteProvider,
 } from "../../types/metaAg";
 import { assert } from "../../utils/condition";
+import { isSystemAddress } from "../../utils/sui";
 import { SuiClientUtils } from "../../utils/SuiClientUtils";
 import { getExpectedReturn } from "../swap/buildTx";
 import {
@@ -91,9 +92,10 @@ export class MetaAg {
         );
         break;
       case EProvider.BLUEFIN7K:
-        const { Bluefin7kProvider } = await import(
-          "./providers/bluefin7k"
-        ).catch(catchImportError(EProvider.BLUEFIN7K));
+        const { Bluefin7kProvider } =
+          await import("./providers/bluefin7k").catch(
+            catchImportError(EProvider.BLUEFIN7K),
+          );
         this.providers[EProvider.BLUEFIN7K] = new Bluefin7kProvider(
           providerOptions as Bluefin7kProviderOptions,
           this.options,
@@ -292,6 +294,7 @@ export class MetaAg {
       isAggregatorProvider(provider),
       `Provider does not support swap: ${provider.kind}`,
     );
+    assert(!isSystemAddress(options.signer), "Invalid signer address");
     const coinOut = await provider.swap(options);
     options.tx.add(
       metaSettle(
@@ -316,6 +319,7 @@ export class MetaAg {
     options: MetaFastSwapOptions,
     getTransactionBlockParams?: Omit<GetTransactionBlockParams, "digest">,
   ): Promise<SuiTransactionBlockResponse> {
+    assert(!isSystemAddress(options.signer), "Invalid signer address");
     const provider = await this._getProvider(options.quote.provider);
     if (isAggregatorProvider(provider)) {
       return this._fastSwap(options, getTransactionBlockParams);

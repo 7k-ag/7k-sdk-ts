@@ -26,6 +26,7 @@ import {
 } from "../../../types/metaAg";
 import { OkxSwapRequest, OkxSwapResponse } from "../../../types/okx";
 import { assert } from "../../../utils/condition";
+import { isSystemAddress } from "../../../utils/sui";
 import { SuiClientUtils } from "../../../utils/SuiClientUtils";
 import { metaSettle, simulateSwapTx } from "../common";
 
@@ -47,7 +48,7 @@ export class OkxProvider implements QuoteProvider, SwapAPIProvider {
     coinTypeOut,
     signer,
   }: MetaQuoteOptions): Promise<MetaQuote | null> {
-    if (!signer) return null;
+    if (!signer || isSystemAddress(signer)) return null;
     const request: OkxSwapRequest = {
       chainId: CHAIN_ID,
       amount: amountIn,
