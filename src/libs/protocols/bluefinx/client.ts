@@ -15,7 +15,7 @@ const request = async <T = any>(path: string, body: any) => {
   if (bluefinXApiKey) {
     headers.set("Bluefin-X-API-Key", bluefinXApiKey);
   }
-  const res = await fetch(`${API_ENDPOINTS.MAIN}/${path}`, {
+  const res = await fetch(`${Config.getApi() || API_ENDPOINTS.MAIN}/${path}`, {
     method: "POST",
     body: JSON.stringify(body),
     headers,

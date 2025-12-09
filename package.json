@@ -1,6 +1,6 @@
 {
   "name": "@7kprotocol/sdk-ts",
-  "version": "3.5.4",
+  "version": "3.6.0",
   "description": "",
   "exports": {
     ".": {
@@ -41,6 +41,7 @@
     "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
     "prepack": "npm run build",
     "test": "mocha --timeout 60000",
+    "pack:local": "npm run build && npm pack",
     "publish:patch": "npm version patch --no-git-tag-version && npm publish --access public",
     "publish:minor": "npm version minor --no-git-tag-version && npm publish --access public",
     "publish:major": "npm version major --no-git-tag-version && npm publish --access public",
@@ -78,6 +79,7 @@
     "uuid": "^13.0.0"
   },
   "optionalDependencies": {
+    "@bluefin-exchange/bluefin7k-aggregator-sdk": "^5.1.4",
     "@cetusprotocol/aggregator-sdk": "^1.4.1",
     "@flowx-finance/sdk": "^1.13.8"
   }

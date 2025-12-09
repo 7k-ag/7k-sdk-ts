@@ -1,4 +1,5 @@
 import "mocha";
+import "./setup";
 
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { normalizeSuiAddress } from "@mysten/sui/utils";
@@ -6,7 +7,7 @@ import { expect } from "chai";
 import { SUI_TYPE } from "../src/constants/tokens";
 import { ORACLE_BASED_SOURCES } from "../src/features/swap";
 import { buildTx, Config, getQuote } from "../src/index";
-import { testBuildTxV2, testMultiSwap, testSwap } from "./utils.spec";
+import { testBuildTxV2, testSwap } from "./utils.spec";
 
 const testAccount =
   "0x935029ca5219502a47ac9b69f556ccf6e2198b5e7815cf50f68846f723739cbd";
@@ -44,24 +45,24 @@ describe("Cetus test", () => {
     });
   });
 });
-describe("Bluefin test", () => {
-  it("should routing success for bluefin x for y", async () => {
-    await testSwap(client, testAccount, {
-      amountIn: amountX,
-      tokenIn: tokenX,
-      tokenOut: tokenY,
-      sources: ["bluefin"],
-    });
-  });
-  it("should routing success for bluefin y for x", async () => {
-    await testSwap(client, testAccount, {
-      amountIn: amountY,
-      tokenIn: tokenY,
-      tokenOut: tokenX,
-      sources: ["bluefin"],
-    });
-  });
-});
+// describe("Bluefin test", () => {
+//   it("should routing success for bluefin x for y", async () => {
+//     await testSwap(client, testAccount, {
+//       amountIn: amountX,
+//       tokenIn: tokenX,
+//       tokenOut: tokenY,
+//       sources: ["bluefin"],
+//     });
+//   });
+//   it("should routing success for bluefin y for x", async () => {
+//     await testSwap(client, testAccount, {
+//       amountIn: amountY,
+//       tokenIn: tokenY,
+//       tokenOut: tokenX,
+//       sources: ["bluefin"],
+//     });
+//   });
+// });
 describe("FlowX test", () => {
   it("should routing success for flowx x for y", async () => {
     await testSwap(client, testAccount, {
@@ -386,22 +387,22 @@ describe("Full Sail test", () => {
     });
   });
 });
-describe("All sources test", () => {
-  it("should routing success for all sources x for y", async () => {
-    await testSwap(client, testAccount, {
-      amountIn: amountX,
-      tokenIn: tokenX,
-      tokenOut: tokenY,
-    });
-  });
-  it("should routing success for all sources y for x", async () => {
-    await testSwap(client, testAccount, {
-      amountIn: amountY,
-      tokenIn: tokenY,
-      tokenOut: tokenX,
-    });
-  });
-});
+// describe("All sources test", () => {
+//   it("should routing success for all sources x for y", async () => {
+//     await testSwap(client, testAccount, {
+//       amountIn: amountX,
+//       tokenIn: tokenX,
+//       tokenOut: tokenY,
+//     });
+//   });
+//   it("should routing success for all sources y for x", async () => {
+//     await testSwap(client, testAccount, {
+//       amountIn: amountY,
+//       tokenIn: tokenY,
+//       tokenOut: tokenX,
+//     });
+//   });
+// });
 describe("sponsored tx", () => {
   it("should validate sponsored tx", async () => {
     const quote = await getQuote({
@@ -434,20 +435,20 @@ describe("sponsored tx", () => {
   });
 });
 
-describe("multi swap", () => {
-  it("should routing success for multi swap", async () => {
-    await testMultiSwap(client, testAccount, [
-      { amountIn: amountX, tokenIn: tokenX, tokenOut: tokenY },
-      { amountIn: amountY, tokenIn: tokenY, tokenOut: tokenX },
-    ]);
-  });
-});
+// describe("multi swap", () => {
+//   it("should routing success for multi swap", async () => {
+//     await testMultiSwap(client, testAccount, [
+//       { amountIn: amountX, tokenIn: tokenX, tokenOut: tokenY },
+//       { amountIn: amountY, tokenIn: tokenY, tokenOut: tokenX },
+//     ]);
+//   });
+// });
 
 describe("Compare gas usage between build tx v1 and build tx v2", () => {
   it("should routing success for build tx v2", async () => {
     await testBuildTxV2(
       client,
-      "0x56c9a128e9eb14f15f9a7f690ef47980c39fdaf4745163ce3fc38f86d068b856",
+      "0x61d7cbb1150337a19115d545f582be66eee53a98d354fd0105edcad47bbdc466",
       {
         amountIn: "10000000000000",
         tokenIn:

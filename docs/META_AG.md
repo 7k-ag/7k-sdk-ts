@@ -3,14 +3,14 @@
 ## Introduction
 
 Meta Aggregator is a unified interface that aggregates quotes from multiple DEX
-aggregators (Bluefin7K, Flowx, Cetus) to provide the best swap rates. It
+aggregators (Bluefin7K, Flowx, Cetus, OKX) to provide the best swap rates. It
 compares quotes across different providers and allows you to choose the most
 favorable one based on output amount, gas costs, or other metrics.
 
 Key features:
 
-- **Multi-provider quotes**: Get quotes from Bluefin7K, Flowx, and Cetus in
-  parallel
+- **Multi-provider quotes**: Get quotes from multiple providers in parallel
+  (Bluefin7K, Flowx, Cetus, OKX)
 - **Simulation support**: Simulate transactions to get actual output amounts and
   gas estimates
 - **Unified interface**: Single API to interact with multiple aggregators
@@ -31,14 +31,15 @@ To use specific aggregator providers, you may need to install their respective
 SDKs:
 
 ```bash
+# For Bluefin7K aggregator
+npm install @bluefin-exchange/bluefin7k-aggregator-sdk
+
 # For Cetus aggregator
 npm install @cetusprotocol/aggregator-sdk
 
 # For Flowx aggregator
 npm install @flowx-finance/sdk
 ```
-
-The Bluefin7K provider is built-in and doesn't require additional packages.
 
 ## Quick Start
 
@@ -53,8 +54,8 @@ const metaAg = new MetaAg();
 // Get quotes
 const quotes = await metaAg.quote({
   amountIn: "1000000000", // 1 SUI
-  coinInType: "0x2::sui::SUI",
-  coinOutType:
+  coinTypeIn: "0x2::sui::SUI",
+  coinTypeOut:
     "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
 });
 
@@ -102,9 +103,10 @@ Each provider can be configured with provider-specific options:
 | `apiKey`        | `string`      | API key for Bluefin7K           |
 | `disabled`      | `boolean`     | Disable this provider           |
 | `sources`       | `SourceDex[]` | Specific DEX sources to include |
-| `maxPaths`      | `number`      | Maximum routing paths           |
 | `excludedPools` | `string[]`    | Pool addresses to exclude       |
 | `targetPools`   | `string[]`    | Pool addresses to target        |
+
+**Note:** Requires `@bluefin-exchange/bluefin7k-aggregator-sdk` package.
 
 **Flowx Provider:**
 
@@ -118,6 +120,8 @@ Each provider can be configured with provider-specific options:
 | `excludeSources`           | `Protocol[]` | Protocols to exclude          |
 | `maxHops`                  | `number`     | Maximum hops in route         |
 | `splitDistributionPercent` | `number`     | Split distribution percentage |
+
+**Note:** Requires `@flowx-finance/sdk` package.
 
 **Cetus Provider:**
 
@@ -133,6 +137,22 @@ Each provider can be configured with provider-specific options:
 | `depth`            | `number`                  | Search depth                |
 | `liquidityChanges` | `PreSwapLpChangeParams[]` | Liquidity change parameters |
 
+**Note:** Requires `@cetusprotocol/aggregator-sdk` package.
+
+**OKX Provider:**
+
+| Parameter       | Type      | Description                   |
+| --------------- | --------- | ----------------------------- |
+| `apiKey`        | `string`  | OKX API key (required)        |
+| `secretKey`     | `string`  | OKX secret key (required)     |
+| `apiPassphrase` | `string`  | OKX API passphrase (required) |
+| `projectId`     | `string`  | OKX project ID (required)     |
+| `api`           | `string`  | OKX API endpoint (optional)   |
+| `disabled`      | `boolean` | Disable this provider         |
+
+**Note:** OKX is a SwapAPI provider that executes swaps via API. No additional
+package required.
+
 #### Constructor Example
 
 ```typescript
@@ -142,8 +162,7 @@ const metaAg = new MetaAg({
     bluefin7k: {
       apiKey: "your-bluefin-api-key",
       sources: ["suiswap", "turbos", "cetus"],
-      maxPaths: 3,
-      disabled: true, // explicit disable
+      disabled: false,
     },
     flowx: {
       apiKey: "your-flowx-api-key",
@@ -174,12 +193,13 @@ Get quotes from all enabled providers in parallel.
 
 **options:**
 
-| Parameter     | Type     | Description                                                                                                         | Required             |
-| ------------- | -------- | ------------------------------------------------------------------------------------------------------------------- | -------------------- |
-| `amountIn`    | `string` | Input amount as string (e.g., "1000000000" for 1 SUI)                                                               | Yes                  |
-| `coinInType`  | `string` | Coin type for input token (e.g., "0x2::sui::SUI")                                                                   | Yes                  |
-| `coinOutType` | `string` | Coin type for output token (e.g., "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC") | Yes                  |
-| `timeout`     | `number` | Timeout in milliseconds for each quote request                                                                      | No (default: 2000ms) |
+| Parameter     | Type     | Description                                                                                                         | Required                         |
+| ------------- | -------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `amountIn`    | `string` | Input amount as string (e.g., "1000000000" for 1 SUI)                                                               | Yes                              |
+| `coinTypeIn`  | `string` | Coin type for input token (e.g., "0x2::sui::SUI")                                                                   | Yes                              |
+| `coinTypeOut` | `string` | Coin type for output token (e.g., "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC") | Yes                              |
+| `signer`      | `string` | Signer address (required for SwapAPI providers like OKX)                                                            | No (required for some providers) |
+| `timeout`     | `number` | Timeout in milliseconds for each quote request                                                                      | No (default: 2000ms)             |
 
 **simulation (optional):**
 
@@ -193,18 +213,18 @@ Get quotes from all enabled providers in parallel.
 
 Array of `MetaQuote` objects with the following structure:
 
-| Property             | Type             | Description                                                           |
-| -------------------- | ---------------- | --------------------------------------------------------------------- |
-| `id`                 | `string`         | Unique quote ID (UUID)                                                |
-| `provider`           | `EProvider`      | Provider that generated this quote ("bluefin7k", "flowx", or "cetus") |
-| `quote`              | `object`         | Raw quote response from the provider                                  |
-| `coinTypeIn`         | `string`         | Input coin type                                                       |
-| `coinTypeOut`        | `string`         | Output coin type                                                      |
-| `amountIn`           | `string`         | Input amount as string                                                |
-| `rawAmountOut`       | `string`         | Raw output amount before commissions                                  |
-| `amountOut`          | `string`         | Final output amount after commissions                                 |
-| `simulatedAmountOut` | `string`         | Simulated output amount (if simulation was enabled)                   |
-| `gasUsed`            | `GasCostSummary` | Gas cost estimate (if simulation was enabled)                         |
+| Property             | Type             | Description                                                               |
+| -------------------- | ---------------- | ------------------------------------------------------------------------- |
+| `id`                 | `string`         | Unique quote ID (UUID)                                                    |
+| `provider`           | `EProvider`      | Provider that generated this quote ("bluefin7k", "flowx", "cetus", "okx") |
+| `quote`              | `object`         | Raw quote response from the provider                                      |
+| `coinTypeIn`         | `string`         | Input coin type                                                           |
+| `coinTypeOut`        | `string`         | Output coin type                                                          |
+| `amountIn`           | `string`         | Input amount as string                                                    |
+| `rawAmountOut`       | `string`         | Raw output amount before commissions                                      |
+| `amountOut`          | `string`         | Final output amount after commissions                                     |
+| `simulatedAmountOut` | `string`         | Simulated output amount (if simulation was enabled)                       |
+| `gasUsed`            | `GasCostSummary` | Gas cost estimate (if simulation was enabled)                             |
 
 #### Quote Example
 
@@ -212,8 +232,8 @@ Array of `MetaQuote` objects with the following structure:
 // Simple quote without simulation
 const quotes = await metaAg.quote({
   amountIn: "1000000000",
-  coinInType: "0x2::sui::SUI",
-  coinOutType:
+  coinTypeIn: "0x2::sui::SUI",
+  coinTypeOut:
     "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
 });
 
@@ -221,8 +241,8 @@ const quotes = await metaAg.quote({
 const quotesWithSim = await metaAg.quote(
   {
     amountIn: "1000000000",
-    coinInType: "0x2::sui::SUI",
-    coinOutType:
+    coinTypeIn: "0x2::sui::SUI",
+    coinTypeOut:
       "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
   },
   {
@@ -234,8 +254,8 @@ const quotesWithSim = await metaAg.quote(
 const quotesDeferred = await metaAg.quote(
   {
     amountIn: "1000000000",
-    coinInType: "0x2::sui::SUI",
-    coinOutType:
+    coinTypeIn: "0x2::sui::SUI",
+    coinTypeOut:
       "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
   },
   {
@@ -261,6 +281,9 @@ await metaAg.swap(
 ```
 
 Build a swap transaction from a quote and return the coin out object.
+
+**Note:** This method is for aggregator providers (Bluefin7K, Flowx, Cetus). For
+SwapAPI providers like OKX, use `fastSwap` instead.
 
 #### Parameters
 
@@ -293,8 +316,8 @@ import { Transaction, coinWithBalance } from "@mysten/sui/transactions";
 // Get the best quote
 const quotes = await metaAg.quote({
   amountIn: "1000000000",
-  coinInType: "0x2::sui::SUI",
-  coinOutType:
+  coinTypeIn: "0x2::sui::SUI",
+  coinTypeOut:
     "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
 });
 
@@ -329,6 +352,69 @@ const result = await client.signAndExecuteTransaction({
 });
 ```
 
+### fastSwap
+
+```typescript
+await metaAg.fastSwap(
+  options: MetaFastSwapOptions,
+  getTransactionBlockParams?: Omit<GetTransactionBlockParams, "digest">
+): Promise<SuiTransactionBlockResponse>
+```
+
+Build, sign, and execute a swap transaction in one step. This method is used for
+SwapAPI providers (like OKX) that handle transaction execution via API, as well
+as aggregator providers for convenience.
+
+#### Parameters
+
+**options:**
+
+| Parameter         | Type        | Description                                           | Required |
+| ----------------- | ----------- | ----------------------------------------------------- | -------- |
+| `quote`           | `MetaQuote` | Quote object from the `quote` method                  | Yes      |
+| `signer`          | `string`    | Signer address (owner of input coins)                 | Yes      |
+| `signTransaction` | `function`  | Function to sign the transaction bytes                | Yes      |
+| `useGasCoin`      | `boolean`   | Whether to use the gas coin as input (default: false) | No       |
+
+**getTransactionBlockParams (optional):**
+
+- Options for waiting for the transaction, such as `options` and `signal`
+
+#### Returns
+
+`SuiTransactionBlockResponse`: The transaction response with digest and effects.
+
+#### FastSwap Example
+
+```typescript
+// For SwapAPI providers (OKX)
+const quotes = await metaAg.quote({
+  amountIn: "1000000000",
+  coinTypeIn: "0x2::sui::SUI",
+  coinTypeOut:
+    "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
+  signer: "0xYourAddress", // Required for OKX
+});
+
+const okxQuote = quotes.find((q) => q.provider === "okx");
+
+if (okxQuote) {
+  const result = await metaAg.fastSwap({
+    quote: okxQuote,
+    signer: "0xYourAddress",
+    signTransaction: async (txBytes) => {
+      // Sign transaction bytes with your keypair
+      const signature = await keypair.signPersonalMessage(
+        await keypair.signTransactionBlock(txBytes),
+      );
+      return { signature, bytes: txBytes };
+    },
+  });
+
+  console.log(`Transaction executed: ${result.digest}`);
+}
+```
+
 ## Full Example
 
 Here's a complete working example:
@@ -356,8 +442,8 @@ const amountX = "1000000000"; // 1 SUI
 const quotes = await metaAg.quote(
   {
     amountIn: amountX,
-    coinInType: tokenX,
-    coinOutType: tokenY,
+    coinTypeIn: tokenX,
+    coinTypeOut: tokenY,
   },
   { sender: "0xYourAddress" }, // Enable simulation
 );

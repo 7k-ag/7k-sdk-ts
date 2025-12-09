@@ -1,28 +1,44 @@
 import type {
+  QuoteResponse,
+  SourceDex,
+} from "@bluefin-exchange/bluefin7k-aggregator-sdk";
+import type {
   PreSwapLpChangeParams,
   RouterDataV3,
 } from "@cetusprotocol/aggregator-sdk";
 import type { AggregatorQuoter, Protocol } from "@flowx-finance/sdk";
 import type { GasCostSummary } from "@mysten/sui/client";
+import { SignatureWithBytes } from "@mysten/sui/cryptography";
 import type {
   Transaction,
   TransactionObjectArgument,
 } from "@mysten/sui/transactions";
-import { QuoteResponse, SourceDex } from "./aggregator";
+import {
+  QuoteResponse as LegacyQuoteResponse,
+  SourceDex as LegacySourceDex,
+} from "./aggregator";
+import { OkxSwapResponseData } from "./okx";
 
 export enum EProvider {
+  BLUEFIN7K_LEGACY = "bluefin7k_legacy",
   BLUEFIN7K = "bluefin7k",
   CETUS = "cetus",
   FLOWX = "flowx",
+  OKX = "okx",
 }
 type ProviderBaseOptions = {
   api?: string;
   apiKey?: string;
   disabled?: boolean;
 };
-export type BluefinProviderOptions = ProviderBaseOptions & {
-  sources?: SourceDex[];
+export type BluefinLegacyProviderOptions = ProviderBaseOptions & {
+  sources?: LegacySourceDex[];
   maxPaths?: number;
+  excludedPools?: string[];
+  targetPools?: string[];
+};
+export type Bluefin7kProviderOptions = ProviderBaseOptions & {
+  sources?: SourceDex[];
   excludedPools?: string[];
   targetPools?: string[];
 };
@@ -41,12 +57,20 @@ export type CetusProviderOptions = ProviderBaseOptions & {
   depth?: number;
   liquidityChanges?: PreSwapLpChangeParams[];
 };
+export type OkxProviderOptions = Required<Omit<ProviderBaseOptions, "api">> & {
+  api?: string;
+  secretKey: string;
+  apiPassphrase: string;
+  projectId: string;
+};
 export interface MetaAgOptions {
   /**If not specified, all providers will be used */
   providers?: {
-    [EProvider.BLUEFIN7K]?: BluefinProviderOptions;
+    [EProvider.BLUEFIN7K_LEGACY]?: BluefinLegacyProviderOptions;
+    [EProvider.BLUEFIN7K]?: Bluefin7kProviderOptions;
     [EProvider.FLOWX]?: FlowxProviderOptions;
     [EProvider.CETUS]?: CetusProviderOptions;
+    [EProvider.OKX]?: OkxProviderOptions;
   };
   /**Mainnet Json Rpc url, if not specified, the default mainnet url will be used */
   fullnodeUrl?: string;
@@ -64,9 +88,11 @@ export interface MetaAgOptions {
   tipBps?: number;
 }
 export interface MetaQuoteOptions {
-  coinInType: string;
-  coinOutType: string;
+  coinTypeIn: string;
+  coinTypeOut: string;
   amountIn: string;
+  /** Required for RFQ providers (ie: BluefinX) */
+  signer?: string;
   /**
    * Timeout for quote operation in milliseconds
    * @default 2000ms
@@ -83,12 +109,22 @@ export interface MetaSimulationOptions {
   /** If specify, defer the simulation that could reduce the time to display quote result, you must update the quote via the id on callback
    * else await all quote and simulation before return
    */
-  onSimulated?: (
-    payload: Pick<
-      MetaQuote,
-      "simulatedAmountOut" | "gasUsed" | "id" | "provider"
-    >,
-  ) => void;
+  onSimulated?: (payload: MetaQuote) => void;
+}
+export interface MetaFastSwapOptions {
+  /** Quote object from the quote operation */
+  quote: MetaQuote;
+  /** Signer address (owner of `coinIn`) */
+  signer: string;
+  /** If true, use the gas coin for the swap
+   * @default true */
+  useGasCoin?: boolean;
+  /**
+   * Sign the transaction bytes
+   * @param txBytes - base64 transaction bytes
+   * @returns - signature with bytes
+   */
+  signTransaction: (txBytes: string) => Promise<SignatureWithBytes>;
 }
 export interface MetaSwapOptions {
   /** Quote object from the quote operation */
@@ -108,6 +144,10 @@ export type FlowxQuoteResponse = Awaited<
 >;
 export type MetaQuote = (
   | {
+      provider: EProvider.BLUEFIN7K_LEGACY;
+      quote: LegacyQuoteResponse;
+    }
+  | {
       provider: EProvider.BLUEFIN7K;
       quote: QuoteResponse;
     }
@@ -118,6 +158,10 @@ export type MetaQuote = (
   | {
       provider: EProvider.FLOWX;
       quote: FlowxQuoteResponse;
+    }
+  | {
+      provider: EProvider.OKX;
+      quote: OkxSwapResponseData;
     }
 ) & {
   /** uuid to keep track the quote result, used to apply simulation result on quote on callback `onSimulated`*/
@@ -137,8 +181,33 @@ export type MetaQuote = (
   /** Estimate gas consumption if the transaction is executed */
   gasUsed?: GasCostSummary;
 };
-export abstract class AgProvider {
-  abstract kind: EProvider;
-  abstract quote(quoteOptions: MetaQuoteOptions): Promise<MetaQuote>;
-  abstract swap(options: MetaSwapOptions): Promise<TransactionObjectArgument>;
+export interface QuoteProvider {
+  readonly kind: EProvider;
+  quote(_quoteOptions: MetaQuoteOptions): Promise<MetaQuote | null>;
 }
+
+export interface SwapAPIProvider extends QuoteProvider {
+  readonly kind: EProvider.OKX;
+  fastSwap(options: MetaFastSwapOptions): Promise<string>;
+}
+
+export interface AggregatorProvider extends QuoteProvider {
+  readonly kind:
+    | EProvider.BLUEFIN7K_LEGACY
+    | EProvider.BLUEFIN7K
+    | EProvider.CETUS
+    | EProvider.FLOWX;
+  swap(options: MetaSwapOptions): Promise<TransactionObjectArgument>;
+}
+
+export const isAggregatorProvider = (
+  provider: QuoteProvider,
+): provider is AggregatorProvider =>
+  provider.kind === EProvider.BLUEFIN7K_LEGACY ||
+  provider.kind === EProvider.BLUEFIN7K ||
+  provider.kind === EProvider.CETUS ||
+  provider.kind === EProvider.FLOWX;
+
+export const isSwapAPIProvider = (
+  provider: QuoteProvider,
+): provider is SwapAPIProvider => provider.kind === EProvider.OKX;

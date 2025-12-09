@@ -1,33 +1,40 @@
-import { getFullnodeUrl, SuiClient, SuiEvent } from "@mysten/sui/client";
+import {
+  getFullnodeUrl,
+  GetTransactionBlockParams,
+  SuiClient,
+  SuiTransactionBlockResponse,
+} from "@mysten/sui/client";
 import {
   coinWithBalance,
   Transaction,
   TransactionObjectArgument,
 } from "@mysten/sui/transactions";
-import { normalizeStructTag } from "@mysten/sui/utils";
-import {
-  _7K_META_CONFIG,
-  _7K_META_PACKAGE_ID,
-  _7K_META_PUBLISHED_AT,
-  _7K_META_VAULT,
-} from "../../constants/_7k";
+import { normalizeStructTag, toBase64 } from "@mysten/sui/utils";
 import { SUI_ADDRESS_ZERO } from "../../constants/sui";
 import {
-  AgProvider,
-  BluefinProviderOptions,
+  Bluefin7kProviderOptions,
+  BluefinLegacyProviderOptions,
   CetusProviderOptions,
   EProvider,
   FlowxProviderOptions,
+  isAggregatorProvider,
+  isSwapAPIProvider,
   MetaAgOptions,
+  MetaFastSwapOptions,
   MetaQuote,
   MetaQuoteOptions,
   MetaSimulationOptions,
   MetaSwapOptions,
+  OkxProviderOptions,
+  QuoteProvider,
 } from "../../types/metaAg";
-import { assert } from "../../utils/condition";
+import { isSystemAddress } from "../../utils/sui";
 import { SuiClientUtils } from "../../utils/SuiClientUtils";
 import { getExpectedReturn } from "../swap/buildTx";
-import { BluefinProvider } from "./providers/bluefin";
+import { metaSettle, simulateAggregator, timeout } from "./common";
+import { MetaAgError, MetaAgErrorCode } from "./error";
+import { BluefinLegacyProvider } from "./providers/bluefin7kLegacy";
+import { OkxProvider, simulateOKXSwap } from "./providers/okx";
 
 const HERMES_API = "https://hermes.pyth.network";
 
@@ -36,9 +43,10 @@ const DEFAULT_PROVIDERS: Required<MetaAgOptions>["providers"] = {
   [EProvider.FLOWX]: {},
   [EProvider.CETUS]: {},
 };
+
 export class MetaAg {
   client: SuiClient;
-  private providers: Partial<Record<EProvider, AgProvider>> = {};
+  private providers: Partial<Record<EProvider, QuoteProvider>> = {};
   private inspector: SuiClientUtils;
   private options: Required<MetaAgOptions>;
   constructor(options?: MetaAgOptions) {
@@ -64,11 +72,27 @@ export class MetaAg {
     if (p) return p;
 
     const providerOptions = this.options.providers[provider];
-    assert(!!providerOptions, `Provider not found: ${provider}`);
+    MetaAgError.assert(
+      !!providerOptions,
+      `Provider not found: ${provider}`,
+      MetaAgErrorCode.PROVIDER_NOT_FOUND,
+      { provider },
+    );
     switch (provider) {
+      case EProvider.BLUEFIN7K_LEGACY:
+        this.providers[EProvider.BLUEFIN7K_LEGACY] = new BluefinLegacyProvider(
+          providerOptions as BluefinLegacyProviderOptions,
+          this.options,
+          this.client,
+        );
+        break;
       case EProvider.BLUEFIN7K:
-        this.providers[EProvider.BLUEFIN7K] = new BluefinProvider(
-          providerOptions as BluefinProviderOptions,
+        const { Bluefin7kProvider } =
+          await import("./providers/bluefin7k").catch(
+            catchImportError(EProvider.BLUEFIN7K),
+          );
+        this.providers[EProvider.BLUEFIN7K] = new Bluefin7kProvider(
+          providerOptions as Bluefin7kProviderOptions,
           this.options,
           this.client,
         );
@@ -92,73 +116,64 @@ export class MetaAg {
           this.client,
         );
         break;
+      case EProvider.OKX:
+        this.providers[EProvider.OKX] = new OkxProvider(
+          providerOptions as OkxProviderOptions,
+          this.options,
+          this.client,
+        );
+        break;
       default:
-        throw new Error(`Provider not supported: ${provider}`);
+        throw new MetaAgError(
+          `Provider not supported: ${provider}`,
+          MetaAgErrorCode.PROVIDER_NOT_SUPPORTED,
+          { provider },
+        );
     }
     return this.providers[provider]!;
   }
 
   private async _simulate(
-    provider: AgProvider,
+    provider: QuoteProvider,
     quote: MetaQuote,
     simulation: MetaSimulationOptions,
   ) {
     try {
-      const tx = new Transaction();
-      const id = quote.id;
-      const coinOut = await provider.swap({
-        quote,
-        coinIn: coinWithBalance({
-          balance: BigInt(quote.amountIn),
-          type: quote.coinTypeIn,
-          useGasCoin: false,
-        }),
-        signer: simulation.sender,
-        tx,
-      });
-      tx.add(
-        metaSettle(
+      if (isAggregatorProvider(provider)) {
+        return simulateAggregator(
+          provider,
           quote,
-          coinOut,
-          10000,
-          this.options.tipBps,
-          this.options.partner,
-          this.options.partnerCommissionBps,
-        ),
-      );
-      tx.transferObjects([coinOut], simulation.sender);
-      const res = await timeout(
-        () =>
-          this.inspector.devInspectTransactionBlock({
-            sender: simulation.sender,
-            transactionBlock: tx,
-          }),
-        simulation.timeout ?? 2000,
-        `simulation for ${provider.kind} provider with id ${id}`,
-      );
-      if (res.effects.status.status === "failure") {
-        throw new Error(res.error ?? "Simulation failed");
+          simulation,
+          this.inspector,
+          this.options,
+        );
       }
-      const amountOut = extractAmountOutWrapper(res.events);
-      return {
-        id,
-        simulatedAmountOut: amountOut as string,
-        gasUsed: res.effects.gasUsed,
-        provider: provider.kind,
-      };
+
+      switch (quote.provider) {
+        case EProvider.OKX:
+          return simulateOKXSwap(
+            quote,
+            this.inspector,
+            simulation,
+            this.options,
+          );
+        default:
+          throw new MetaAgError(
+            `Provider not supported: ${provider.kind}`,
+            MetaAgErrorCode.PROVIDER_NOT_SUPPORTED,
+            { provider: provider.kind },
+          );
+      }
     } catch (error) {
-      console.warn(`Failed to simulate ${provider.kind}: `, error);
+      console.warn(error, { provider: provider.kind, quote: quote.id });
     }
   }
 
-  private async _quote(
-    provider: AgProvider,
-    options: MetaQuoteOptions,
-    simulation?: MetaSimulationOptions,
-  ) {
+  private async _quote(provider: QuoteProvider, options: MetaQuoteOptions) {
     const quote = await timeout(
       async () => {
         const quote = await provider.quote(options);
+        if (!quote) return null;
         const { expectedAmount } = getExpectedReturn(
           quote.rawAmountOut,
           0,
@@ -169,22 +184,37 @@ export class MetaAg {
         return quote;
       },
       options.timeout ?? 2000,
-      `quote for ${provider.kind} provider from ${options.coinInType} to ${options.coinOutType}`,
+      `quote for ${provider.kind} provider from ${options.coinTypeIn} to ${options.coinTypeOut}`,
     );
-    if (simulation) {
-      if (simulation.onSimulated) {
-        this._simulate(provider, quote, simulation).then((payload) => {
-          if (payload) {
-            simulation.onSimulated?.(payload);
-          }
-        });
-      } else {
-        const updated = await this._simulate(provider, quote, simulation);
-        quote.simulatedAmountOut = updated?.simulatedAmountOut;
-        quote.gasUsed = updated?.gasUsed;
-      }
-    }
+
     return quote;
+  }
+
+  private async _fastSwap(
+    { quote, signer, useGasCoin, signTransaction }: MetaFastSwapOptions,
+    getTransactionBlockParams?: Omit<GetTransactionBlockParams, "digest">,
+  ) {
+    const tx = new Transaction();
+    const coin = await this.swap({
+      quote,
+      signer,
+      tx,
+      coinIn: coinWithBalance({
+        type: quote.coinTypeIn,
+        balance: BigInt(quote.amountIn),
+        useGasCoin,
+      }),
+    });
+    tx.transferObjects([coin], signer);
+    tx.setSenderIfNotSet(signer);
+    const txBytes = await tx.build({ client: this.client });
+    const { signature, bytes } = await signTransaction(toBase64(txBytes));
+    return this.client.executeTransactionBlock({
+      transactionBlock: bytes,
+      signature,
+      options: getTransactionBlockParams?.options,
+      signal: getTransactionBlockParams?.signal,
+    });
   }
 
   /**
@@ -199,28 +229,45 @@ export class MetaAg {
   ): Promise<MetaQuote[]> {
     const opts: MetaQuoteOptions = {
       ...options,
-      coinInType: normalizeStructTag(options.coinInType),
-      coinOutType: normalizeStructTag(options.coinOutType),
+      coinTypeIn: normalizeStructTag(options.coinTypeIn),
+      coinTypeOut: normalizeStructTag(options.coinTypeOut),
     };
     const quotes = await Promise.allSettled(
       Object.entries(this.options.providers)
         .filter(([_k, v]) => !v.disabled)
         .map(async ([provider]) => {
           const p = await this._getProvider(provider as EProvider);
-          return this._quote(p, opts, simulation);
+          return this._quote(p, opts);
         }),
     );
-    return quotes
+    const result = quotes
       .map((quote) =>
         quote.status === "fulfilled"
           ? quote.value
           : (console.log(quote.reason), null),
       )
       .filter((quote) => quote !== null);
+
+    if (simulation) {
+      const requests = result.map(async (quote) => {
+        const provider = await this._getProvider(quote.provider);
+        const updated = await this._simulate(provider, quote, simulation);
+        quote.simulatedAmountOut = updated?.simulatedAmountOut;
+        quote.gasUsed = updated?.gasUsed;
+        simulation?.onSimulated?.({ ...quote });
+      });
+      if (!simulation.onSimulated) {
+        await Promise.all(requests);
+      }
+    }
+
+    return result;
   }
 
   /**
    * Build transaction from quote
+   * @info Use this function to build composable transaction (ie: add more commands after the swap, consume the coin out object)
+   * @warning Providers that build transaction on the fly (typically RFQ, Swap-API providers ie: BluefinX, Okx, ...) are not supported, please use `fastSwap` instead
    * @param options - build tx options
    * @param slippageBps - slippage bps if not specified, fallback to global slippage bps, if none of them specified, default to 100
    * @returns coin out object, you must consume it by transferObjects, or other sub sequence commands
@@ -230,7 +277,24 @@ export class MetaAg {
     slippageBps?: number,
   ): Promise<TransactionObjectArgument> {
     const provider = await this._getProvider(options.quote.provider);
-    assert(!!provider, `Provider not found: ${options.quote.provider}`);
+    MetaAgError.assert(
+      !!provider,
+      `Provider not found: ${options.quote.provider}`,
+      MetaAgErrorCode.PROVIDER_NOT_FOUND,
+      { provider: options.quote.provider },
+    );
+    MetaAgError.assert(
+      isAggregatorProvider(provider),
+      `Provider does not support swap: ${provider.kind}, use fastSwap instead`,
+      MetaAgErrorCode.PROVIDER_NOT_SUPPORT_SWAP,
+      { provider: provider.kind },
+    );
+    MetaAgError.assert(
+      !isSystemAddress(options.signer),
+      "Invalid signer address",
+      MetaAgErrorCode.INVALID_SIGNER_ADDRESS,
+      { signer: options.signer },
+    );
     const coinOut = await provider.swap(options);
     options.tx.add(
       metaSettle(
@@ -244,6 +308,38 @@ export class MetaAg {
     );
     options.tx.setSenderIfNotSet(options.signer);
     return coinOut;
+  }
+
+  /**
+   * Build, Sign, and Execute transaction in one step
+   * @param options - fast swap options
+   * @returns - txDigest of the transaction
+   */
+  async fastSwap(
+    options: MetaFastSwapOptions,
+    getTransactionBlockParams?: Omit<GetTransactionBlockParams, "digest">,
+  ): Promise<SuiTransactionBlockResponse> {
+    MetaAgError.assert(
+      !isSystemAddress(options.signer),
+      "Invalid signer address",
+      MetaAgErrorCode.INVALID_SIGNER_ADDRESS,
+      { signer: options.signer },
+    );
+    const provider = await this._getProvider(options.quote.provider);
+    if (isAggregatorProvider(provider)) {
+      return this._fastSwap(options, getTransactionBlockParams);
+    } else if (isSwapAPIProvider(provider)) {
+      return this.client.waitForTransaction({
+        ...getTransactionBlockParams,
+        digest: await provider.fastSwap(options),
+      });
+    } else {
+      throw new MetaAgError(
+        `Provider not supported: ${provider.kind}`,
+        MetaAgErrorCode.PROVIDER_NOT_SUPPORTED,
+        { provider: provider.kind },
+      );
+    }
   }
 
   /**
@@ -280,94 +376,16 @@ export class MetaAg {
   }
 }
 
-/**
- * this settlement does not charge commission fee for partner, since all integrated aggregators already charge commission fee for partner
- * @param quote Meta Aggregator Quote
- * @param coinOut Coin Out Object
- * @param slippageBps Slippage Bps
- * @param tipBps Tip Bps default = 0
- * @param partner address of partner for analytic default is zero address
- */
-const metaSettle = (
-  quote: MetaQuote,
-  coinOut: TransactionObjectArgument,
-  slippageBps = 100,
-  tipBps = 0,
-  partner?: string,
-  commissionBps = 0,
-) => {
-  return (tx: Transaction) => {
-    const { minAmount, expectedAmount } = getExpectedReturn(
-      quote.rawAmountOut,
-      slippageBps,
-      commissionBps,
-      tipBps,
-    );
-
-    if (tipBps > 0) {
-      tx.moveCall({
-        target: `${_7K_META_PUBLISHED_AT}::vault::collect_tip`,
-        typeArguments: [quote.coinTypeOut],
-        arguments: [
-          tx.object(_7K_META_VAULT),
-          tx.object(_7K_META_CONFIG),
-          coinOut,
-          tx.pure.u64(tipBps),
-        ],
-      });
-    }
-
-    tx.moveCall({
-      target: `${_7K_META_PUBLISHED_AT}::settle::settle`,
-      typeArguments: [quote.coinTypeIn, quote.coinTypeOut],
-      arguments: [
-        tx.object(_7K_META_CONFIG),
-        tx.object(_7K_META_VAULT),
-        tx.pure.u64(quote.amountIn),
-        coinOut,
-        tx.pure.u64(minAmount),
-        tx.pure.u64(expectedAmount),
-        tx.pure.option("address", partner),
-        tx.pure.u64(commissionBps),
-        tx.pure.u64(0), // ps
-      ],
-    });
-  };
-};
-
-const extractAmountOutWrapper = (events: SuiEvent[]) => {
-  const swapEvent = events
-    .filter((event) => event.type === `${_7K_META_PACKAGE_ID}::settle::Swap`)
-    ?.pop();
-  return (swapEvent?.parsedJson as any)?.amount_out;
-};
-
 const catchImportError = (provider: EProvider) => {
   return (e: any) => {
     const map = {
       [EProvider.CETUS]: "@cetusprotocol/aggregator-sdk",
       [EProvider.FLOWX]: "@flowx-finance/sdk",
-      [EProvider.BLUEFIN7K]: "@7kprotocol/sdk-ts",
+      [EProvider.BLUEFIN7K_LEGACY]: "@7kprotocol/sdk-ts",
+      [EProvider.BLUEFIN7K]: "@bluefin-exchange/bluefin7k-aggregator-sdk",
+      [EProvider.OKX]: "",
     };
     console.warn(`Please install ${map[provider]} to use ${provider} provider`);
     throw e;
   };
-};
-
-const timeout = async <T = any>(
-  fn: () => Promise<T>,
-  timeout: number,
-  msg?: string,
-) => {
-  if (timeout <= 0) return fn();
-  return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error(`Timeout ${msg ?? "operation"}`)),
-      timeout,
-    );
-    fn()
-      .then(resolve)
-      .catch(reject)
-      .finally(() => clearTimeout(timer));
-  });
 };
