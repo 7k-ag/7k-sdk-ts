@@ -10,6 +10,7 @@ const WORMHOLE_STATE_ID =
 const PYTH_STATE_ID =
   "0x1f9310238ee9298fb703c3419030b35b22bb1cc37113e3bb5007c99aec79e5b8";
 
+let api: string = "";
 let apiKey: string = "";
 let bluefinXApiKey: string = "";
 let suiClient: SuiClient = new SuiClient({
@@ -23,6 +24,14 @@ let pythClient: SuiPythClient = new SuiPythClient(
 let pythConnection: SuiPriceServiceConnection = new SuiPriceServiceConnection(
   HERMES_API,
 );
+
+function setApi(url: string): void {
+  api = url;
+}
+
+function getApi(): string {
+  return api;
+}
 
 function setApiKey(key: string): void {
   apiKey = key;
@@ -65,6 +74,8 @@ function getPythConnection(): SuiPriceServiceConnection {
 }
 
 const Config = {
+  setApi,
+  getApi,
   setApiKey,
   getApiKey,
   setBluefinXApiKey,

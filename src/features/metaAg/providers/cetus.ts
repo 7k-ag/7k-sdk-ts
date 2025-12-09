@@ -1,21 +1,21 @@
 import { AggregatorClient, Env } from "@cetusprotocol/aggregator-sdk";
 import { SuiClient } from "@mysten/sui/client";
-import { TransactionObjectArgument } from "@mysten/sui/transactions";
 import { v4 } from "uuid";
 import { _7K_PARTNER_ADDRESS } from "../../../constants/_7k";
 import {
-  AgProvider,
+  AggregatorProvider,
   CetusProviderOptions,
   EProvider,
   MetaAgOptions,
   MetaQuote,
   MetaQuoteOptions,
   MetaSwapOptions,
+  QuoteProvider,
 } from "../../../types/metaAg";
-import { assert } from "../../../utils/condition";
+import { MetaAgError, MetaAgErrorCode } from "../error";
 
-export class CetusProvider implements AgProvider {
-  kind = EProvider.CETUS;
+export class CetusProvider implements QuoteProvider, AggregatorProvider {
+  readonly kind = EProvider.CETUS;
   private readonly cetusClient: AggregatorClient;
   constructor(
     private readonly options: CetusProviderOptions,
@@ -37,8 +37,8 @@ export class CetusProvider implements AgProvider {
     const quote = await this.cetusClient.findRouters({
       amount: quoteOptions.amountIn,
       byAmountIn: true,
-      from: quoteOptions.coinInType,
-      target: quoteOptions.coinOutType,
+      from: quoteOptions.coinTypeIn,
+      target: quoteOptions.coinTypeOut,
       providers: this.options.sources,
       splitCount: this.options.splitCount,
       splitAlgorithm: this.options.splitAlgorithm,
@@ -46,7 +46,12 @@ export class CetusProvider implements AgProvider {
       depth: this.options.depth,
       liquidityChanges: this.options.liquidityChanges,
     });
-    assert(!!quote, "No quote found");
+    MetaAgError.assert(
+      !!quote,
+      "No quote found",
+      MetaAgErrorCode.QUOTE_NOT_FOUND,
+      { provider: this.kind },
+    );
     return {
       id: v4(),
       provider: EProvider.CETUS,
@@ -54,13 +59,18 @@ export class CetusProvider implements AgProvider {
       amountIn: quote.amountIn.toString() || "0",
       rawAmountOut: quote.amountOut.toString() || "0",
       amountOut: quote.amountOut.toString() || "0",
-      coinTypeIn: quoteOptions.coinInType,
-      coinTypeOut: quoteOptions.coinOutType,
+      coinTypeIn: quoteOptions.coinTypeIn,
+      coinTypeOut: quoteOptions.coinTypeOut,
     };
   }
 
-  async swap(options: MetaSwapOptions): Promise<TransactionObjectArgument> {
-    assert(options.quote.provider === EProvider.CETUS, "Expect Cetus quote");
+  async swap(options: MetaSwapOptions) {
+    MetaAgError.assert(
+      options.quote.provider === EProvider.CETUS,
+      "Expect Cetus quote",
+      MetaAgErrorCode.INVALID_QUOTE,
+      { quote: options.quote, expectedProvider: EProvider.CETUS },
+    );
     const coinOut = await this.cetusClient.routerSwap({
       inputCoin: options.coinIn,
       router: options.quote.quote,

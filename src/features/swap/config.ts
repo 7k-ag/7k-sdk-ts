@@ -1,3 +1,4 @@
+import { Config as _Config } from "../../config";
 import { fetchClient } from "../../config/fetchClient";
 import { API_ENDPOINTS } from "../../constants/apiEndpoints";
 import { Config } from "../../types/aggregator";
@@ -194,7 +195,9 @@ export async function getConfig() {
   }
 
   try {
-    const response = await fetchClient(`${API_ENDPOINTS.MAIN}/config`);
+    const response = await fetchClient(
+      `${_Config.getApi() || API_ENDPOINTS.MAIN}/config`,
+    );
     const quoteResponse = (await response.json()) as Config;
     config = { ...config, ...quoteResponse };
     configTs = Date.now();

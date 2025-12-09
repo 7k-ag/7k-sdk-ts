@@ -1,5 +1,12 @@
 # @7kprotocol/sdk-ts
 
+## 3.6.0
+
+### Minor Changes
+
+- Deprecate Bluefin7K legacy api
+- Support OKX swap
+
 ## 3.5.4
 
 ### Patch Changes

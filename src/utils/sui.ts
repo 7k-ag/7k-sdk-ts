@@ -1,10 +1,19 @@
+import { SUI_SYSTEM_STATE_OBJECT_ID } from "@cetusprotocol/aggregator-sdk";
 import {
   CoinStruct,
   PaginatedObjectsResponse,
   SuiObjectResponseQuery,
 } from "@mysten/sui/client";
 import { Transaction, TransactionArgument } from "@mysten/sui/transactions";
-import { parseStructTag } from "@mysten/sui/utils";
+import {
+  MOVE_STDLIB_ADDRESS,
+  normalizeSuiAddress,
+  parseStructTag,
+  SUI_CLOCK_OBJECT_ID,
+  SUI_FRAMEWORK_ADDRESS,
+  SUI_RANDOM_OBJECT_ID,
+  SUI_SYSTEM_ADDRESS,
+} from "@mysten/sui/utils";
 import { Config } from "../config";
 import { _7K_CONFIG, _7K_PACKAGE_ID, _7K_VAULT } from "../constants/_7k";
 import { checkIsSui } from "./token";
@@ -323,3 +332,18 @@ export const SuiUtils = {
     });
   },
 };
+
+export const isSystemAddress = (address: string) => {
+  const addr = normalizeSuiAddress(address);
+  const addresses = [
+    SUI_SYSTEM_ADDRESS,
+    MOVE_STDLIB_ADDRESS,
+    SUI_FRAMEWORK_ADDRESS,
+    SUI_CLOCK_OBJECT_ID,
+    SUI_RANDOM_OBJECT_ID,
+    SUI_SYSTEM_STATE_OBJECT_ID,
+    "0x0",
+  ].map((v) => normalizeSuiAddress(v));
+  return addresses.includes(addr);
+};
+console.log(isSystemAddress("0x0"));
