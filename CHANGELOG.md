@@ -1,5 +1,37 @@
 # @7kprotocol/sdk-ts
 
+## 4.0.0
+
+### Major Changes
+
+- **Legacy Aggregator Removal (BREAKING)**:
+  - Removed all legacy aggregator APIs (`getQuote`, `buildTx`, `buildTxV2`,
+    `executeTx`, `estimateGasFee`, `multiSwap`).
+  - All swap operations now use the `MetaAg` class.
+  - Removed `EProvider.BLUEFIN7K_LEGACY`. Use `EProvider.BLUEFIN7K` instead.
+- **Price API Migration (BREAKING)**:
+  - Migrated to new LP pro infrastructure with batch request support.
+  - Prices are now strictly returned in USD; `vsCoin` parameter has been
+    removed.
+- **Config Module Removal (BREAKING)**:
+  - Removed global `Config` module. Configuration and `SuiClient` are now
+    handled via the `MetaAg` constructor.
+- **Protocol Implementation Refactor (BREAKING)**:
+  - Moved protocol-specific logic to external SDKs (Bluefin7K, Cetus, Flowx).
+  - Cleaned up legacy types and protocol-specific implementation files.
+
+### Minor Changes
+
+- Extracted `getExpectedReturn` utility function.
+- Removed legacy constants and utility functions like `getCoinOjectIdsByAmount`.
+
+### Internal Changes
+
+- Removed deprecated directories: `src/features/swap/`, `src/config/`, and
+  protocol implementations.
+- Cleaned up legacy tests and examples.
+- Added comprehensive tests for the new Price API.
+
 ## 3.6.0
 
 ### Minor Changes
