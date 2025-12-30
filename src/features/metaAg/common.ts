@@ -17,7 +17,7 @@ import {
   MetaSimulationOptions,
 } from "../../types/metaAg";
 import { SuiClientUtils } from "../../utils/SuiClientUtils";
-import { getExpectedReturn } from "../swap/buildTx";
+import { getExpectedReturn } from "../../utils/swap";
 import { MetaAgError, MetaAgErrorCode } from "./error";
 
 export const simulateSwapTx = async (

@@ -1,22 +1,7 @@
-export * from "./types/aggregator";
 export * from "./types/metaAg";
-
-import { Config } from "./config";
 
 import { MetaAg } from "./features/metaAg";
 import { getSuiPrice, getTokenPrice, getTokenPrices } from "./features/prices";
-import { executeBluefinTx } from "./libs/protocols/bluefinx/client";
-
-import {
-  buildTx,
-  buildTxV2,
-  DEFAULT_SOURCES,
-  estimateGasFee,
-  executeTx,
-  getQuote,
-  getSwapHistory,
-  multiSwap,
-} from "./features/swap";
 
 import {
   cancelDcaOrder,
@@ -31,68 +16,31 @@ import {
   placeLimitOrder,
 } from "./features/limitDca";
 
-// avoid breaking changes
-const getSuiClient = Config.getSuiClient;
-const setSuiClient = Config.setSuiClient;
-
 export {
-  buildTx,
-  buildTxV2,
+  MetaAg,
   cancelDcaOrder,
   cancelLimitOrder,
   claimExpiredLimitOrder,
-  // config
-  Config,
-  DEFAULT_SOURCES,
-  estimateGasFee,
-  executeBluefinTx,
-  executeTx,
   getClosedDcaOrders,
   getClosedLimitOrders,
   getDcaOrderExecutions,
   getOpenDcaOrders,
   getOpenLimitOrders,
-  // swap
-  getQuote,
-  // sui client
-  getSuiClient,
-  getSuiPrice,
-  getSwapHistory,
   // prices
+  getSuiPrice,
   getTokenPrice,
   getTokenPrices,
-  MetaAg,
-  multiSwap,
   // dca
   placeDcaOrder,
   // limit order
   placeLimitOrder,
-  setSuiClient,
 };
 
 export default {
-  // config
-  Config,
-
-  // sui client
-  getSuiClient,
-  setSuiClient,
-
   // prices
   getTokenPrice,
   getTokenPrices,
   getSuiPrice,
-
-  // swap
-  getQuote,
-  estimateGasFee,
-  buildTx,
-  buildTxV2,
-  multiSwap,
-  getSwapHistory,
-  executeTx,
-  executeBluefinTx,
-  DEFAULT_SOURCES,
 
   // limit order
   placeLimitOrder,
