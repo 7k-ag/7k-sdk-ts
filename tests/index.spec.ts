@@ -1,41 +1,11 @@
-import "mocha";
 import { assert } from "chai";
+import "mocha";
 
 import npmPackage from "../src/index";
-import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
 
 describe("NPM Package", () => {
   it("should be an object", () => {
     assert.isObject(npmPackage);
-  });
-
-  // config
-  it("should have a Config property", () => {
-    assert.property(npmPackage, "Config");
-  });
-
-  // api key
-  it("should be able to set and get api key", () => {
-    npmPackage.Config.setApiKey("test_api_key");
-    assert.equal(npmPackage.Config.getApiKey(), "test_api_key");
-  });
-
-  // bluefin x api key
-  it("should be able to set and get bluefin x api key", () => {
-    npmPackage.Config.setBluefinXApiKey("test_bluefin_x_api_key");
-    assert.equal(
-      npmPackage.Config.getBluefinXApiKey(),
-      "test_bluefin_x_api_key",
-    );
-  });
-
-  // sui client
-  it("should be able to set and get sui client", () => {
-    const suiClient = new SuiClient({
-      url: getFullnodeUrl("mainnet"),
-    });
-    npmPackage.Config.setSuiClient(suiClient);
-    assert.equal(npmPackage.Config.getSuiClient(), suiClient);
   });
 
   // prices
@@ -49,23 +19,6 @@ describe("NPM Package", () => {
 
   it("should have a getSuiPrice property", () => {
     assert.property(npmPackage, "getSuiPrice");
-  });
-
-  // swap
-  it("should have a getQuote property", () => {
-    assert.property(npmPackage, "getQuote");
-  });
-
-  it("should have a estimateGasFee property", () => {
-    assert.property(npmPackage, "estimateGasFee");
-  });
-
-  it("should have a buildTx property", () => {
-    assert.property(npmPackage, "buildTx");
-  });
-
-  it("should have a getSwapHistory property", () => {
-    assert.property(npmPackage, "getSwapHistory");
   });
 
   // limit order

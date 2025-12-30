@@ -29,8 +29,6 @@ Key features:
 - **Limit Orders**: Place and manage limit orders for token swaps
 - **DCA Orders**: Set up dollar-cost averaging strategies for automated
   recurring purchases
-- **BluefinX Integration**: Access RFQ-based trading with sponsored transactions
-  and MEV protection
 - **Type Safety**: Full TypeScript support with comprehensive type definitions
 - **Mainnet Support**: Production-ready SDK for Sui mainnet
 - **Flexible Configuration**: Customize API keys, slippage, commissions, and
@@ -66,13 +64,13 @@ npm i @mysten/sui@^1.39.0 @pythnetwork/pyth-sui-js@^2.2.0
 The following dependencies are **optional** and only needed for specific MetaAg
 providers:
 
-| Package                         | Version   | Provider              |
-| ------------------------------- | --------- | --------------------- |
-| `@flowx-finance/sdk`            | `^1.13.8` | Flowx MetaAg provider |
-| `@cetusprotocol/aggregator-sdk` | `^1.4.1`  | Cetus MetaAg provider |
-
-**Note**: The Bluefin7K MetaAg provider is built-in and requires no additional
-dependencies.
+| Package                                      | Version   | Provider                  |
+| -------------------------------------------- | --------- | ------------------------- |
+| Package                                      | Version   | Provider                  |
+| -------------------------------------------- | --------- | -----------------------   |
+| `@flowx-finance/sdk`                         | `^1.13.8` | Flowx MetaAg provider     |
+| `@cetusprotocol/aggregator-sdk`              | `^1.4.1`  | Cetus MetaAg provider     |
+| `@bluefin-exchange/bluefin7k-aggregator-sdk` | `^5.1.4`  | Bluefin7k MetaAg provider |
 
 To use Flowx or Cetus providers, install their respective dependencies:
 
@@ -82,6 +80,9 @@ npm i @flowx-finance/sdk@^1.13.8
 
 # For Cetus MetaAg provider
 npm i @cetusprotocol/aggregator-sdk@^1.4.1
+
+# For Bluefin7k MetaAg provider
+npm i @bluefin-exchange/bluefin7k-aggregator-sdk@^5.1.4
 ```
 
 ### Graceful Degradation
@@ -93,13 +94,13 @@ missing:
   and a helpful warning with installation instructions will be shown
 - **Missing `@cetusprotocol/aggregator-sdk`**: Cetus MetaAg provider will not be
   available, and a helpful warning with installation instructions will be shown
+- **Missing `@bluefin-exchange/bluefin7k-aggregator-sdk`**: Bluefin7k MetaAg
+  provider will not be available, and a helpful warning with installation
+  instructions will be shown
 - **Missing `@mysten/sui`**: Core functionality will fail (this is required)
 
 The SDK will provide clear error messages and installation instructions when
 optional dependencies are missing.
-
-**Note**: The Bluefin7K provider works out-of-the-box with no additional
-dependencies.
 
 ## Usage
 
@@ -112,7 +113,7 @@ import SevenK from "@7kprotocol/sdk-ts";
 or import specific functions as needed:
 
 ```typescript
-import { getQuote, buildTx } from "@7kprotocol/sdk-ts";
+import { MetaAg, getTokenPrice } from "@7kprotocol/sdk-ts";
 ```
 
 Note: this package only supports **mainnet**.
@@ -120,14 +121,6 @@ Note: this package only supports **mainnet**.
 ## MetaAg (Multi-Provider Aggregation)
 
 See [Meta Aggregator](docs/META_AG.md).
-
-## Swap
-
-See [Swap](docs/SWAP.md).
-
-## BluefinX
-
-See [BluefinX](docs/BLUEFINX.md).
 
 ## Limit Orders
 

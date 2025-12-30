@@ -13,10 +13,6 @@ export enum MetaAgErrorCode {
   SIMULATION_FAILED = 1008,
   // OKX error
   OKX_FINALIZE_COMMAND_NOT_FOUND = 1100,
-  // BluefinX error
-  BLUEFINX_TRANSACTION_NOT_FOUND = 1200,
-  BLUEFINX_TRANSACTION_NOT_APPROVED = 1201,
-  BLUEFINX_TRANSACTION_DIGEST_NOT_FOUND = 1202,
 }
 
 export type MetaAgErrorDetailsMap = {
@@ -37,13 +33,6 @@ export type MetaAgErrorDetailsMap = {
   [MetaAgErrorCode.SIMULATION_FAILED]: { error: DevInspectResults["error"] };
   // OKX error
   [MetaAgErrorCode.OKX_FINALIZE_COMMAND_NOT_FOUND]: { packageId: string };
-  // BluefinX error
-  [MetaAgErrorCode.BLUEFINX_TRANSACTION_NOT_FOUND]: Record<string, never>;
-  [MetaAgErrorCode.BLUEFINX_TRANSACTION_NOT_APPROVED]: Record<string, never>;
-  [MetaAgErrorCode.BLUEFINX_TRANSACTION_DIGEST_NOT_FOUND]: Record<
-    string,
-    never
-  >;
 };
 
 export type MetaAgErrorDetails<T extends MetaAgErrorCode> =

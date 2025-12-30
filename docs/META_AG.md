@@ -424,7 +424,7 @@ import "mocha";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import { SUI_TYPE } from "../src/constants/tokens";
-import { Config, MetaAg } from "../src/index";
+import { MetaAg } from "../src/index";
 
 const client = new SuiClient({ url: getFullnodeUrl("mainnet") });
 
