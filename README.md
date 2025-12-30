@@ -64,13 +64,13 @@ npm i @mysten/sui@^1.39.0 @pythnetwork/pyth-sui-js@^2.2.0
 The following dependencies are **optional** and only needed for specific MetaAg
 providers:
 
-| Package                         | Version   | Provider              |
-| ------------------------------- | --------- | --------------------- |
-| `@flowx-finance/sdk`            | `^1.13.8` | Flowx MetaAg provider |
-| `@cetusprotocol/aggregator-sdk` | `^1.4.1`  | Cetus MetaAg provider |
-
-**Note**: The Bluefin7K MetaAg provider is built-in and requires no additional
-dependencies.
+| Package                                      | Version   | Provider                  |
+| -------------------------------------------- | --------- | ------------------------- |
+| Package                                      | Version   | Provider                  |
+| -------------------------------------------- | --------- | -----------------------   |
+| `@flowx-finance/sdk`                         | `^1.13.8` | Flowx MetaAg provider     |
+| `@cetusprotocol/aggregator-sdk`              | `^1.4.1`  | Cetus MetaAg provider     |
+| `@bluefin-exchange/bluefin7k-aggregator-sdk` | `^5.1.4`  | Bluefin7k MetaAg provider |
 
 To use Flowx or Cetus providers, install their respective dependencies:
 
@@ -80,6 +80,9 @@ npm i @flowx-finance/sdk@^1.13.8
 
 # For Cetus MetaAg provider
 npm i @cetusprotocol/aggregator-sdk@^1.4.1
+
+# For Bluefin7k MetaAg provider
+npm i @bluefin-exchange/bluefin7k-aggregator-sdk@^5.1.4
 ```
 
 ### Graceful Degradation
@@ -91,13 +94,13 @@ missing:
   and a helpful warning with installation instructions will be shown
 - **Missing `@cetusprotocol/aggregator-sdk`**: Cetus MetaAg provider will not be
   available, and a helpful warning with installation instructions will be shown
+- **Missing `@bluefin-exchange/bluefin7k-aggregator-sdk`**: Bluefin7k MetaAg
+  provider will not be available, and a helpful warning with installation
+  instructions will be shown
 - **Missing `@mysten/sui`**: Core functionality will fail (this is required)
 
 The SDK will provide clear error messages and installation instructions when
 optional dependencies are missing.
-
-**Note**: The Bluefin7K provider works out-of-the-box with no additional
-dependencies.
 
 ## Usage
 

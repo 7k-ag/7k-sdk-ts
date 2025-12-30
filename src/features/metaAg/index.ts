@@ -235,7 +235,7 @@ export class MetaAg {
       .map((quote) =>
         quote.status === "fulfilled"
           ? quote.value
-          : (console.log(quote.reason), null),
+          : (console.warn(quote.reason), null),
       )
       .filter((quote) => quote !== null);
 

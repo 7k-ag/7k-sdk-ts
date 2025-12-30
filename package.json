@@ -1,44 +1,35 @@
 {
   "name": "@7kprotocol/sdk-ts",
-  "version": "3.6.1-beta.1",
+  "version": "3.6.1-beta.2",
   "description": "",
   "exports": {
     ".": {
       "import": {
-        "types": "./lib/esm/types/index.d.ts",
-        "default": "./lib/esm/index.mjs"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
       },
       "require": {
-        "types": "./lib/cjs/types/index.d.ts",
-        "default": "./lib/cjs/index.js"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       }
-    },
-    "./esm": {
-      "types": "./lib/esm/types/index.d.ts",
-      "default": "./lib/esm/index.mjs"
-    },
-    "./cjs": {
-      "types": "./lib/cjs/types/index.d.ts",
-      "default": "./lib/cjs/index.js"
     }
   },
-  "types": "./lib/cjs/types/index.d.ts",
-  "main": "./lib/cjs/index.js",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
   "files": [
-    "lib/**/*"
+    "dist"
   ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf ./lib",
+    "clean": "rm -rf ./dist",
     "prepare": "husky",
     "tsc": "npx tsc -p ./configs/tsconfig.base.json --noEmit",
     "lint": "npx eslint ./src",
     "prettier": "npx prettier --write .",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "build:esm": "tsc -p ./configs/tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
-    "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
+    "build": "tsup",
+    "watch": "tsup --watch",
     "prepack": "npm run build",
     "test": "mocha --timeout 60000",
     "pack:local": "npm run build && npm pack",
@@ -68,6 +59,7 @@
     "husky": "^9.1.7",
     "mocha": "^11.6.0",
     "ts-node": "^10.9.2",
+    "tsup": "^8.3.5",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.1"
   },
