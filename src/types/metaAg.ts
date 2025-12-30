@@ -13,14 +13,9 @@ import type {
   Transaction,
   TransactionObjectArgument,
 } from "@mysten/sui/transactions";
-import {
-  QuoteResponse as LegacyQuoteResponse,
-  SourceDex as LegacySourceDex,
-} from "./aggregator";
 import { OkxSwapResponseData } from "./okx";
 
 export enum EProvider {
-  BLUEFIN7K_LEGACY = "bluefin7k_legacy",
   BLUEFIN7K = "bluefin7k",
   CETUS = "cetus",
   FLOWX = "flowx",
@@ -30,12 +25,6 @@ type ProviderBaseOptions = {
   api?: string;
   apiKey?: string;
   disabled?: boolean;
-};
-export type BluefinLegacyProviderOptions = ProviderBaseOptions & {
-  sources?: LegacySourceDex[];
-  maxPaths?: number;
-  excludedPools?: string[];
-  targetPools?: string[];
 };
 export type Bluefin7kProviderOptions = ProviderBaseOptions & {
   sources?: SourceDex[];
@@ -66,7 +55,6 @@ export type OkxProviderOptions = Required<Omit<ProviderBaseOptions, "api">> & {
 export interface MetaAgOptions {
   /**If not specified, all providers will be used */
   providers?: {
-    [EProvider.BLUEFIN7K_LEGACY]?: BluefinLegacyProviderOptions;
     [EProvider.BLUEFIN7K]?: Bluefin7kProviderOptions;
     [EProvider.FLOWX]?: FlowxProviderOptions;
     [EProvider.CETUS]?: CetusProviderOptions;
@@ -91,7 +79,7 @@ export interface MetaQuoteOptions {
   coinTypeIn: string;
   coinTypeOut: string;
   amountIn: string;
-  /** Required for RFQ providers (ie: BluefinX) */
+  /** Required for api-tx providers (ie: Okx) */
   signer?: string;
   /**
    * Timeout for quote operation in milliseconds
@@ -144,10 +132,6 @@ export type FlowxQuoteResponse = Awaited<
 >;
 export type MetaQuote = (
   | {
-      provider: EProvider.BLUEFIN7K_LEGACY;
-      quote: LegacyQuoteResponse;
-    }
-  | {
       provider: EProvider.BLUEFIN7K;
       quote: QuoteResponse;
     }
@@ -192,18 +176,13 @@ export interface SwapAPIProvider extends QuoteProvider {
 }
 
 export interface AggregatorProvider extends QuoteProvider {
-  readonly kind:
-    | EProvider.BLUEFIN7K_LEGACY
-    | EProvider.BLUEFIN7K
-    | EProvider.CETUS
-    | EProvider.FLOWX;
+  readonly kind: EProvider.BLUEFIN7K | EProvider.CETUS | EProvider.FLOWX;
   swap(options: MetaSwapOptions): Promise<TransactionObjectArgument>;
 }
 
 export const isAggregatorProvider = (
   provider: QuoteProvider,
 ): provider is AggregatorProvider =>
-  provider.kind === EProvider.BLUEFIN7K_LEGACY ||
   provider.kind === EProvider.BLUEFIN7K ||
   provider.kind === EProvider.CETUS ||
   provider.kind === EProvider.FLOWX;

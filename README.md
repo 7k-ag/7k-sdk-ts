@@ -29,8 +29,6 @@ Key features:
 - **Limit Orders**: Place and manage limit orders for token swaps
 - **DCA Orders**: Set up dollar-cost averaging strategies for automated
   recurring purchases
-- **BluefinX Integration**: Access RFQ-based trading with sponsored transactions
-  and MEV protection
 - **Type Safety**: Full TypeScript support with comprehensive type definitions
 - **Mainnet Support**: Production-ready SDK for Sui mainnet
 - **Flexible Configuration**: Customize API keys, slippage, commissions, and
@@ -112,7 +110,7 @@ import SevenK from "@7kprotocol/sdk-ts";
 or import specific functions as needed:
 
 ```typescript
-import { getQuote, buildTx } from "@7kprotocol/sdk-ts";
+import { MetaAg, getTokenPrice } from "@7kprotocol/sdk-ts";
 ```
 
 Note: this package only supports **mainnet**.
@@ -120,14 +118,6 @@ Note: this package only supports **mainnet**.
 ## MetaAg (Multi-Provider Aggregation)
 
 See [Meta Aggregator](docs/META_AG.md).
-
-## Swap
-
-See [Swap](docs/SWAP.md).
-
-## BluefinX
-
-See [BluefinX](docs/BLUEFINX.md).
 
 ## Limit Orders
 

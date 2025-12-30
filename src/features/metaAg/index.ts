@@ -13,7 +13,6 @@ import { normalizeStructTag, toBase64 } from "@mysten/sui/utils";
 import { SUI_ADDRESS_ZERO } from "../../constants/sui";
 import {
   Bluefin7kProviderOptions,
-  BluefinLegacyProviderOptions,
   CetusProviderOptions,
   EProvider,
   FlowxProviderOptions,
@@ -30,10 +29,9 @@ import {
 } from "../../types/metaAg";
 import { isSystemAddress } from "../../utils/sui";
 import { SuiClientUtils } from "../../utils/SuiClientUtils";
-import { getExpectedReturn } from "../swap/buildTx";
+import { getExpectedReturn } from "../../utils/swap";
 import { metaSettle, simulateAggregator, timeout } from "./common";
 import { MetaAgError, MetaAgErrorCode } from "./error";
-import { BluefinLegacyProvider } from "./providers/bluefin7kLegacy";
 import { OkxProvider, simulateOKXSwap } from "./providers/okx";
 
 const HERMES_API = "https://hermes.pyth.network";
@@ -79,13 +77,6 @@ export class MetaAg {
       { provider },
     );
     switch (provider) {
-      case EProvider.BLUEFIN7K_LEGACY:
-        this.providers[EProvider.BLUEFIN7K_LEGACY] = new BluefinLegacyProvider(
-          providerOptions as BluefinLegacyProviderOptions,
-          this.options,
-          this.client,
-        );
-        break;
       case EProvider.BLUEFIN7K:
         const { Bluefin7kProvider } =
           await import("./providers/bluefin7k").catch(
@@ -267,7 +258,7 @@ export class MetaAg {
   /**
    * Build transaction from quote
    * @info Use this function to build composable transaction (ie: add more commands after the swap, consume the coin out object)
-   * @warning Providers that build transaction on the fly (typically RFQ, Swap-API providers ie: BluefinX, Okx, ...) are not supported, please use `fastSwap` instead
+   * @warning Providers that build transaction on the fly (typically RFQ, Swap-API providers ie: Okx, ...) are not supported, please use `fastSwap` instead
    * @param options - build tx options
    * @param slippageBps - slippage bps if not specified, fallback to global slippage bps, if none of them specified, default to 100
    * @returns coin out object, you must consume it by transferObjects, or other sub sequence commands
@@ -290,7 +281,7 @@ export class MetaAg {
       { provider: provider.kind },
     );
     MetaAgError.assert(
-      !isSystemAddress(options.signer),
+      options.signer && !isSystemAddress(options.signer),
       "Invalid signer address",
       MetaAgErrorCode.INVALID_SIGNER_ADDRESS,
       { signer: options.signer },
@@ -320,7 +311,7 @@ export class MetaAg {
     getTransactionBlockParams?: Omit<GetTransactionBlockParams, "digest">,
   ): Promise<SuiTransactionBlockResponse> {
     MetaAgError.assert(
-      !isSystemAddress(options.signer),
+      options.signer && !isSystemAddress(options.signer),
       "Invalid signer address",
       MetaAgErrorCode.INVALID_SIGNER_ADDRESS,
       { signer: options.signer },
@@ -381,7 +372,6 @@ const catchImportError = (provider: EProvider) => {
     const map = {
       [EProvider.CETUS]: "@cetusprotocol/aggregator-sdk",
       [EProvider.FLOWX]: "@flowx-finance/sdk",
-      [EProvider.BLUEFIN7K_LEGACY]: "@7kprotocol/sdk-ts",
       [EProvider.BLUEFIN7K]: "@bluefin-exchange/bluefin7k-aggregator-sdk",
       [EProvider.OKX]: "",
     };

@@ -23,7 +23,6 @@ const metaAg = new MetaAg({
   partner: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf",
   partnerCommissionBps: 100,
   providers: {
-    bluefin7k_legacy: { disabled: false },
     bluefin7k: { disabled: false },
     cetus: { disabled: false },
     flowx: { disabled: false },
