@@ -1,11 +1,17 @@
 import { bcs } from "@mysten/sui/bcs";
-import { SuiClient } from "@mysten/sui/client";
+import { ClientWithCoreApi } from "@mysten/sui/client";
 import {
-  OpenMoveTypeSignature,
+  Command,
   TransactionDataBuilder,
   TransactionPlugin,
 } from "@mysten/sui/transactions";
 import { normalizeSuiAddress } from "@mysten/sui/utils";
+
+// `MoveCall: any` is intentional — `Extract` needs a shape check, not a full
+// type match, to pick the discriminated-union arm we want.
+type MoveCallArgumentTypes = NonNullable<
+  NonNullable<Extract<Command, { MoveCall: any }>["MoveCall"]>["_argumentTypes"]
+>;
 
 export interface ObjectCacheEntry {
   objectId: string;
@@ -19,7 +25,7 @@ export interface MoveFunctionCacheEntry {
   package: string;
   module: string;
   function: string;
-  parameters: OpenMoveTypeSignature[];
+  parameters: MoveCallArgumentTypes;
 }
 
 export interface CacheEntryTypes {
@@ -166,14 +172,14 @@ export class InMemoryObjectCache extends AsyncCache {
 
 export interface ObjectCacheOptions {
   cache?: AsyncCache;
-  client: SuiClient;
+  client: ClientWithCoreApi;
   onEffects?: (
     effects: typeof bcs.TransactionEffects.$inferType,
   ) => Promise<void>;
 }
 
 export class CustomObjectCache {
-  #client: SuiClient;
+  #client: ClientWithCoreApi;
   #cache: AsyncCache;
   #onEffects?: (
     effects: typeof bcs.TransactionEffects.$inferType,
@@ -242,31 +248,28 @@ export class CustomObjectCache {
       return [];
     }
     const dedup = [...new Set(unresolvedObjects)];
-    const res = await this.#client.multiGetObjects({
-      ids: dedup,
-      options: {
-        showOwner: true,
-      },
+    const res = await this.#client.core.getObjects({
+      objectIds: dedup,
     });
     const objects: ObjectCacheEntry[] = [];
-    for (const obj of res || []) {
-      if (!obj.data) {
+    for (const obj of res.objects) {
+      if (obj instanceof Error) {
         continue;
       }
-      const owner = obj.data.owner;
+      const owner = obj.owner;
 
       const initialSharedVersion =
-        owner && typeof owner === "object" && "Shared" in owner
-          ? owner.Shared.initial_shared_version
-          : null;
+        owner.$kind === "Shared" ? owner.Shared.initialSharedVersion : null;
       const ownerAddress =
-        owner && typeof owner === "object" && "AddressOwner" in owner
+        owner.$kind === "AddressOwner"
           ? owner.AddressOwner
-          : null;
+          : owner.$kind === "ObjectOwner"
+            ? owner.ObjectOwner
+            : null;
       const cached: ObjectCacheEntry = {
-        objectId: obj.data.objectId,
-        version: obj.data.version,
-        digest: obj.data.digest,
+        objectId: obj.objectId,
+        version: obj.version,
+        digest: obj.digest,
         initialSharedVersion,
         owner: ownerAddress,
       };

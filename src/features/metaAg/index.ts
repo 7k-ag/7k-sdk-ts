@@ -1,15 +1,15 @@
-import {
-  getFullnodeUrl,
-  GetTransactionBlockParams,
-  SuiClient,
-  SuiTransactionBlockResponse,
-} from "@mysten/sui/client";
+import { ClientWithCoreApi, CoreClient } from "@mysten/sui/client";
+import { SuiGrpcClient } from "@mysten/sui/grpc";
+// The Sui fullnode URL is the same endpoint for JSON-RPC and gRPC — the v2
+// gRPC transport hits the same host as the legacy JSON-RPC. We reuse the
+// upstream helper for the value, not to construct a JSON-RPC client.
+import { getJsonRpcFullnodeUrl } from "@mysten/sui/jsonRpc";
 import {
   coinWithBalance,
   Transaction,
   TransactionObjectArgument,
 } from "@mysten/sui/transactions";
-import { normalizeStructTag, toBase64 } from "@mysten/sui/utils";
+import { fromBase64, normalizeStructTag, toBase64 } from "@mysten/sui/utils";
 import { SUI_ADDRESS_ZERO } from "../../constants/sui";
 import {
   Bluefin7kProviderOptions,
@@ -34,7 +34,36 @@ import { metaSettle, simulateAggregator, timeout } from "./common";
 import { MetaAgError, MetaAgErrorCode } from "./error";
 import { OkxProvider, simulateOKXSwap } from "./providers/okx";
 
+const DEFAULT_CLIENT = (): ClientWithCoreApi =>
+  new SuiGrpcClient({
+    baseUrl: getJsonRpcFullnodeUrl("mainnet"),
+    network: "mainnet",
+  });
+
 const HERMES_API = "https://hermes.pyth.network";
+
+/** Result type returned by `MetaAg.fastSwap` (transport-agnostic v2 shape). */
+export type MetaTransactionResult = Awaited<
+  ReturnType<CoreClient["executeTransaction"]>
+>;
+
+/** Subset of v2 `TransactionInclude` flags exposed by `MetaAg.fastSwap`. */
+export interface MetaExecuteInclude {
+  balanceChanges?: boolean;
+  effects?: boolean;
+  events?: boolean;
+  objectTypes?: boolean;
+}
+
+export interface ExecuteTransactionExtraOptions {
+  signal?: AbortSignal;
+  /**
+   * Flags forwarded to the gRPC `executeTransaction`/`waitForTransaction`
+   * call. When omitted, the result contains `digest`/`signatures` only; pass
+   * `{ effects: true, events: true }` to populate the corresponding fields.
+   */
+  include?: MetaExecuteInclude;
+}
 
 const DEFAULT_PROVIDERS: Required<MetaAgOptions>["providers"] = {
   [EProvider.BLUEFIN7K]: {},
@@ -43,25 +72,21 @@ const DEFAULT_PROVIDERS: Required<MetaAgOptions>["providers"] = {
 };
 
 export class MetaAg {
-  client: SuiClient;
+  client: ClientWithCoreApi;
   private providers: Partial<Record<EProvider, QuoteProvider>> = {};
   private inspector: SuiClientUtils;
   private options: Required<MetaAgOptions>;
   constructor(options?: MetaAgOptions) {
+    this.client = options?.client ?? DEFAULT_CLIENT();
     this.options = {
       providers: { ...DEFAULT_PROVIDERS, ...options?.providers },
       slippageBps: options?.slippageBps ?? 100,
-      fullnodeUrl: options?.fullnodeUrl ?? getFullnodeUrl("mainnet"),
+      client: this.client,
       hermesApi: options?.hermesApi ?? HERMES_API,
       partner: options?.partner ?? SUI_ADDRESS_ZERO,
       partnerCommissionBps: options?.partnerCommissionBps ?? 0,
       tipBps: options?.tipBps ?? 0,
     };
-
-    this.client = new SuiClient({
-      url: this.options.fullnodeUrl,
-    });
-
     this.inspector = new SuiClientUtils(this.client);
   }
 
@@ -131,7 +156,7 @@ export class MetaAg {
   ) {
     try {
       if (isAggregatorProvider(provider)) {
-        return simulateAggregator(
+        return await simulateAggregator(
           provider,
           quote,
           simulation,
@@ -142,7 +167,7 @@ export class MetaAg {
 
       switch (quote.provider) {
         case EProvider.OKX:
-          return simulateOKXSwap(
+          return await simulateOKXSwap(
             quote,
             this.inspector,
             simulation,
@@ -157,6 +182,7 @@ export class MetaAg {
       }
     } catch (error) {
       console.warn(error, { provider: provider.kind, quote: quote.id });
+      return undefined;
     }
   }
 
@@ -183,8 +209,8 @@ export class MetaAg {
 
   private async _fastSwap(
     { quote, signer, useGasCoin, signTransaction }: MetaFastSwapOptions,
-    getTransactionBlockParams?: Omit<GetTransactionBlockParams, "digest">,
-  ) {
+    extraOptions?: ExecuteTransactionExtraOptions,
+  ): Promise<MetaTransactionResult> {
     const tx = new Transaction();
     const coin = await this.swap({
       quote,
@@ -200,11 +226,11 @@ export class MetaAg {
     tx.setSenderIfNotSet(signer);
     const txBytes = await tx.build({ client: this.client });
     const { signature, bytes } = await signTransaction(toBase64(txBytes));
-    return this.client.executeTransactionBlock({
-      transactionBlock: bytes,
-      signature,
-      options: getTransactionBlockParams?.options,
-      signal: getTransactionBlockParams?.signal,
+    return this.client.core.executeTransaction({
+      transaction: fromBase64(bytes),
+      signatures: [signature],
+      signal: extraOptions?.signal,
+      include: extraOptions?.include,
     });
   }
 
@@ -308,8 +334,8 @@ export class MetaAg {
    */
   async fastSwap(
     options: MetaFastSwapOptions,
-    getTransactionBlockParams?: Omit<GetTransactionBlockParams, "digest">,
-  ): Promise<SuiTransactionBlockResponse> {
+    extraOptions?: ExecuteTransactionExtraOptions,
+  ): Promise<MetaTransactionResult> {
     MetaAgError.assert(
       options.signer && !isSystemAddress(options.signer),
       "Invalid signer address",
@@ -318,11 +344,12 @@ export class MetaAg {
     );
     const provider = await this._getProvider(options.quote.provider);
     if (isAggregatorProvider(provider)) {
-      return this._fastSwap(options, getTransactionBlockParams);
+      return this._fastSwap(options, extraOptions);
     } else if (isSwapAPIProvider(provider)) {
-      return this.client.waitForTransaction({
-        ...getTransactionBlockParams,
+      return this.client.core.waitForTransaction({
         digest: await provider.fastSwap(options),
+        signal: extraOptions?.signal,
+        include: extraOptions?.include,
       });
     } else {
       throw new MetaAgError(
@@ -344,31 +371,41 @@ export class MetaAg {
     this.options.partnerCommissionBps =
       options.partnerCommissionBps ?? this.options.partnerCommissionBps;
     this.options.tipBps = options.tipBps ?? this.options.tipBps;
-    if (
-      options.fullnodeUrl &&
-      options.fullnodeUrl !== this.options.fullnodeUrl
-    ) {
-      this.client = new SuiClient({ url: options.fullnodeUrl });
+    const clientChanged = Boolean(
+      options.client && options.client !== this.client,
+    );
+    const hermesChanged = Boolean(
+      options.hermesApi && options.hermesApi !== this.options.hermesApi,
+    );
+    if (clientChanged) {
+      this.client = options.client!;
+      this.options.client = this.client;
       this.inspector = new SuiClientUtils(this.client);
-      this.options.fullnodeUrl = options.fullnodeUrl;
     }
-    if (options.hermesApi && options.hermesApi !== this.options.hermesApi) {
+    if (hermesChanged) {
+      this.options.hermesApi = options.hermesApi!;
+    }
+    // Providers capture the previous client / Hermes URL — drop them so they
+    // re-initialize with the latest options on next use.
+    if (clientChanged || hermesChanged) {
       this.providers = {};
-      this.options.hermesApi = options.hermesApi;
     }
     // if update provider's options, we need to re-initialize the provider
     for (const [provider, opt] of Object.entries(options.providers || {})) {
       this.options.providers[provider as EProvider] = {
         ...opt,
         ...this.options.providers[provider as EProvider],
-      } as any;
+      } as Bluefin7kProviderOptions &
+        CetusProviderOptions &
+        FlowxProviderOptions &
+        OkxProviderOptions;
       delete this.providers[provider as EProvider];
     }
   }
 }
 
 const catchImportError = (provider: EProvider) => {
-  return (e: any) => {
+  return (e: unknown): never => {
     const map = {
       [EProvider.CETUS]: "@cetusprotocol/aggregator-sdk",
       [EProvider.FLOWX]: "@flowx-finance/sdk",

@@ -1,5 +1,133 @@
 # @7kprotocol/sdk-ts
 
+## 5.0.0-beta.0
+
+### Major Changes
+
+- **Sui SDK v2 migration (BREAKING)**:
+  - Peer dependency `@mysten/sui` bumped from `^1.44.0` to `^2.17.0`.
+  - All Sui client calls now route through the v2 `ClientWithCoreApi` /
+    `client.core.*` surface. Legacy `@mysten/sui/client` (JSON-RPC) imports have
+    been removed from the SDK.
+  - The default client is now `SuiGrpcClient` (mainnet). To select a different
+    transport (`SuiGraphQLClient`, `SuiJsonRpcClient`, or a custom one), pass a
+    pre-constructed client via the new `MetaAgOptions.client` option.
+- **`MetaAgOptions` shape change (BREAKING)**:
+  - `fullnodeUrl?: string` — **removed**. Construct your own client and pass it
+    via `client?: ClientWithCoreApi` instead.
+  - `client?: ClientWithCoreApi` — **new**. Accepts any v2 client. Defaults to
+    `new SuiGrpcClient({ baseUrl: <mainnet gRPC>, network: "mainnet" })` when
+    omitted.
+- **`MetaAg.fastSwap` signature change (BREAKING)**:
+  - Second argument renamed from `getTransactionBlockParams` to
+    `extraOptions: ExecuteTransactionExtraOptions` exposing only `signal` and a
+    transport-agnostic `include` subset (`effects`, `events`, `balanceChanges`,
+    `objectTypes`).
+  - Return type changed from `SuiTransactionBlockResponse` to
+    `MetaTransactionResult` — the v2 transaction envelope. Read the digest via
+    `result.Transaction?.digest`; `FailedTransaction` is the reverted-tx arm and
+    is never returned as success.
+- **`MetaAg.client` field type change (BREAKING)**:
+  - The public `MetaAg.client` field is now typed `ClientWithCoreApi` instead of
+    the concrete `SuiClient`. Callers that previously called legacy JSON-RPC
+    methods directly on this field must migrate to `client.core.*` or supply
+    their own typed client.
+- **Optional vendor SDKs bumped (BREAKING upstream changes)**:
+  - `@cetusprotocol/aggregator-sdk`: `^1.4.1` → `^1.5.4`.
+  - `@flowx-finance/sdk`: `^1.13.8` → `^2.0.3` (major).
+  - `@bluefin-exchange/bluefin7k-aggregator-sdk`: `^5.1.4` → `^7.2.0` (major).
+
+### Cetus + non-JSON-RPC transport caveat
+
+The bumped Cetus SDK (1.5.4) still types its internal client as
+`SuiJsonRpcClient` and calls legacy JSON-RPC methods (`getDynamicFieldObject`,
+`getCoins`, `getOwnedObjects`) on Pyth-priced and DeepBookV3-driven routes.
+Routes that don't touch those paths work on gRPC / GraphQL (verified live for
+SUI→USDC via `DEEPBOOKV3` at 50 SUI and `OBRIC` at 10 SUI). Routes that do touch
+them (e.g. `HAEDALPMM`) fail deterministically on non-JSON-RPC transports with
+an `INVALID_ARGUMENT BatchGetObjects` server error. **If you rely on full Cetus
+coverage, pass a `SuiJsonRpcClient` via `MetaAgOptions.client`.** This is
+documented inline on the option's JSDoc.
+
+### Minor Changes
+
+- New: `ExecuteTransactionExtraOptions.include?: MetaExecuteInclude` lets
+  callers opt into populating `effects`, `events`, `balanceChanges`, and
+  `objectTypes` on the `fastSwap` response. Default returns
+  `digest`/`signatures` only.
+- New helpers exposed from `MetaAg`: `MetaTransactionResult`,
+  `MetaExecuteInclude`, `ExecuteTransactionExtraOptions`.
+- `OkxProvider.fastSwap` now throws when the chain returns a `FailedTransaction`
+  envelope instead of silently returning the failed transaction's digest.
+  Callers can no longer mistake a reverted swap for a success.
+- `MetaAg.updateMetaAgOptions` correctly re-initializes the provider cache when
+  the transport client is swapped (previously stale providers could keep a
+  reference to the prior client).
+- `SuiClientUtils.simulateTransaction` (renamed from
+  `devInspectTransactionBlock`) attaches its build plugin at most once per
+  `Transaction` instance via a `WeakSet`, preventing duplicate cache plugin runs
+  across retries.
+- Internal: `ObjectCache.resolveObjects` now routes through
+  `client.core.getObjects` (transport-agnostic) instead of the concrete
+  `SuiGrpcClient` method.
+
+### Migration guide
+
+Before (v4.x):
+
+```typescript
+import { getFullnodeUrl } from "@mysten/sui/client";
+import { MetaAg } from "@7kprotocol/sdk-ts";
+
+const metaAg = new MetaAg({
+  fullnodeUrl: getFullnodeUrl("mainnet"),
+  partner: "0x...",
+});
+
+const result = await metaAg.fastSwap({ quote, signer, signTransaction });
+console.log(result.digest);
+```
+
+After (v5.0.0-beta.0):
+
+```typescript
+import { MetaAg } from "@7kprotocol/sdk-ts";
+
+// Default: SuiGrpcClient against mainnet. No URL needed.
+const metaAg = new MetaAg({ partner: "0x..." });
+
+const result = await metaAg.fastSwap(
+  { quote, signer, signTransaction },
+  { include: { effects: true, events: true } }, // opt-in
+);
+// v2 envelope shape: Transaction (success) | FailedTransaction (reverted)
+const digest = result.Transaction?.digest;
+if (!digest) throw new Error("swap reverted");
+```
+
+To select a different transport (e.g. JSON-RPC for full Cetus coverage):
+
+```typescript
+import { SuiJsonRpcClient } from "@mysten/sui/jsonRpc";
+import { MetaAg } from "@7kprotocol/sdk-ts";
+
+const metaAg = new MetaAg({
+  client: new SuiJsonRpcClient({
+    url: "https://fullnode.mainnet.sui.io:443",
+    network: "mainnet",
+  }),
+});
+```
+
+### Internal Changes
+
+- Test infra: switched test loader from `ts-node` to `tsx` (under bun); added
+  unit tests for the v2 simulation result reader and the `ObjectCache` v2
+  effects mapping; added a live-mainnet probe suite for Cetus transport
+  compatibility.
+- Build: `tsup` DTS resolution moved to `moduleResolution: "bundler"` to pick up
+  `@mysten/sui` v2 subpath exports.
+
 ## 4.0.0
 
 ### Major Changes

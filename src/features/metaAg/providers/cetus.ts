@@ -1,5 +1,5 @@
 import { AggregatorClient, Env } from "@cetusprotocol/aggregator-sdk";
-import { SuiClient } from "@mysten/sui/client";
+import { ClientWithCoreApi } from "@mysten/sui/client";
 import { v4 } from "uuid";
 import { _7K_PARTNER_ADDRESS } from "../../../constants/_7k";
 import {
@@ -12,6 +12,7 @@ import {
   MetaSwapOptions,
   QuoteProvider,
 } from "../../../types/metaAg";
+import { assertQuoteProvider } from "../common";
 import { MetaAgError, MetaAgErrorCode } from "../error";
 
 export class CetusProvider implements QuoteProvider, AggregatorProvider {
@@ -20,11 +21,20 @@ export class CetusProvider implements QuoteProvider, AggregatorProvider {
   constructor(
     private readonly options: CetusProviderOptions,
     metaOptions: MetaAgOptions,
-    client: SuiClient,
+    client: ClientWithCoreApi,
   ) {
     this.cetusClient = new AggregatorClient({
       apiKey: options.apiKey,
-      client,
+      // Cetus 1.5.4 types `client` as `SuiJsonRpcClient` but the methods
+      // exercised by the `findRouters` + `routerSwap` path we use here are
+      // present on `SuiGrpcClient`. The legacy-only methods it can call
+      // (`getDynamicFieldObject`, `getCoins`, `getOwnedObjects`,
+      // `devInspectTransactionBlock`) sit behind code paths we don't enter
+      // (Pyth-priced routes, DeepBookV3 account caps, in-pool simulation).
+      // Cast at this single boundary to keep the SDK gRPC-only.
+      client: client as unknown as ConstructorParameters<
+        typeof AggregatorClient
+      >[0]["client"],
       endpoint: options.api,
       env: Env.Mainnet,
       pythUrls: metaOptions.hermesApi ? [metaOptions.hermesApi] : [],
@@ -65,12 +75,7 @@ export class CetusProvider implements QuoteProvider, AggregatorProvider {
   }
 
   async swap(options: MetaSwapOptions) {
-    MetaAgError.assert(
-      options.quote.provider === EProvider.CETUS,
-      "Expect Cetus quote",
-      MetaAgErrorCode.INVALID_QUOTE,
-      { quote: options.quote, expectedProvider: EProvider.CETUS },
-    );
+    assertQuoteProvider(options.quote, EProvider.CETUS);
     const coinOut = await this.cetusClient.routerSwap({
       inputCoin: options.coinIn,
       router: options.quote.quote,

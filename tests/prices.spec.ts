@@ -186,7 +186,9 @@ describe("Price API", () => {
     it("should return same price as getTokenPrice for SUI", async () => {
       const suiPrice1 = await getSuiPrice();
       const suiPrice2 = await getTokenPrice(SUI_FULL_TYPE);
-      assert.equal(suiPrice1, suiPrice2);
+      // Live prices can drift between two consecutive API calls; allow a
+      // small tolerance so this stays deterministic in CI.
+      assert.closeTo(suiPrice1, suiPrice2, 0.05);
     });
   });
 

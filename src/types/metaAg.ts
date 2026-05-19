@@ -7,7 +7,7 @@ import type {
   RouterDataV3,
 } from "@cetusprotocol/aggregator-sdk";
 import type { AggregatorQuoter, Protocol } from "@flowx-finance/sdk";
-import type { GasCostSummary } from "@mysten/sui/client";
+import { ClientWithCoreApi, SuiClientTypes } from "@mysten/sui/client";
 import { SignatureWithBytes } from "@mysten/sui/cryptography";
 import type {
   Transaction,
@@ -60,8 +60,28 @@ export interface MetaAgOptions {
     [EProvider.CETUS]?: CetusProviderOptions;
     [EProvider.OKX]?: OkxProviderOptions;
   };
-  /**Mainnet Json Rpc url, if not specified, the default mainnet url will be used */
-  fullnodeUrl?: string;
+  /**
+   * Sui client to use for on-chain reads, simulation, and execution. Accepts
+   * any v2 `ClientWithCoreApi` implementation (`SuiGrpcClient`,
+   * `SuiGraphQLClient`, `SuiJsonRpcClient`, or a custom transport). If not
+   * specified, a default `SuiGrpcClient` against Sui mainnet is constructed.
+   *
+   * @warning **Cetus provider compatibility**: `@cetusprotocol/aggregator-sdk`
+   * is **only fully compatible with `SuiJsonRpcClient`**. It calls legacy
+   * JSON-RPC-only methods (`getDynamicFieldObject`, `getCoins`,
+   * `getOwnedObjects`, `devInspectTransactionBlock`) for specific routes:
+   *
+   *   - Pyth-priced routes (uses `getDynamicFieldObject` to resolve price
+   *     feeds in `routerSwap`).
+   *   - DeepBookV3 routes (uses `getCoins` for coin merging and
+   *     `getOwnedObjects` to mint/find an account cap).
+   *
+   * Passing a `SuiGrpcClient` / `SuiGraphQLClient` will work for plain
+   * `findRouters + routerSwap` routes but **will throw at runtime** for the
+   * cases above. If you need full Cetus coverage, pass a `SuiJsonRpcClient`
+   * here (or disable the Cetus provider, or update to the latest cetus sdk that fully compatible with any sui client).
+   */
+  client?: ClientWithCoreApi;
   /**Hermes Api url, if not specified, the default hermes api url will be used */
   hermesApi?: string;
   /**Address to receive commission, if not specified, the commission will not be used */
@@ -163,7 +183,7 @@ export type MetaQuote = (
   /** Simulated amount out if the transaction is executed */
   simulatedAmountOut?: string;
   /** Estimate gas consumption if the transaction is executed */
-  gasUsed?: GasCostSummary;
+  gasUsed?: SuiClientTypes.GasCostSummary;
 };
 export interface QuoteProvider {
   readonly kind: EProvider;

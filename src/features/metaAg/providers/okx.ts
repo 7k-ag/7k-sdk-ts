@@ -1,11 +1,12 @@
-import { SuiClient } from "@mysten/sui/client";
+import { ClientWithCoreApi } from "@mysten/sui/client";
 import {
-  Commands,
+  TransactionCommands as Commands,
   Transaction,
   TransactionDataBuilder,
   TransactionObjectArgument,
 } from "@mysten/sui/transactions";
 import {
+  fromBase64,
   normalizeStructTag,
   normalizeSuiAddress,
   toBase64,
@@ -27,7 +28,7 @@ import {
 import { OkxSwapRequest, OkxSwapResponse } from "../../../types/okx";
 import { isSystemAddress } from "../../../utils/sui";
 import { SuiClientUtils } from "../../../utils/SuiClientUtils";
-import { metaSettle, simulateSwapTx } from "../common";
+import { assertQuoteProvider, metaSettle, simulateSwapTx } from "../common";
 import { MetaAgError, MetaAgErrorCode } from "../error";
 
 const API = "https://web3.okx.com";
@@ -39,7 +40,7 @@ export class OkxProvider implements QuoteProvider, SwapAPIProvider {
   constructor(
     private readonly options: OkxProviderOptions,
     private readonly metaOptions: Required<MetaAgOptions>,
-    private readonly client: SuiClient,
+    private readonly client: ClientWithCoreApi,
   ) {}
 
   async quote({
@@ -85,12 +86,7 @@ export class OkxProvider implements QuoteProvider, SwapAPIProvider {
 
   async fastSwap(options: MetaFastSwapOptions): Promise<string> {
     const { quote, signer, signTransaction } = options;
-    MetaAgError.assert(
-      quote.provider === EProvider.OKX,
-      "Invalid quote",
-      MetaAgErrorCode.INVALID_QUOTE,
-      { quote, expectedProvider: EProvider.OKX },
-    );
+    assertQuoteProvider(quote, EProvider.OKX);
     const { tx, coin } = buildTx({ quote, signer });
     tx.add(
       metaSettle(
@@ -105,11 +101,22 @@ export class OkxProvider implements QuoteProvider, SwapAPIProvider {
     tx.transferObjects([coin], signer);
     const txBytes = await tx.build({ client: this.client });
     const { bytes, signature } = await signTransaction(toBase64(txBytes));
-    const res = await this.client.executeTransactionBlock({
-      signature,
-      transactionBlock: bytes,
+    const res = await this.client.core.executeTransaction({
+      transaction: fromBase64(bytes),
+      signatures: [signature],
     });
-    return res.digest;
+    // Only `Transaction.digest` means the chain accepted and executed the tx
+    // successfully. `FailedTransaction.digest` represents a reverted tx and
+    // must not be returned as a success digest — the caller would otherwise
+    // `waitForTransaction` on a tx that already failed.
+    if (!res.Transaction?.digest) {
+      throw new MetaAgError(
+        "OKX transaction failed or returned no digest",
+        MetaAgErrorCode.SIMULATION_FAILED,
+        { error: res.FailedTransaction?.digest ?? "no digest" },
+      );
+    }
+    return res.Transaction.digest;
   }
 }
 
@@ -213,12 +220,7 @@ const replaceFinalizeCommand = (
 
 const buildTx = (options: Omit<MetaSwapOptions, "coinIn" | "tx">) => {
   const { quote, signer } = options;
-  MetaAgError.assert(
-    quote.provider === EProvider.OKX,
-    "Invalid quote",
-    MetaAgErrorCode.INVALID_QUOTE,
-    { quote, expectedProvider: EProvider.OKX },
-  );
+  assertQuoteProvider(quote, EProvider.OKX);
   const tx = Transaction.from(quote.quote.tx.data);
   tx.setSenderIfNotSet(signer);
   const { tx: tx2, coin } = replaceFinalizeCommand(tx, quote.quote.tx.to);

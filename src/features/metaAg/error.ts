@@ -1,4 +1,3 @@
-import { DevInspectResults } from "@mysten/sui/client";
 import { EProvider, MetaQuote, MetaQuoteOptions } from "../../types/metaAg";
 
 export enum MetaAgErrorCode {
@@ -16,7 +15,7 @@ export enum MetaAgErrorCode {
 }
 
 export type MetaAgErrorDetailsMap = {
-  [MetaAgErrorCode.UNKNOWN]: any;
+  [MetaAgErrorCode.UNKNOWN]: unknown;
   [MetaAgErrorCode.TIMEOUT]: { timeout: number };
   [MetaAgErrorCode.PROVIDER_NOT_FOUND]: { provider: EProvider };
   [MetaAgErrorCode.PROVIDER_NOT_SUPPORTED]: { provider: EProvider };
@@ -30,7 +29,7 @@ export type MetaAgErrorDetailsMap = {
   };
   [MetaAgErrorCode.INVALID_SIGNER_ADDRESS]: { signer: string };
   [MetaAgErrorCode.PROVIDER_NOT_SUPPORT_SWAP]: { provider: EProvider };
-  [MetaAgErrorCode.SIMULATION_FAILED]: { error: DevInspectResults["error"] };
+  [MetaAgErrorCode.SIMULATION_FAILED]: { error: string | undefined };
   // OKX error
   [MetaAgErrorCode.OKX_FINALIZE_COMMAND_NOT_FOUND]: { packageId: string };
 };

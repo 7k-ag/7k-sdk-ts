@@ -1,4 +1,3 @@
-import { SuiEvent } from "@mysten/sui/client";
 import {
   coinWithBalance,
   Transaction,
@@ -12,13 +11,62 @@ import {
 } from "../../constants/_7k";
 import {
   AggregatorProvider,
+  EProvider,
   MetaAgOptions,
   MetaQuote,
   MetaSimulationOptions,
 } from "../../types/metaAg";
+import type { SimulateTransactionResult } from "../../utils/SuiClientUtils";
 import { SuiClientUtils } from "../../utils/SuiClientUtils";
 import { getExpectedReturn } from "../../utils/swap";
 import { MetaAgError, MetaAgErrorCode } from "./error";
+
+type SimulatedTransaction = NonNullable<
+  | SimulateTransactionResult["Transaction"]
+  | SimulateTransactionResult["FailedTransaction"]
+>;
+type SimulatedEvent = NonNullable<SimulatedTransaction["events"]>[number];
+
+/**
+ * v2 gRPC returns a `{ Transaction?, FailedTransaction? }` envelope from
+ * both `executeTransaction` and `simulateTransaction`. Unwrap to the inner
+ * payload, throwing `SIMULATION_FAILED` if neither arm is populated.
+ */
+export const unwrapTxResult = <
+  T extends {
+    Transaction?: unknown;
+    FailedTransaction?: unknown;
+  },
+>(
+  res: T,
+  msg = "Transaction returned no result",
+): NonNullable<T["Transaction"] | T["FailedTransaction"]> => {
+  const inner = (res.Transaction ?? res.FailedTransaction) as
+    | NonNullable<T["Transaction"] | T["FailedTransaction"]>
+    | undefined;
+  if (!inner) {
+    throw new MetaAgError(msg, MetaAgErrorCode.SIMULATION_FAILED, {
+      error: msg,
+    });
+  }
+  return inner;
+};
+
+/**
+ * Assert that `quote.provider` matches the expected provider kind. All
+ * provider classes use this identical guard at the top of `swap`/`fastSwap`.
+ */
+export function assertQuoteProvider<E extends EProvider>(
+  quote: MetaQuote,
+  expected: E,
+): asserts quote is Extract<MetaQuote, { provider: E }> {
+  MetaAgError.assert(
+    quote.provider === expected,
+    "Invalid quote",
+    MetaAgErrorCode.INVALID_QUOTE,
+    { quote, expectedProvider: expected },
+  );
+}
 
 export const simulateSwapTx = async (
   tx: Transaction,
@@ -27,23 +75,24 @@ export const simulateSwapTx = async (
 ) => {
   const res = await timeout(
     () =>
-      inspector.devInspectTransactionBlock({
+      inspector.simulateTransaction({
         sender: simulation.sender,
         transactionBlock: tx,
       }),
     simulation.timeout ?? 2000,
   );
-  if (res.effects.status.status === "failure") {
-    throw new MetaAgError(
-      res.error ?? "Simulation failed",
-      MetaAgErrorCode.SIMULATION_FAILED,
-      { error: res.error },
-    );
+  const result = unwrapTxResult(res, "Simulation failed");
+  const status = result.effects.status;
+  if (!status.success) {
+    const errorMessage = status.error.message ?? "Simulation failed";
+    throw new MetaAgError(errorMessage, MetaAgErrorCode.SIMULATION_FAILED, {
+      error: errorMessage,
+    });
   }
-  const amountOut = extractAmountOutWrapper(res.events);
+  const amountOut = extractAmountOutWrapper(result.events ?? []);
   return {
-    simulatedAmountOut: amountOut as string,
-    gasUsed: res.effects.gasUsed,
+    simulatedAmountOut: amountOut,
+    gasUsed: result.effects.gasUsed,
   };
 };
 export const simulateAggregator = async (
@@ -138,18 +187,21 @@ export const metaSettle = (
   };
 };
 
-const extractAmountOutWrapper = (events: SuiEvent[]) => {
+const extractAmountOutWrapper = (events: SimulatedEvent[]) => {
   const swapEvent = events
-    .filter((event) => event.type === `${_7K_META_PACKAGE_ID}::settle::Swap`)
+    .filter(
+      (event) => event.eventType === `${_7K_META_PACKAGE_ID}::settle::Swap`,
+    )
     ?.pop();
-  return (swapEvent?.parsedJson as any)?.amount_out;
+  const json = swapEvent?.json as { amount_out?: string } | null | undefined;
+  return json?.amount_out;
 };
 
-export const timeout = async <T = any>(
+export const timeout = async <T>(
   fn: () => Promise<T>,
   timeout: number,
   msg?: string,
-) => {
+): Promise<T> => {
   if (timeout <= 0) return fn();
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(

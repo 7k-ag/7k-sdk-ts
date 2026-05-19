@@ -81,15 +81,41 @@ Creates a new MetaAggregator instance.
 
 #### Parameters
 
-| Parameter                      | Type     | Description                                                                                 | Default                                                              |
-| ------------------------------ | -------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `options.providers`            | `object` | Configuration for each aggregator provider. See [Provider Options](#provider-options) below | All enabled by default                                               |
-| `options.fullnodeUrl`          | `string` | Sui network RPC endpoint                                                                    | Mainnet default URL                                                  |
-| `options.hermesApi`            | `string` | Pyth Hermes API URL for price feeds                                                         | `https://hermes.pyth.network`                                        |
-| `options.partner`              | `string` | Partner address for analytics and commission                                                | `0x0000000000000000000000000000000000000000000000000000000000000000` |
-| `options.partnerCommissionBps` | `number` | Partner commission in basis points (1 bps = 0.01%)                                          | `0`                                                                  |
-| `options.slippageBps`          | `number` | Default slippage tolerance in basis points (1 bps = 0.01%)                                  | `100` (1%)                                                           |
-| `options.tipBps`               | `number` | Tip to 7K Protocol in basis points (1 bps = 0.01%)                                          | `0`                                                                  |
+| Parameter                      | Type                | Description                                                                                        | Default                                                              |
+| ------------------------------ | ------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `options.providers`            | `object`            | Configuration for each aggregator provider. See [Provider Options](#provider-options) below        | All enabled by default                                               |
+| `options.client`               | `ClientWithCoreApi` | Pre-constructed Sui v2 client (`SuiGrpcClient`, `SuiGraphQLClient`, `SuiJsonRpcClient`, or custom) | `new SuiGrpcClient` against Sui mainnet                              |
+| `options.hermesApi`            | `string`            | Pyth Hermes API URL for price feeds                                                                | `https://hermes.pyth.network`                                        |
+| `options.partner`              | `string`            | Partner address for analytics and commission                                                       | `0x0000000000000000000000000000000000000000000000000000000000000000` |
+| `options.partnerCommissionBps` | `number`            | Partner commission in basis points (1 bps = 0.01%)                                                 | `0`                                                                  |
+| `options.slippageBps`          | `number`            | Default slippage tolerance in basis points (1 bps = 0.01%)                                         | `100` (1%)                                                           |
+| `options.tipBps`               | `number`            | Tip to 7K Protocol in basis points (1 bps = 0.01%)                                                 | `0`                                                                  |
+
+#### Transport selection (v5)
+
+The SDK is transport-agnostic — `options.client` accepts any v2 client
+implementing `ClientWithCoreApi`. When omitted, a default `SuiGrpcClient`
+against Sui mainnet is constructed for you.
+
+> **Cetus transport caveat**: `@cetusprotocol/aggregator-sdk@^1.5.4` still types
+> its internal client as `SuiJsonRpcClient` and invokes legacy JSON-RPC methods
+> (`getDynamicFieldObject`, `getCoins`, `getOwnedObjects`) on Pyth-priced and
+> DeepBookV3 routes. Most routes work with the default `SuiGrpcClient`, but
+> routes that touch Pyth (e.g. `HAEDALPMM`) fail deterministically on
+> non-JSON-RPC transports. If you need full Cetus coverage, pass a
+> `SuiJsonRpcClient`:
+>
+> ```typescript
+> import { SuiJsonRpcClient } from "@mysten/sui/jsonRpc";
+> import { MetaAg } from "@7kprotocol/sdk-ts";
+>
+> const metaAg = new MetaAg({
+>   client: new SuiJsonRpcClient({
+>     url: "https://fullnode.mainnet.sui.io:443",
+>     network: "mainnet",
+>   }),
+> });
+> ```
 
 #### Provider Options
 
@@ -357,8 +383,8 @@ const result = await client.signAndExecuteTransaction({
 ```typescript
 await metaAg.fastSwap(
   options: MetaFastSwapOptions,
-  getTransactionBlockParams?: Omit<GetTransactionBlockParams, "digest">
-): Promise<SuiTransactionBlockResponse>
+  extraOptions?: ExecuteTransactionExtraOptions
+): Promise<MetaTransactionResult>
 ```
 
 Build, sign, and execute a swap transaction in one step. This method is used for
@@ -376,13 +402,21 @@ as aggregator providers for convenience.
 | `signTransaction` | `function`  | Function to sign the transaction bytes                | Yes      |
 | `useGasCoin`      | `boolean`   | Whether to use the gas coin as input (default: false) | No       |
 
-**getTransactionBlockParams (optional):**
+**extraOptions (optional):**
 
-- Options for waiting for the transaction, such as `options` and `signal`
+| Parameter | Type                 | Description                                                                                                                                       |
+| --------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `signal`  | `AbortSignal`        | Cancel the in-flight execute / waitForTransaction call.                                                                                           |
+| `include` | `MetaExecuteInclude` | Opt-in flags (`effects`, `events`, `balanceChanges`, `objectTypes`) forwarded to the underlying `executeTransaction` / `waitForTransaction` call. |
 
 #### Returns
 
-`SuiTransactionBlockResponse`: The transaction response with digest and effects.
+`MetaTransactionResult`: the v2 transaction envelope. Either
+`{ $kind: 'Transaction', Transaction: { digest, … } }` on success or
+`{ $kind: 'FailedTransaction', FailedTransaction: { … } }` on a reverted
+transaction. Read the digest via `result.Transaction?.digest`. With
+`extraOptions.include.effects: true` the `effects` field of the inner payload is
+populated; otherwise only `digest`/`signatures` are present.
 
 #### FastSwap Example
 
@@ -403,15 +437,17 @@ if (okxQuote) {
     quote: okxQuote,
     signer: "0xYourAddress",
     signTransaction: async (txBytes) => {
-      // Sign transaction bytes with your keypair
-      const signature = await keypair.signPersonalMessage(
-        await keypair.signTransactionBlock(txBytes),
-      );
+      // `txBytes` is base64-encoded transaction bytes from `Transaction.build`.
+      // `keypair.signTransaction` (from `@mysten/sui` v2) takes a Uint8Array
+      // and returns `{ signature, bytes }` (both base64).
+      const { signature } = await keypair.signTransaction(fromBase64(txBytes));
       return { signature, bytes: txBytes };
     },
   });
 
-  console.log(`Transaction executed: ${result.digest}`);
+  const digest = result.Transaction?.digest;
+  if (!digest) throw new Error("OKX swap reverted");
+  console.log(`Transaction executed: ${digest}`);
 }
 ```
 
@@ -420,15 +456,21 @@ if (okxQuote) {
 Here's a complete working example:
 
 ```typescript
-import "mocha";
-import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
+import { SuiGrpcClient } from "@mysten/sui/grpc";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
-import { SUI_TYPE } from "../src/constants/tokens";
-import { MetaAg } from "../src/index";
+import { MetaAg } from "@7kprotocol/sdk-ts";
 
-const client = new SuiClient({ url: getFullnodeUrl("mainnet") });
+const SUI_TYPE = "0x2::sui::SUI";
+
+// Default transport: SuiGrpcClient against mainnet. Construct your own to
+// override (e.g. SuiJsonRpcClient for full Cetus coverage).
+const client = new SuiGrpcClient({
+  baseUrl: "https://fullnode.mainnet.sui.io:443",
+  network: "mainnet",
+});
 
 const metaAg = new MetaAg({
+  client, // optional — omit to use the default mainnet SuiGrpcClient
   partner: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf",
   partnerCommissionBps: 100, // 1% commission
 });
@@ -469,10 +511,11 @@ const coinOut = await metaAg.swap(
 
 tx.transferObjects([coinOut], "0xYourAddress");
 
-// Inspect transaction (optional, for testing)
-const res = await client.devInspectTransactionBlock({
-  transactionBlock: tx,
-  sender: "0xYourAddress",
+// Inspect transaction (optional, for testing) — v2 core API
+const res = await client.core.simulateTransaction({
+  transaction: tx,
+  checksEnabled: false,
+  include: { effects: true, events: true, commandResults: true },
 });
 
 console.log("Transaction ready to execute!");

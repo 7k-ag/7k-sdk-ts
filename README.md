@@ -50,40 +50,49 @@ This package has peer dependencies that are required for core functionality:
 
 | Package                    | Version   | Purpose                      | Required For       |
 | -------------------------- | --------- | ---------------------------- | ------------------ |
-| `@mysten/sui`              | `^1.44.0` | Sui blockchain interaction   | Core functionality |
+| `@mysten/sui`              | `^2.17.0` | Sui blockchain interaction   | Core functionality |
 | `@pythnetwork/pyth-sui-js` | `^2.2.0`  | Pyth price feeds integration | Price feeds        |
 
 **Required peer dependencies:**
 
 ```bash
-npm i @mysten/sui@^1.39.0 @pythnetwork/pyth-sui-js@^2.2.0
+npm i @mysten/sui@^2.17.0 @pythnetwork/pyth-sui-js@^2.2.0
 ```
+
+> **v5 note**: `@mysten/sui` v2 ships gRPC, GraphQL, and JSON-RPC transports
+> behind a unified `ClientWithCoreApi`. The SDK constructs a `SuiGrpcClient`
+> against Sui mainnet by default; pass `MetaAgOptions.client` to override with
+> any transport (see the [MetaAg docs](docs/META_AG.md)).
 
 ### Optional Dependencies (for MetaAg providers)
 
 The following dependencies are **optional** and only needed for specific MetaAg
 providers:
 
-| Package                                      | Version   | Provider                  |
-| -------------------------------------------- | --------- | ------------------------- |
-| Package                                      | Version   | Provider                  |
-| -------------------------------------------- | --------- | -----------------------   |
-| `@flowx-finance/sdk`                         | `^1.13.8` | Flowx MetaAg provider     |
-| `@cetusprotocol/aggregator-sdk`              | `^1.4.1`  | Cetus MetaAg provider     |
-| `@bluefin-exchange/bluefin7k-aggregator-sdk` | `^5.1.4`  | Bluefin7k MetaAg provider |
+| Package                                      | Version  | Provider                  |
+| -------------------------------------------- | -------- | ------------------------- |
+| `@flowx-finance/sdk`                         | `^2.0.3` | Flowx MetaAg provider     |
+| `@cetusprotocol/aggregator-sdk`              | `^1.5.4` | Cetus MetaAg provider     |
+| `@bluefin-exchange/bluefin7k-aggregator-sdk` | `^7.2.0` | Bluefin7k MetaAg provider |
 
 To use Flowx or Cetus providers, install their respective dependencies:
 
 ```bash
 # For Flowx MetaAg provider
-npm i @flowx-finance/sdk@^1.13.8
+npm i @flowx-finance/sdk@^2.0.3
 
 # For Cetus MetaAg provider
-npm i @cetusprotocol/aggregator-sdk@^1.4.1
+npm i @cetusprotocol/aggregator-sdk@^1.5.4
 
 # For Bluefin7k MetaAg provider
-npm i @bluefin-exchange/bluefin7k-aggregator-sdk@^5.1.4
+npm i @bluefin-exchange/bluefin7k-aggregator-sdk@^7.2.0
 ```
+
+> **Cetus transport caveat (v5)**: Cetus 1.5.4 still types its internal client
+> as `SuiJsonRpcClient` and calls legacy JSON-RPC methods on Pyth-priced and
+> DeepBookV3-driven routes. Most routes work with the default `SuiGrpcClient`,
+> but routes that touch Pyth oracles (e.g. `HAEDALPMM`) will fail. If you need
+> full Cetus coverage, pass a `SuiJsonRpcClient` via `MetaAgOptions.client`.
 
 ### Graceful Degradation
 

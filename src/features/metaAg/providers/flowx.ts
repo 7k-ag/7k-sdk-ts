@@ -4,7 +4,7 @@ import {
   CommissionType,
   TradeBuilder,
 } from "@flowx-finance/sdk";
-import { SuiClient } from "@mysten/sui/client";
+import { ClientWithCoreApi } from "@mysten/sui/client";
 import { TransactionObjectArgument } from "@mysten/sui/transactions";
 import { v4 } from "uuid";
 import { _7K_PARTNER_ADDRESS } from "../../../constants/_7k";
@@ -17,6 +17,7 @@ import {
   MetaSwapOptions,
   QuoteProvider,
 } from "../../../types/metaAg";
+import { assertQuoteProvider } from "../common";
 import { MetaAgError, MetaAgErrorCode } from "../error";
 
 export class FlowxProvider implements QuoteProvider, AggregatorProvider {
@@ -24,7 +25,7 @@ export class FlowxProvider implements QuoteProvider, AggregatorProvider {
   private quoter: AggregatorQuoter;
   constructor(
     private readonly options: FlowxProviderOptions,
-    private readonly client: SuiClient,
+    private readonly client: ClientWithCoreApi,
   ) {
     this.quoter = new AggregatorQuoter("mainnet", options.apiKey);
   }
@@ -53,12 +54,7 @@ export class FlowxProvider implements QuoteProvider, AggregatorProvider {
   }
 
   async swap(options: MetaSwapOptions): Promise<TransactionObjectArgument> {
-    MetaAgError.assert(
-      options.quote.provider === EProvider.FLOWX,
-      "Invalid quote",
-      MetaAgErrorCode.INVALID_QUOTE,
-      { quote: options.quote, expectedProvider: EProvider.FLOWX },
-    );
+    assertQuoteProvider(options.quote, EProvider.FLOWX);
     const builder = new TradeBuilder("mainnet", options.quote.quote.routes);
     builder.sender(options.signer);
     builder.slippage(10000 * 100);
@@ -71,11 +67,22 @@ export class FlowxProvider implements QuoteProvider, AggregatorProvider {
         true,
       ),
     );
-    const res = await builder.build().swap({
-      tx: options.tx as any,
-      client: this.client as any,
-      coinIn: options.coinIn as any,
+    const swap = builder.build().swap;
+    type SwapClient = Parameters<typeof swap>[0]["client"];
+    const res = await swap({
+      tx: options.tx,
+      // FlowX 2.0.3 types `client` as `SuiGrpcClient`, but at runtime it only
+      // calls through `core.*`. Cast at this single boundary so the SDK
+      // public API stays transport-agnostic (`ClientWithCoreApi`).
+      client: this.client as unknown as SwapClient,
+      coinIn: options.coinIn,
     });
-    return res!;
+    MetaAgError.assert(
+      !!res,
+      "FlowX swap returned no coin out",
+      MetaAgErrorCode.INVALID_QUOTE,
+      { quote: options.quote, expectedProvider: EProvider.FLOWX },
+    );
+    return res;
   }
 }

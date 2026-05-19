@@ -1,6 +1,6 @@
 {
   "name": "@7kprotocol/sdk-ts",
-  "version": "4.0.0",
+  "version": "5.0.0-beta.0",
   "description": "",
   "exports": {
     ".": {
@@ -58,21 +58,21 @@
     "eslint": "^9.29.0",
     "husky": "^9.1.7",
     "mocha": "^11.6.0",
-    "ts-node": "^10.9.2",
     "tsup": "^8.3.5",
+    "tsx": "^4.21.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.1"
   },
   "peerDependencies": {
-    "@mysten/sui": "^1.44.0",
+    "@mysten/sui": "^2.17.0",
     "@pythnetwork/pyth-sui-js": "^2.2.0"
   },
   "dependencies": {
     "uuid": "^13.0.0"
   },
   "optionalDependencies": {
-    "@bluefin-exchange/bluefin7k-aggregator-sdk": "^5.1.4",
-    "@cetusprotocol/aggregator-sdk": "^1.4.1",
-    "@flowx-finance/sdk": "^1.13.8"
+    "@bluefin-exchange/bluefin7k-aggregator-sdk": "^7.2.0",
+    "@cetusprotocol/aggregator-sdk": "^1.5.4",
+    "@flowx-finance/sdk": "^2.0.3"
   }
 }
