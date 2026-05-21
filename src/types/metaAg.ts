@@ -9,6 +9,8 @@ import type {
 import type { AggregatorQuoter, Protocol } from "@flowx-finance/sdk";
 import { ClientWithCoreApi, SuiClientTypes } from "@mysten/sui/client";
 import { SignatureWithBytes } from "@mysten/sui/cryptography";
+import { SuiGrpcClient } from "@mysten/sui/grpc";
+import { SuiJsonRpcClient } from "@mysten/sui/jsonRpc";
 import type {
   Transaction,
   TransactionObjectArgument,
@@ -37,6 +39,16 @@ export type FlowxProviderOptions = ProviderBaseOptions & {
   excludeSources?: Protocol[];
   maxHops?: number;
   splitDistributionPercent?: number;
+  /**
+   * Per-provider client override for FlowX. FlowX 2.0.3's `Trade.swap`
+   * invokes native methods on `SuiGrpcClient` (`getBalance`,
+   * `getDynamicField`, `getObject`, etc.) — it does not yet accept
+   * `ClientWithCoreApi`. When supplied, this client is used for the FlowX
+   * swap path; otherwise the global `MetaAgOptions.client` is cast to
+   * `SuiGrpcClient` at the boundary. Once FlowX widens its types to
+   * `ClientWithCoreApi`, this override can be removed.
+   */
+  client?: SuiGrpcClient;
 };
 export type CetusProviderOptions = ProviderBaseOptions & {
   sources?: string[];
@@ -45,6 +57,17 @@ export type CetusProviderOptions = ProviderBaseOptions & {
   splitFactor?: number;
   depth?: number;
   liquidityChanges?: PreSwapLpChangeParams[];
+  /**
+   * Per-provider client override for Cetus. Cetus 1.5.4's `AggregatorClient`
+   * requires `SuiJsonRpcClient` for full coverage — legacy JSON-RPC methods
+   * (`getDynamicFieldObject`, `getCoins`, `getOwnedObjects`,
+   * `devInspectTransactionBlock`) are called on Pyth-priced and DeepBookV3
+   * routes. When supplied, this client is used for the Cetus swap path;
+   * otherwise the global `MetaAgOptions.client` is cast to `SuiJsonRpcClient`
+   * at the boundary. Once Cetus widens its types to `ClientWithCoreApi`,
+   * this override can be removed.
+   */
+  client?: SuiJsonRpcClient;
 };
 export type OkxProviderOptions = Required<Omit<ProviderBaseOptions, "api">> & {
   api?: string;

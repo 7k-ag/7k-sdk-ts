@@ -5,6 +5,7 @@ import {
   TradeBuilder,
 } from "@flowx-finance/sdk";
 import { ClientWithCoreApi } from "@mysten/sui/client";
+import { SuiGrpcClient } from "@mysten/sui/grpc";
 import { TransactionObjectArgument } from "@mysten/sui/transactions";
 import { v4 } from "uuid";
 import { _7K_PARTNER_ADDRESS } from "../../../constants/_7k";
@@ -23,10 +24,18 @@ import { MetaAgError, MetaAgErrorCode } from "../error";
 export class FlowxProvider implements QuoteProvider, AggregatorProvider {
   readonly kind = EProvider.FLOWX;
   private quoter: AggregatorQuoter;
+  // FlowX 2.0.3 calls native methods on `SuiGrpcClient` (`getBalance`,
+  // `getDynamicField`, `getObject`, etc.) and does not yet accept
+  // `ClientWithCoreApi`. We accept the global `ClientWithCoreApi` for
+  // forward compatibility and let callers override per-provider via
+  // `FlowxProviderOptions.client` when the global isn't a gRPC client.
+  // The cast is the single vendor seam — drop it when FlowX widens.
+  private readonly client: SuiGrpcClient;
   constructor(
     private readonly options: FlowxProviderOptions,
-    private readonly client: ClientWithCoreApi,
+    client: ClientWithCoreApi,
   ) {
+    this.client = options.client ?? (client as unknown as SuiGrpcClient);
     this.quoter = new AggregatorQuoter("mainnet", options.apiKey);
   }
 
@@ -67,14 +76,9 @@ export class FlowxProvider implements QuoteProvider, AggregatorProvider {
         true,
       ),
     );
-    const swap = builder.build().swap;
-    type SwapClient = Parameters<typeof swap>[0]["client"];
-    const res = await swap({
+    const res = await builder.build().swap({
       tx: options.tx,
-      // FlowX 2.0.3 types `client` as `SuiGrpcClient`, but at runtime it only
-      // calls through `core.*`. Cast at this single boundary so the SDK
-      // public API stays transport-agnostic (`ClientWithCoreApi`).
-      client: this.client as unknown as SwapClient,
+      client: this.client,
       coinIn: options.coinIn,
     });
     MetaAgError.assert(
